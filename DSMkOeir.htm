@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Call of Duty - Lobby</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #000;
+}
+
+body {
+    color: #fff;
+    background: #000 url('https://cdn.imgurl.ir/uploads/y16139_IMG_20260618_101758_062.jpg') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/* === OVERLAY === */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* === همه المان‌ها === */
+.topbar, .logo, .left-menu, .right-menu, .bottom-menu, .play-btn {
+    position: fixed;
+    z-index: 2;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 48px;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(12px) saturate(180%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 2px solid #ffb300;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #ffb300;
+    box-shadow: 0 0 14px rgba(255, 180, 0, 0.3);
+}
+
+.player-info {
+    font-size: 10px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.player-info div:first-child {
+    color: #ffd966;
+    letter-spacing: 0.3px;
+}
+
+.currency {
+    display: flex;
+    gap: 5px;
+}
+
+.currency-box {
+    height: 24px;
+    padding: 0 10px;
+    background: rgba(255, 180, 0, 0.12);
+    border: 1px solid #ffb300;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffd966;
+    text-shadow: 0 0 10px rgba(255, 180, 0, 0.2);
+}
+
+/* ===== LOGO ===== */
+.logo {
+    top: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+
+.logo img {
+    height: 32px;
+    filter: drop-shadow(0 4px 14px rgba(255, 180, 0, 0.4));
+}
+
+/* ===== LEFT MENU ===== */
+.left-menu {
+    top: 100px;
+    left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+}
+
+.left-btn {
+    width: 38px;
+    height: 38px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 180, 0, 0.5);
+    border-radius: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.25s;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.left-btn:hover {
+    transform: scale(1.08) translateX(3px);
+    border-color: #ffb300;
+    box-shadow: 0 6px 20px rgba(255, 180, 0, 0.3);
+}
+
+.left-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ===== RIGHT MENU ===== */
+.right-menu {
+    top: 100px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+}
+
+.right-btn {
+    width: 38px;
+    height: 38px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 180, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.25s;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.right-btn:hover {
+    transform: scale(1.08) translateX(-3px);
+    border-color: #ffb300;
+    box-shadow: 0 6px 20px rgba(255, 180, 0, 0.3);
+}
+
+.right-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ===== BOTTOM MENU (رفع مشکل - قرارگیری تصویر فروشگاه) ===== */
+.bottom-menu {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 180, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.bottom-btn {
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 180, 0, 0.4);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-btn:hover {
+    border-color: #ffcc00;
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 180, 0, 0.25);
+    background: rgba(255, 180, 0, 0.15);
+}
+
+.bottom-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ===== PLAY BUTTON ===== */
+.play-btn {
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 50px;
+    border: none;
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    background: transparent;
+}
+
+.play-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 14px;
+    filter: none;
+    transition: 0.3s;
+}
+
+.play-btn:hover {
+    transform: translateX(-50%) scale(1.04) translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.play-btn:active {
+    transform: translateX(-50%) scale(0.96);
+}
+
+/* ===== LANDSCAPE MODE ===== */
+@media (orientation: landscape) {
+    body {
+        background: #000 url('https://cdn.imgurl.ir/uploads/y16139_IMG_20260618_101758_062.jpg') no-repeat center center !important;
+        background-size: cover !important;
+        background-attachment: fixed !important;
+    }
+    
+    .topbar {
+        height: 40px;
+        padding: 0 8px;
+    }
+    
+    .profile img {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .player-info {
+        font-size: 9px;
+    }
+    
+    .currency-box {
+        height: 20px;
+        font-size: 9px;
+        padding: 0 8px;
+    }
+    
+    .logo {
+        top: 46px;
+    }
+    
+    .logo img {
+        height: 24px;
+    }
+    
+    .left-menu, .right-menu {
+        top: 76px;
+        gap: 5px;
+    }
+    
+    .left-btn, .right-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .bottom-menu {
+        bottom: 14px;
+        padding: 5px 10px;
+        gap: 6px;
+    }
+    
+    .bottom-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .play-btn {
+        bottom: 70px;
+        width: 150px;
+        height: 42px;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 500px) {
+    .topbar { padding: 0 8px; height: 42px; }
+    .profile img { width: 26px; height: 26px; }
+    .player-info { font-size: 9px; }
+    .currency-box { font-size: 9px; height: 20px; padding: 0 8px; }
+    .logo img { height: 26px; }
+    .left-btn, .right-btn { width: 34px; height: 34px; }
+    .bottom-menu { padding: 4px 8px; gap: 5px; }
+    .bottom-btn { width: 38px; height: 38px; }
+    .play-btn { width: 150px; height: 44px; bottom: 76px; }
+    .left-menu, .right-menu { top: 85px; gap: 5px; }
+    .logo { top: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+    <div class="profile">
+        <img src="PROFILE.png" alt="Profile">
+        <div class="player-info">
+            <div>PLAYER</div>
+            <div>Lv.55</div>
+        </div>
+    </div>
+    <div class="currency">
+        <div class="currency-box">💰 5000</div>
+        <div class="currency-box">💎 200</div>
+    </div>
+</div>
+
+<!-- ===== LOGO ===== -->
+<div class="logo">
+    <img src="LOGO.png" alt="Logo">
+</div>
+
+<!-- ===== LEFT MENU ===== -->
+<div class="left-menu">
+    <div class="left-btn"><img src="SHOP.png" alt="Shop"></div>
+    <div class="left-btn"><img src="CLAN.png" alt="Clan"></div>
+    <div class="left-btn"><img src="MISSION.png" alt="Mission"></div>
+</div>
+
+<!-- ===== RIGHT MENU ===== -->
+<div class="right-menu">
+    <div class="right-btn"><img src="MAIL.png" alt="Mail"></div>
+    <div class="right-btn"><img src="RANK.png" alt="Rank"></div>
+    <div class="right-btn" onclick="openSettings()" style="border-color: #ffb300; background: rgba(255,180,0,0.15);">
+        <img src="https://cdn.imgurl.ir/uploads/e923788_BackgroundEraser__.png" alt="Settings" style="filter: drop-shadow(0 0 8px rgba(255,180,0,0.4));">
+    </div>
+    <div class="right-btn"><img src="NEWS.png" alt="News"></div>
+</div>
+
+<!-- ===== BOTTOM MENU (تصویر فروشگاه در کادر خالی) ===== -->
+<div class="bottom-menu">
+    <!-- دکمه اول: تصویر فروشگاه -->
+    <div class="bottom-btn" onclick="openShop()">
+        <img src="https://uploadkon.ir/uploads/f3b118_26IMG-20260618-120340-044.jpg" alt="Shop">
+    </div>
+    <!-- دکمه‌های دیگر -->
+    <div class="bottom-btn"><img src="WEAPON.png" alt="Weapon"></div>
+    <div class="bottom-btn"><img src="BATTLEPASS.png" alt="Battle Pass"></div>
+    <div class="bottom-btn"><img src="INVENTORY.png" alt="Inventory"></div>
+</div>
+
+<!-- ===== PLAY BUTTON ===== -->
+<button class="play-btn" onclick="playGame()">
+    <img src="https://uploadkon.ir/uploads/34f918_26IMG-20260618-114710-730.jpg" alt="شروع بازی">
+</button>
+
+<script>
+// ===== پخش موسیقی پس‌زمینه =====
+let bgMusic = null;
+let isMusicPlaying = false;
+
+function initMusic() {
+    try {
+        bgMusic = new Audio('https://uploadkon.ir/uploads/750a18_26Alexander-Nakarada-Chase.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+        bgMusic.preload = 'auto';
+        
+        document.addEventListener('click', startMusic, { once: true });
+        document.addEventListener('touchstart', startMusic, { once: true });
+        
+        bgMusic.addEventListener('canplaythrough', function() {
+            console.log('موسیقی آماده پخش است');
+        });
+        
+        bgMusic.addEventListener('error', function(e) {
+            console.log('خطا در پخش موسیقی:', e);
+        });
+        
+    } catch (e) {
+        console.log('خطا در راه‌اندازی موسیقی:', e);
+    }
+}
+
+function startMusic() {
+    if (bgMusic && !isMusicPlaying) {
+        bgMusic.play().then(() => {
+            isMusicPlaying = true;
+            console.log('موسیقی شروع شد');
+        }).catch(err => {
+            console.log('شروع موسیقی با خطا مواجه شد:', err);
+            document.addEventListener('click', retryPlay, { once: true });
+        });
+    }
+}
+
+function retryPlay() {
+    if (bgMusic && !isMusicPlaying) {
+        bgMusic.play().then(() => {
+            isMusicPlaying = true;
+        }).catch(err => console.log('تلاش مجدد ناموفق:', err));
+    }
+}
+
+initMusic();
+
+// ===== توابع =====
+function playGame() {
+    alert('شروع بازی کالاف دیوتی!');
+}
+
+function openSettings() {
+    alert('باز کردن تنظیمات');
+}
+
+function openShop() {
+    alert('باز کردن فروشگاه');
+}
+
+// ===== مدیریت تغییر جهت صفحه =====
+window.addEventListener('orientationchange', function() {
+    document.body.style.background = '#000 url("https://cdn.imgurl.ir/uploads/y16139_IMG_20260618_101758_062.jpg") no-repeat center center';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundAttachment = 'fixed';
+});
+
+window.addEventListener('load', function() {
+    document.body.style.background = '#000 url("https://cdn.imgurl.ir/uploads/y16139_IMG_20260618_101758_062.jpg") no-repeat center center';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundAttachment = 'fixed';
+});
+
+// ===== کنترل موسیقی با تغییر تب =====
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden && bgMusic) {
+        bgMusic.pause();
+    } else if (!document.hidden && bgMusic && isMusicPlaying) {
+        bgMusic.play().catch(() => {});
+    }
+});
+</script>
+
+</body>
+</html>
