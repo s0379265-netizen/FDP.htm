@@ -937,7 +937,7 @@ body::after{
     </div>
   </div>
   <div class="chat-messages" id="chatMessages">
-    <div class="msg system">به چت جهانی خوش آمدید</div>
+    <div class="msg system">⏳ در حال اتصال به سرور...</div>
   </div>
   <div class="chat-input-row">
     <input id="chatInput" type="text" placeholder="پیام ..." maxlength="100">
@@ -1005,10 +1005,9 @@ function checkSavedUsername(){
 }
 
 // ============================================================
-// 2. پروفایل پاپ‌آپ (ادغام شده از کد پایینی)
+// 2. پروفایل پاپ‌آپ (با آواتار از API گیت‌هاب)
 // ============================================================
 function showUserInfo(){
-  // به‌روزرسانی اطلاعات پروفایل قبل از نمایش
   updateProfileUI();
   document.getElementById('profilePopup').classList.add('active');
 }
@@ -1018,27 +1017,24 @@ function closeProfile(){
 }
 
 function updateProfileUI(){
-  // نام و سطح
   document.getElementById('profileNameDisplay').innerHTML = playerName || 'PLAYER<em>NAME</em>';
   document.getElementById('profileLvBadge').textContent = 'LV · ' + playerLevel;
   
-  // ID تصادفی
   const id = Math.floor(100000000 + Math.random() * 900000000);
   document.getElementById('profileIdDisplay').textContent = id;
   
-  // آواتار سه‌بعدی از API گیت‌هاب (UI Avatars)
+  // آواتار از API رایگان UI Avatars (گیت‌هاب)
   const avatarUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(playerName || 'Player') + '&background=1a2535&color=f7d48b&size=128&font-size=0.5&rounded=false&bold=true';
   document.getElementById('profileAvatarImg').src = avatarUrl;
   document.getElementById('topAvatarImg').src = avatarUrl;
   
-  // XP
+  // آمار تصادفی
   const xp = Math.floor(20000 + Math.random() * 80000);
   const maxXp = 100000;
   const pct = Math.min(100, Math.round((xp / maxXp) * 100));
   document.getElementById('profileXpText').textContent = xp.toLocaleString() + ' / ' + maxXp.toLocaleString();
   document.getElementById('profileXpFill').style.width = pct + '%';
   
-  // آمار تصادفی
   const kills = Math.floor(5000 + Math.random() * 10000);
   const deaths = Math.floor(1000 + Math.random() * 3000);
   const kd = (kills / deaths).toFixed(2);
@@ -1089,7 +1085,7 @@ function startMusic(){
 initMusic();
 
 // ============================================================
-// 4. چت (Ably) - رفع مشکل دکمه ارسال
+// 4. چت (Ably) - با قابلیت اتصال مجدد خودکار و پایدار
 // ============================================================
 const ABLY_KEYS=[
   'NNYzzQ.RzmqSQ:6e0uUwK2UhjT274c8uJhxTH3DMfTZaQ9z3M346986mM',
@@ -1099,6 +1095,9 @@ const CHANNEL_NAME='cod-lobby-chat';
 let ably=null, channel=null;
 let username='کاربر_'+Math.floor(Math.random()*1000);
 let isChatReady=false, currentKeyIndex=0, chatVisible=true;
+let reconnectTimer=null;
+let reconnectAttempts=0;
+const MAX_RECONNECT_ATTEMPTS=10;
 
 const chatMessages=document.getElementById('chatMessages');
 const chatInput=document.getElementById('chatInput');
@@ -1106,96 +1105,210 @@ const sendBtn=document.getElementById('sendBtn');
 const onlineCountEl=document.getElementById('onlineCount');
 const chatPanel=document.getElementById('chatPanel');
 
+// نمایش وضعیت اتصال
+function setConnectionStatus(status){
+  const header = document.querySelector('.chat-header .chat-online');
+  const dot = header.querySelector('.dot');
+  if(status === 'connected'){
+    dot.style.background = '#5dc44a';
+    dot.style.animation = 'blink 1.6s infinite';
+  } else if(status === 'connecting'){
+    dot.style.background = '#ffaa00';
+    dot.style.animation = 'blink 0.8s infinite';
+  } else {
+    dot.style.background = '#ff4444';
+    dot.style.animation = 'none';
+  }
+}
+
 function initChat(){
-  if(playerName) username=playerName;
+  if(playerName) username = playerName;
+  reconnectAttempts = 0;
   tryConnect(0);
 }
 
 function tryConnect(index){
-  if(index>=ABLY_KEYS.length){addSystemMessage('⚠ سرورها ناموفق');return;}
+  if(index >= ABLY_KEYS.length){
+    addSystemMessage('⚠ تمام سرورها ناموفق');
+    setConnectionStatus('disconnected');
+    // تلاش مجدد بعد از 5 ثانیه
+    if(reconnectAttempts < MAX_RECONNECT_ATTEMPTS){
+      reconnectAttempts++;
+      setTimeout(() => {
+        addSystemMessage('🔄 تلاش مجدد (' + reconnectAttempts + '/' + MAX_RECONNECT_ATTEMPTS + ')');
+        tryConnect(0);
+      }, 5000);
+    }
+    return;
+  }
+  
   try{
-    ably=new Ably.Realtime({key:ABLY_KEYS[index],clientId:username});
-    currentKeyIndex=index;
-    ably.connection.on('connected',()=>{
-      isChatReady=true;
+    if(ably) {
+      try { ably.close(); } catch(e){}
+    }
+    
+    setConnectionStatus('connecting');
+    addSystemMessage('⏳ در حال اتصال به سرور...');
+    
+    ably = new Ably.Realtime({
+      key: ABLY_KEYS[index],
+      clientId: username,
+      autoConnect: true
+    });
+    
+    currentKeyIndex = index;
+    
+    ably.connection.on('connected', function(){
+      isChatReady = true;
+      setConnectionStatus('connected');
+      reconnectAttempts = 0;
       addSystemMessage('● متصل شد');
-      channel=ably.channels.get(CHANNEL_NAME);
-      channel.on('attached',()=>{
-        channel.presence.enter({username},(err)=>{if(!err)updateOnlineCount();});
-      });
-      channel.history({limit:15},(err,result)=>{
-        if(!err&&result) result.items.reverse().forEach(item=>{
-          if(item.data&&item.data.text) addMessage(item.data.username||'?',item.data.text,false);
+      
+      if(channel) {
+        try { channel.detach(); } catch(e){}
+      }
+      
+      channel = ably.channels.get(CHANNEL_NAME);
+      
+      channel.on('attached', function(){
+        channel.presence.enter({username: username}, function(err){
+          if(!err) updateOnlineCount();
         });
       });
-      channel.subscribe(msg=>{
-        if(msg.data&&msg.data.text)
-          addMessage(msg.data.username||'?',msg.data.text,msg.data.username===username);
+      
+      channel.on('failed', function(err){
+        console.error('Channel failed:', err);
+        isChatReady = false;
+        setConnectionStatus('disconnected');
+        addSystemMessage('⚠ خطا در کانال');
+        // تلاش مجدد با سرور بعدی
+        ably.close();
+        tryConnect(currentKeyIndex + 1);
       });
-      channel.presence.subscribe('enter',updateOnlineCount);
-      channel.presence.subscribe('leave',updateOnlineCount);
+      
+      // دریافت تاریخچه
+      channel.history({limit: 15}, function(err, result){
+        if(!err && result && result.items){
+          result.items.reverse().forEach(function(item){
+            if(item.data && item.data.text){
+              addMessage(item.data.username || '?', item.data.text, false);
+            }
+          });
+        }
+      });
+      
+      channel.subscribe(function(msg){
+        if(msg.data && msg.data.text){
+          addMessage(msg.data.username || '?', msg.data.text, msg.data.username === username);
+        }
+      });
+      
+      channel.presence.subscribe('enter', updateOnlineCount);
+      channel.presence.subscribe('leave', updateOnlineCount);
+      
+      // به‌روزرسانی تعداد آنلاین
+      setTimeout(updateOnlineCount, 1000);
     });
-    ably.connection.on('disconnected',()=>{isChatReady=false;ably.close();tryConnect(index+1);});
-    ably.connection.on('failed',()=>{isChatReady=false;ably.close();tryConnect(index+1);});
-  }catch(e){tryConnect(index+1);}
+    
+    ably.connection.on('disconnected', function(){
+      console.log('Disconnected from Ably');
+      isChatReady = false;
+      setConnectionStatus('disconnected');
+      addSystemMessage('🔴 قطع ارتباط');
+      
+      // تلاش مجدد خودکار
+      if(reconnectAttempts < MAX_RECONNECT_ATTEMPTS){
+        reconnectAttempts++;
+        setTimeout(function(){
+          addSystemMessage('🔄 تلاش مجدد (' + reconnectAttempts + '/' + MAX_RECONNECT_ATTEMPTS + ')');
+          ably.connect();
+        }, 3000);
+      } else {
+        // تغییر به سرور بعدی
+        ably.close();
+        tryConnect(currentKeyIndex + 1);
+      }
+    });
+    
+    ably.connection.on('failed', function(){
+      console.log('Connection failed');
+      isChatReady = false;
+      setConnectionStatus('disconnected');
+      addSystemMessage('❌ اتصال ناموفق');
+      ably.close();
+      tryConnect(currentKeyIndex + 1);
+    });
+    
+  } catch(e){
+    console.error('Error in tryConnect:', e);
+    tryConnect(index + 1);
+  }
 }
 
-function addMessage(user,text,isOwn){
-  const div=document.createElement('div');
-  div.className='msg'+(isOwn?' own':'');
-  const time=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
-  div.innerHTML='<span class="user">'+user+'</span><span class="time">'+time+'</span>'+text;
+function addMessage(user, text, isOwn){
+  const div = document.createElement('div');
+  div.className = 'msg' + (isOwn ? ' own' : '');
+  const time = new Date().toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+  div.innerHTML = '<span class="user">' + user + '</span><span class="time">' + time + '</span>' + text;
   chatMessages.appendChild(div);
-  chatMessages.scrollTop=chatMessages.scrollHeight;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function addSystemMessage(text){
-  const div=document.createElement('div');
-  div.className='msg system';div.textContent=text;
+  const div = document.createElement('div');
+  div.className = 'msg system';
+  div.textContent = text;
   chatMessages.appendChild(div);
-  chatMessages.scrollTop=chatMessages.scrollHeight;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function updateOnlineCount(){
-  if(channel&&channel.presence){
-    channel.presence.get((err,members)=>{
-      if(!err&&members) onlineCountEl.textContent=members.length;
+  if(channel && channel.presence){
+    channel.presence.get(function(err, members){
+      if(!err && members){
+        onlineCountEl.textContent = members.length;
+      }
     });
   }
 }
 
 function sendChatMessage(){
-  const text=chatInput.value.trim();
-  if(!text||!isChatReady||!channel){
+  const text = chatInput.value.trim();
+  if(!text || !isChatReady || !channel){
     if(!isChatReady) addSystemMessage('⏳ در حال اتصال...');
     return;
   }
-  channel.publish('message',{username,text},(err)=>{
-    if(!err){chatInput.value='';addMessage(username,text,true);}
-    else {
+  
+  channel.publish('message', {username: username, text: text}, function(err){
+    if(!err){
+      chatInput.value = '';
+      addMessage(username, text, true);
+    } else {
+      console.error('Publish error:', err);
       addSystemMessage('⚠ خطا در ارسال');
-      isChatReady=false;
+      isChatReady = false;
       ably.close();
-      tryConnect(currentKeyIndex+1);
+      tryConnect(currentKeyIndex + 1);
     }
   });
 }
 
 function toggleChat(){
-  chatVisible=!chatVisible;
-  chatPanel.classList.toggle('expanded',chatVisible);
-  chatPanel.classList.toggle('collapsed',!chatVisible);
-  if(chatVisible) setTimeout(()=>{chatMessages.scrollTop=chatMessages.scrollHeight;},100);
+  chatVisible = !chatVisible;
+  chatPanel.classList.toggle('expanded', chatVisible);
+  chatPanel.classList.toggle('collapsed', !chatVisible);
+  if(chatVisible) setTimeout(function(){ chatMessages.scrollTop = chatMessages.scrollHeight; }, 100);
 }
 
-// رویدادهای چت - رفع مشکل دکمه ارسال
-chatInput.addEventListener('keydown',function(e){
-  if(e.key==='Enter'){
+// رویدادهای چت
+chatInput.addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){
     e.preventDefault();
     sendChatMessage();
   }
 });
-sendBtn.addEventListener('click',function(e){
+
+sendBtn.addEventListener('click', function(e){
   e.preventDefault();
   sendChatMessage();
 });
@@ -1212,24 +1325,34 @@ function openThird(){ alert('بخش سوم'); }
 // ============================================================
 // 6. INIT
 // ============================================================
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden&&bgMusic) bgMusic.pause();
-  else if(!document.hidden&&bgMusic&&isMusicPlaying) bgMusic.play().catch(()=>{});
-});
-
-window.addEventListener('orientationchange',()=>{
-  document.body.style.backgroundSize='cover';
-});
-
-window.addEventListener('load',()=>{
-  if(!checkSavedUsername()){
-    document.getElementById('modalOverlay').style.display='flex';
-    setTimeout(()=>document.getElementById('usernameInput').focus(),100);
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden && bgMusic){
+    bgMusic.pause();
+  } else if(!document.hidden && bgMusic && isMusicPlaying){
+    bgMusic.play().catch(function(){});
   }
-  // کلیک خارج از پروفایل برای بستن
-  document.getElementById('profilePopup').addEventListener('click',function(e){
-    if(e.target===this) closeProfile();
+});
+
+window.addEventListener('orientationchange', function(){
+  document.body.style.backgroundSize = 'cover';
+});
+
+window.addEventListener('load', function(){
+  if(!checkSavedUsername()){
+    document.getElementById('modalOverlay').style.display = 'flex';
+    setTimeout(function(){ document.getElementById('usernameInput').focus(); }, 100);
+  }
+  
+  document.getElementById('profilePopup').addEventListener('click', function(e){
+    if(e.target === this) closeProfile();
   });
+  
+  // اگر بعد از 10 ثانیه اتصال برقرار نشد، پیام نمایش داده شود
+  setTimeout(function(){
+    if(!isChatReady){
+      addSystemMessage('⏳ اتصال به سرور طولانی شد...');
+    }
+  }, 10000);
 });
 </script>
 </body>
