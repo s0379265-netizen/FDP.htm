@@ -36,13 +36,13 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+    background: radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.75) 100%);
     z-index: 0;
     pointer-events: none;
 }
 
 /* === همه المان‌ها === */
-.topbar, .logo, .left-menu, .right-menu, .bottom-menu, .play-btn, .home-btn {
+.topbar, .logo, .left-menu, .right-menu, .bottom-menu, .play-btn {
     position: fixed;
     z-index: 2;
 }
@@ -52,30 +52,30 @@ body::before {
     top: 0;
     right: 0;
     width: 100%;
-    height: 52px;
+    height: 56px;
     background: rgba(8, 8, 8, 0.85);
-    backdrop-filter: blur(16px) saturate(200%);
+    backdrop-filter: blur(18px) saturate(200%);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 14px;
-    border-bottom: 2px solid rgba(255, 180, 0, 0.6);
-    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.8);
+    padding: 0 16px;
+    border-bottom: 2px solid rgba(255, 180, 0, 0.5);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.8);
     z-index: 10;
 }
 
 .profile {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .profile img {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 2px solid #ffb300;
-    box-shadow: 0 0 20px rgba(255, 180, 0, 0.25);
+    box-shadow: 0 0 24px rgba(255, 180, 0, 0.2);
 }
 
 .player-info {
@@ -87,46 +87,46 @@ body::before {
 .player-info div:first-child {
     color: #ffd966;
     letter-spacing: 0.5px;
-    text-shadow: 0 0 12px rgba(255, 180, 0, 0.2);
+    text-shadow: 0 0 14px rgba(255, 180, 0, 0.15);
 }
 
 .currency {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .currency-box {
-    height: 26px;
-    padding: 0 12px;
-    background: rgba(255, 180, 0, 0.1);
-    border: 1px solid rgba(255, 180, 0, 0.4);
+    height: 28px;
+    padding: 0 14px;
+    background: rgba(255, 180, 0, 0.08);
+    border: 1px solid rgba(255, 180, 0, 0.35);
     border-radius: 30px;
     display: flex;
     align-items: center;
     font-size: 11px;
     font-weight: 700;
     color: #ffd966;
-    text-shadow: 0 0 14px rgba(255, 180, 0, 0.15);
+    text-shadow: 0 0 16px rgba(255, 180, 0, 0.1);
     backdrop-filter: blur(4px);
 }
 
 /* ===== LOGO ===== */
 .logo {
-    top: 62px;
+    top: 66px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 5;
 }
 
 .logo img {
-    height: 36px;
-    filter: drop-shadow(0 6px 20px rgba(255, 180, 0, 0.35));
+    height: 38px;
+    filter: drop-shadow(0 6px 24px rgba(255, 180, 0, 0.3));
 }
 
 /* ===== LEFT MENU ===== */
 .left-menu {
-    top: 110px;
-    left: 10px;
+    top: 116px;
+    left: 12px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -134,22 +134,22 @@ body::before {
 }
 
 .left-btn {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 180, 0, 0.4);
-    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 180, 0, 0.35);
+    border-radius: 14px;
     cursor: pointer;
     overflow: hidden;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
 .left-btn:hover {
     transform: scale(1.08) translateX(4px);
     border-color: #ffb300;
-    box-shadow: 0 8px 28px rgba(255, 180, 0, 0.25);
+    box-shadow: 0 8px 32px rgba(255, 180, 0, 0.2);
 }
 
 .left-btn img {
@@ -160,8 +160,8 @@ body::before {
 
 /* ===== RIGHT MENU ===== */
 .right-menu {
-    top: 110px;
-    right: 10px;
+    top: 116px;
+    right: 12px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -169,22 +169,22 @@ body::before {
 }
 
 .right-btn {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 180, 0, 0.4);
-    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 180, 0, 0.35);
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
 .right-btn:hover {
     transform: scale(1.08) translateX(-4px);
     border-color: #ffb300;
-    box-shadow: 0 8px 28px rgba(255, 180, 0, 0.25);
+    box-shadow: 0 8px 32px rgba(255, 180, 0, 0.2);
 }
 
 .right-btn img {
@@ -193,103 +193,62 @@ body::before {
     object-fit: cover;
 }
 
-/* ===== BOTTOM MENU با گرافیک بهتر ===== */
+/* ===== BOTTOM MENU ===== */
 .bottom-menu {
     position: fixed;
-    bottom: 24px;
+    bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    gap: 12px;
     z-index: 5;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(16px) saturate(180%);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 180, 0, 0.2);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(18px) saturate(180%);
+    padding: 8px 18px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 180, 0, 0.15);
+    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
 }
 
 .bottom-btn {
-    width: 52px;
-    height: 52px;
-    background: rgba(0, 0, 0, 0.5);
+    width: 56px;
+    height: 56px;
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(255, 180, 0, 0.3);
+    border: 1px solid rgba(255, 180, 0, 0.25);
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .bottom-btn:hover {
     border-color: #ffcc00;
     transform: scale(1.08) translateY(-4px);
-    box-shadow: 0 12px 32px rgba(255, 180, 0, 0.2);
-    background: rgba(255, 180, 0, 0.1);
+    box-shadow: 0 12px 36px rgba(255, 180, 0, 0.15);
+    background: rgba(255, 180, 0, 0.08);
 }
 
 .bottom-btn img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
-}
-
-/* ===== دکمه خانه (پایین وسط) - بدون دایره ===== */
-.home-btn {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 60px;
-    /* حذف border-radius: 50% و border دایره‌ای */
-    border-radius: 16px;
-    border: none;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    overflow: hidden;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 6;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.home-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 12px rgba(255, 180, 0, 0.2));
-}
-
-.home-btn:hover {
-    transform: translateX(-50%) scale(1.06);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-    background: rgba(255, 180, 0, 0.1);
-}
-
-.home-btn:active {
-    transform: translateX(-50%) scale(0.95);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 /* ===== PLAY BUTTON ===== */
 .play-btn {
-    bottom: 100px;
+    bottom: 108px;
     left: 50%;
     transform: translateX(-50%);
-    width: 190px;
-    height: 54px;
+    width: 200px;
+    height: 56px;
     border: none;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 0;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 44px rgba(0, 0, 0, 0.6);
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     background: transparent;
@@ -300,14 +259,14 @@ body::before {
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 16px;
+    border-radius: 18px;
     filter: none;
     transition: 0.3s;
 }
 
 .play-btn:hover {
     transform: translateX(-50%) scale(1.04) translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 16px 52px rgba(0, 0, 0, 0.7);
 }
 
 .play-btn:active {
@@ -323,13 +282,13 @@ body::before {
     }
     
     .topbar {
-        height: 44px;
-        padding: 0 10px;
+        height: 46px;
+        padding: 0 12px;
     }
     
     .profile img {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
     }
     
     .player-info {
@@ -337,68 +296,60 @@ body::before {
     }
     
     .currency-box {
-        height: 22px;
+        height: 24px;
         font-size: 10px;
-        padding: 0 10px;
+        padding: 0 12px;
     }
     
     .logo {
-        top: 52px;
+        top: 54px;
     }
     
     .logo img {
-        height: 28px;
+        height: 30px;
     }
     
     .left-menu, .right-menu {
-        top: 86px;
+        top: 92px;
         gap: 6px;
     }
     
     .left-btn, .right-btn {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
     }
     
     .bottom-menu {
-        bottom: 16px;
-        padding: 6px 12px;
-        gap: 8px;
+        bottom: 18px;
+        padding: 6px 14px;
+        gap: 10px;
     }
     
     .bottom-btn {
-        width: 44px;
-        height: 44px;
-    }
-    
-    .home-btn {
-        bottom: 22px;
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
+        width: 48px;
+        height: 48px;
     }
     
     .play-btn {
-        bottom: 80px;
-        width: 160px;
-        height: 46px;
+        bottom: 84px;
+        width: 170px;
+        height: 48px;
     }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 500px) {
-    .topbar { padding: 0 8px; height: 44px; }
-    .profile img { width: 28px; height: 28px; }
+    .topbar { padding: 0 10px; height: 46px; }
+    .profile img { width: 30px; height: 30px; }
     .player-info { font-size: 10px; }
-    .currency-box { font-size: 10px; height: 22px; padding: 0 10px; }
-    .logo img { height: 28px; }
-    .left-btn, .right-btn { width: 36px; height: 36px; }
-    .bottom-menu { padding: 5px 10px; gap: 6px; }
-    .bottom-btn { width: 42px; height: 42px; }
-    .home-btn { width: 52px; height: 52px; bottom: 28px; border-radius: 14px; }
-    .play-btn { width: 160px; height: 46px; bottom: 86px; }
-    .left-menu, .right-menu { top: 94px; gap: 6px; }
-    .logo { top: 52px; }
+    .currency-box { font-size: 10px; height: 24px; padding: 0 12px; }
+    .logo img { height: 30px; }
+    .left-btn, .right-btn { width: 38px; height: 38px; }
+    .bottom-menu { padding: 6px 12px; gap: 8px; }
+    .bottom-btn { width: 46px; height: 46px; }
+    .play-btn { width: 170px; height: 48px; bottom: 90px; }
+    .left-menu, .right-menu { top: 98px; gap: 6px; }
+    .logo { top: 54px; }
 }
 </style>
 </head>
@@ -435,26 +386,24 @@ body::before {
 <div class="right-menu">
     <div class="right-btn"><img src="MAIL.png" alt="Mail"></div>
     <div class="right-btn"><img src="RANK.png" alt="Rank"></div>
-    <div class="right-btn" onclick="openSettings()" style="border-color: #ffb300; background: rgba(255,180,0,0.15);">
-        <img src="https://cdn.imgurl.ir/uploads/e923788_BackgroundEraser__.png" alt="Settings" style="filter: drop-shadow(0 0 8px rgba(255,180,0,0.4));">
+    <div class="right-btn" onclick="openSettings()" style="border-color: #ffb300; background: rgba(255,180,0,0.12);">
+        <img src="https://cdn.imgurl.ir/uploads/e923788_BackgroundEraser__.png" alt="Settings" style="filter: drop-shadow(0 0 8px rgba(255,180,0,0.3));">
     </div>
     <div class="right-btn"><img src="NEWS.png" alt="News"></div>
 </div>
 
-<!-- ===== BOTTOM MENU ===== -->
+<!-- ===== BOTTOM MENU (شامل فروشگاه و آیکون خانه در کنار هم) ===== -->
 <div class="bottom-menu">
     <div class="bottom-btn" onclick="openShop()">
         <img src="https://uploadkon.ir/uploads/f3b118_26IMG-20260618-120340-044.jpg" alt="Shop">
+    </div>
+    <div class="bottom-btn" onclick="goHome()" style="border-color: #ffb300; background: rgba(255,180,0,0.1);">
+        <img src="https://uploadkon.ir/uploads/616a18_26IMG-20260618-182201-484.jpg" alt="Home">
     </div>
     <div class="bottom-btn"><img src="WEAPON.png" alt="Weapon"></div>
     <div class="bottom-btn"><img src="BATTLEPASS.png" alt="Battle Pass"></div>
     <div class="bottom-btn"><img src="INVENTORY.png" alt="Inventory"></div>
 </div>
-
-<!-- ===== دکمه خانه (پایین وسط - بدون دایره) ===== -->
-<button class="home-btn" onclick="goHome()">
-    <img src="https://uploadkon.ir/uploads/616a18_26IMG-20260618-182201-484.jpg" alt="Home">
-</button>
 
 <!-- ===== PLAY BUTTON ===== -->
 <button class="play-btn" onclick="playGame()">
