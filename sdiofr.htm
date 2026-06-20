@@ -1,1 +1,2076 @@
-سلام خوش اومدی به بازی جنگ جهانی
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>اینستاگرام</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- LazyLoad -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"></script>
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #000000;
+            color: #f0f0f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        /* ===== APP CONTAINER ===== */
+        .app {
+            max-width: 935px;
+            margin: 0 auto;
+            padding: 0 20px 80px 20px;
+            min-height: 100vh;
+        }
+
+        /* ===== PAGES ===== */
+        .page {
+            display: none;
+            animation: fadeInPage 0.4s ease;
+        }
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TOP NAVBAR ===== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            background: #000000;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .topbar .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .topbar .logo i {
+            font-size: 26px;
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .topbar-actions button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-actions button:hover {
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .topbar-actions .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2a3a, #2a3a5a);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #5a6e7f;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            overflow: hidden;
+        }
+
+        .topbar-actions .avatar:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .topbar-actions .badge-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background: #ff3040;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+
+        /* ===== STORIES ===== */
+        .stories-section {
+            padding: 14px 0 18px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .stories-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 4px 2px 8px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .stories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 72px;
+        }
+
+        .story-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .story-ring {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            padding: 2.5px;
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .story-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #5a6e7f;
+            overflow: hidden;
+        }
+
+        .story-ring-inner .add-icon {
+            font-size: 22px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .story-name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            max-width: 72px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .story-item:first-child .story-ring {
+            background: #262626;
+        }
+        .story-item:first-child .story-ring-inner {
+            background: #000;
+        }
+        .story-item:first-child .story-ring-inner .add-icon {
+            background: none;
+        }
+
+        /* ===== FEED ===== */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            max-width: 100%;
+        }
+
+        .post-card {
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .post-card:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            gap: 10px;
+        }
+
+        .post-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2a3a, #2a3a5a);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #5a6e7f;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-user {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .post-user .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .post-user .name:hover {
+            opacity: 0.7;
+        }
+
+        .post-more {
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-more:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .post-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 200px;
+            overflow: hidden;
+        }
+
+        .post-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-image video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .post-image .placeholder-icon {
+            font-size: 52px;
+            color: rgba(255, 255, 255, 0.025);
+        }
+
+        .post-image .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 65%, rgba(0, 0, 0, 0.04) 100%);
+        }
+
+        /* دکمه صدا روی ویدیو */
+        .video-sound-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .post-image:hover .video-sound-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .video-sound-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .video-sound-btn.active {
+            color: #0095f6;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            padding: 6px 14px 2px 14px;
+            gap: 14px;
+        }
+
+        .post-actions button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .post-actions button:hover {
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .post-actions button.liked {
+            color: #ff3040;
+        }
+
+        .post-actions button.liked i {
+            font-weight: 900;
+        }
+
+        .post-actions .action-spacer {
+            flex: 1;
+        }
+
+        .post-likes {
+            padding: 2px 14px 2px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .post-caption {
+            padding: 2px 14px 2px 14px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .post-caption strong {
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .post-caption strong:hover {
+            opacity: 0.7;
+        }
+
+        .post-time {
+            padding: 2px 14px 8px 14px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .post-card .pexels-credit {
+            padding: 6px 14px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .post-card .pexels-credit a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+        }
+
+        .post-card .pexels-credit a:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== PROFILE PAGE ===== */
+        .profile-header {
+            padding: 16px 0 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 60px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 90;
+            transition: all 0.3s ease;
+        }
+
+        .profile-header.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.02);
+        }
+
+        .profile-avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #1a2a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            color: #5a6e7f;
+            overflow: hidden;
+            border: 2px solid #000;
+        }
+
+        .profile-avatar-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #0095f6;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 3px solid #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar-badge:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .profile-name-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .profile-name-row .username {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .profile-name-row .user-id {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .profile-actions .btn {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-actions .btn-primary {
+            background: #0095f6;
+            color: #fff;
+        }
+
+        .profile-actions .btn-primary:hover {
+            background: #0080d4;
+            transform: scale(1.02);
+        }
+
+        .profile-actions .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .profile-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .profile-actions .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-actions .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .profile-stats .stat-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .profile-stats .stat-item:hover {
+            opacity: 0.7;
+        }
+
+        .profile-stats .stat-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .profile-stats .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .profile-bio {
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .profile-bio .bio-name {
+            font-weight: 600;
+            color: #fff;
+            display: block;
+        }
+
+        .profile-bio .bio-link {
+            color: #0095f6;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .profile-bio .bio-link:hover {
+            opacity: 0.7;
+        }
+
+        .profile-bio .bio-date {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* ===== HIGHLIGHTS ===== */
+        .highlights-section {
+            padding: 12px 0 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 16px;
+        }
+
+        .highlights-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 4px 2px 8px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .highlights-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .highlight-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            min-width: 70px;
+        }
+
+        .highlight-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .highlight-ring {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .highlight-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #5a6e7f;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .highlight-ring-inner .add-icon {
+            font-size: 22px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .highlight-name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            max-width: 70px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== PROFILE TABS ===== */
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .profile-tab {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-tab:hover {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .profile-tab.active {
+            color: #fff;
+        }
+
+        .profile-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            right: 0;
+            left: 0;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        /* ===== POSTS GRID ===== */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .post-grid-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.005));
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.02);
+            font-size: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+        }
+
+        .post-grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-grid-item:hover {
+            border-color: rgba(255, 255, 255, 0.06);
+            transform: scale(1.02);
+            z-index: 1;
+        }
+
+        .post-grid-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .post-grid-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .post-grid-item .overlay span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #000000;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 10px 0;
+            z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+            height: 54px;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 2px 16px;
+            border: none;
+            background: none;
+            position: relative;
+            min-width: 44px;
+        }
+
+        .bottom-nav-item i {
+            font-size: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .bottom-nav-item:hover {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .bottom-nav-item.active {
+            color: #ffffff;
+        }
+
+        .bottom-nav-item .badge {
+            position: absolute;
+            top: 0;
+            right: 6px;
+            background: #ff3040;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 0px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #000;
+            line-height: 16px;
+        }
+
+        .bottom-nav-item .avatar-nav {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2a3a, #2a3a5a);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #5a6e7f;
+            transition: all 0.25s ease;
+            overflow: hidden;
+        }
+
+        .bottom-nav-item.active .avatar-nav {
+            border-color: #ffffff;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content {
+            background: #0b111a;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .modal-content .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal-content .modal-close {
+            display: block;
+            margin: 16px auto 0;
+            padding: 8px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .modal-content .modal-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-user-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            margin: 0 -10px;
+            padding: 10px 10px;
+            border-radius: 8px;
+        }
+
+        .modal-user-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2a3a, #2a3a5a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #5a6e7f;
+            flex-shrink: 0;
+        }
+
+        .modal-user-item .info {
+            flex: 1;
+        }
+
+        .modal-user-item .info .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .modal-user-item .info .username {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-user-item .follow-btn {
+            font-size: 12px;
+            color: #0095f6;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .modal-user-item .follow-btn:hover {
+            background: rgba(0, 149, 246, 0.08);
+        }
+
+        /* ===== LOADING ===== */
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 13px;
+            display: none;
+        }
+
+        .loading-indicator.active {
+            display: block;
+        }
+
+        .loading-indicator .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-top-color: #0095f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .app {
+                padding: 0 12px 76px 12px;
+            }
+            .topbar {
+                height: 52px;
+                padding: 10px 0 12px 0;
+            }
+            .topbar .logo {
+                font-size: 20px;
+            }
+            .topbar .logo i {
+                font-size: 24px;
+            }
+            .topbar-actions {
+                gap: 16px;
+            }
+            .topbar-actions button {
+                font-size: 20px;
+            }
+            .story-ring {
+                width: 64px;
+                height: 64px;
+            }
+            .story-name {
+                font-size: 10px;
+                max-width: 64px;
+            }
+            .profile-avatar {
+                width: 76px;
+                height: 76px;
+            }
+            .profile-avatar-inner {
+                font-size: 32px;
+            }
+            .profile-top {
+                gap: 16px;
+            }
+            .profile-name-row .username {
+                font-size: 18px;
+            }
+            .profile-stats {
+                gap: 20px;
+            }
+            .profile-stats .stat-number {
+                font-size: 14px;
+            }
+            .profile-stats .stat-label {
+                font-size: 12px;
+            }
+            .profile-actions .btn {
+                font-size: 12px;
+                padding: 5px 14px;
+            }
+            .bottom-nav {
+                height: 50px;
+                padding: 4px 0 8px 0;
+            }
+            .bottom-nav-item i {
+                font-size: 22px;
+            }
+            .bottom-nav-item {
+                padding: 2px 12px;
+            }
+            .posts-grid {
+                gap: 3px;
+            }
+            .post-grid-item {
+                min-height: 80px;
+                font-size: 18px;
+            }
+            .modal-content {
+                padding: 16px;
+                margin: 0 10px;
+            }
+            .video-sound-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+                bottom: 12px;
+                right: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .story-ring {
+                width: 56px;
+                height: 56px;
+            }
+            .story-name {
+                font-size: 9px;
+                max-width: 56px;
+            }
+            .topbar-actions {
+                gap: 12px;
+            }
+            .topbar-actions button {
+                font-size: 18px;
+            }
+            .bottom-nav-item i {
+                font-size: 20px;
+            }
+            .bottom-nav-item {
+                padding: 2px 8px;
+                min-width: 36px;
+            }
+            .profile-avatar {
+                width: 64px;
+                height: 64px;
+            }
+            .profile-avatar-inner {
+                font-size: 26px;
+            }
+            .profile-stats {
+                gap: 14px;
+            }
+            .profile-stats .stat-number {
+                font-size: 12px;
+            }
+            .profile-stats .stat-label {
+                font-size: 10px;
+            }
+            .profile-name-row .username {
+                font-size: 16px;
+            }
+            .profile-tabs {
+                gap: 16px;
+            }
+            .profile-tab {
+                font-size: 11px;
+            }
+            .profile-tab i {
+                font-size: 14px;
+            }
+            .video-sound-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    APP CONTAINER
+    ============================================================ -->
+    <div class="app">
+
+        <!-- ============================================================
+        TOP NAVBAR
+        ============================================================ -->
+        <header class="topbar">
+            <div class="logo" onclick="goHome()">
+                <i class="fa-brands fa-instagram"></i>
+                <span>اینستاگرام</span>
+            </div>
+            <div class="topbar-actions">
+                <button onclick="showToast('افزودن پست جدید')">
+                    <i class="fa-regular fa-square-plus"></i>
+                </button>
+                <button onclick="showToast('پیام‌ها')">
+                    <i class="fa-regular fa-paper-plane"></i>
+                </button>
+                <button onclick="showToast('اعلان‌ها')" style="position:relative;">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="badge-dot"></span>
+                </button>
+                <div class="avatar" onclick="showProfile()">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================
+        PAGE: HOME (Feed)
+        ============================================================ -->
+        <div class="page active" id="page-home">
+
+            <!-- Stories -->
+            <div class="stories-section">
+                <div class="stories-scroll">
+                    <div class="story-item" onclick="showToast('افزودن استوری جدید')">
+                        <div class="story-ring">
+                            <div class="story-ring-inner">
+                                <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
+                            </div>
+                        </div>
+                        <span class="story-name">شما</span>
+                    </div>
+                    <div class="story-item" onclick="showToast('مشاهده استوری')">
+                        <div class="story-ring"><div class="story-ring-inner" style="background:linear-gradient(135deg,#1a2a3a,#2a3a5a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">👤</div></div>
+                        <span class="story-name">کاربر_۱</span>
+                    </div>
+                    <div class="story-item" onclick="showToast('مشاهده استوری')">
+                        <div class="story-ring"><div class="story-ring-inner" style="background:linear-gradient(135deg,#2a1a3a,#3a2a5a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">👤</div></div>
+                        <span class="story-name">کاربر_۲</span>
+                    </div>
+                    <div class="story-item" onclick="showToast('مشاهده استوری')">
+                        <div class="story-ring"><div class="story-ring-inner" style="background:linear-gradient(135deg,#1a3a2a,#2a5a3a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">👤</div></div>
+                        <span class="story-name">کاربر_۳</span>
+                    </div>
+                    <div class="story-item" onclick="showToast('مشاهده استوری')">
+                        <div class="story-ring"><div class="story-ring-inner" style="background:linear-gradient(135deg,#3a1a2a,#5a2a3a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">👤</div></div>
+                        <span class="story-name">کاربر_۴</span>
+                    </div>
+                    <div class="story-item" onclick="showToast('مشاهده استوری')">
+                        <div class="story-ring"><div class="story-ring-inner" style="background:linear-gradient(135deg,#2a2a3a,#3a3a5a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">👤</div></div>
+                        <span class="story-name">کاربر_۵</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed -->
+            <div class="feed" id="feedContainer">
+                <div class="loading-indicator" id="loadingIndicator">
+                    <span class="spinner"></span> بارگذاری ویدیوها...
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        PAGE: PROFILE
+        ============================================================ -->
+        <div class="page" id="page-profile">
+
+            <!-- Profile Header -->
+            <div class="profile-header" id="profileHeader">
+                <div class="profile-top">
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar">
+                            <div class="profile-avatar-inner">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="profile-avatar-badge" onclick="showToast('تغییر تصویر پروفایل')">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="profile-name-row">
+                            <span class="username">کاربر_نمونه</span>
+                            <span class="user-id">@user_sample</span>
+                        </div>
+
+                        <div class="profile-actions">
+                            <button class="btn btn-primary" onclick="showToast('شما دنبال می‌کنید')">
+                                <i class="fa-solid fa-user-check"></i> دنبال کردن
+                            </button>
+                            <button class="btn btn-secondary" onclick="showToast('ارسال پیام')">
+                                <i class="fa-regular fa-comment"></i> پیام
+                            </button>
+                            <button class="btn-icon" onclick="showToast('اشتراک‌گذاری پروفایل')">
+                                <i class="fa-regular fa-paper-plane"></i>
+                            </button>
+                            <button class="btn-icon" onclick="showToast('گزینه‌های بیشتر')">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-item" onclick="showToast('۱۵۰ پست')">
+                                <span class="stat-number">۱۵۰</span>
+                                <span class="stat-label">پست</span>
+                            </div>
+                            <div class="stat-item" onclick="openFollowersModal()">
+                                <span class="stat-number">۲.۴K</span>
+                                <span class="stat-label">دنبال‌کننده</span>
+                            </div>
+                            <div class="stat-item" onclick="openFollowingModal()">
+                                <span class="stat-number">۱۸۰</span>
+                                <span class="stat-label">دنبال‌شونده</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-bio">
+                            <span class="bio-name">کاربر نمونه</span>
+                            توسعه‌دهنده رابط کاربری | طراح تجربه کاربری
+                            <span class="bio-link" onclick="window.open('https://example.com', '_blank')">example.com</span>
+                            <span class="bio-date">عضویت: دی ۱۴۰۰</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights -->
+            <div class="highlights-section">
+                <div class="highlights-scroll">
+                    <div class="highlight-item" onclick="showToast('ایجاد هایلایت جدید')">
+                        <div class="highlight-ring">
+                            <div class="highlight-ring-inner">
+                                <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
+                            </div>
+                        </div>
+                        <span class="highlight-name">جدید</span>
+                    </div>
+                    <div class="highlight-item" onclick="showToast('مشاهده هایلایت برترین‌ها')">
+                        <div class="highlight-ring">
+                            <div class="highlight-ring-inner" style="background:linear-gradient(135deg,#1a2a3a,#2a3a5a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">⭐</div>
+                        </div>
+                        <span class="highlight-name">برترین‌ها</span>
+                    </div>
+                    <div class="highlight-item" onclick="showToast('مشاهده هایلایت عکس‌ها')">
+                        <div class="highlight-ring">
+                            <div class="highlight-ring-inner" style="background:linear-gradient(135deg,#2a1a3a,#3a2a5a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">📸</div>
+                        </div>
+                        <span class="highlight-name">عکس‌ها</span>
+                    </div>
+                    <div class="highlight-item" onclick="showToast('مشاهده هایلایت طراحی')">
+                        <div class="highlight-ring">
+                            <div class="highlight-ring-inner" style="background:linear-gradient(135deg,#1a3a2a,#2a5a3a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">🎨</div>
+                        </div>
+                        <span class="highlight-name">طراحی</span>
+                    </div>
+                    <div class="highlight-item" onclick="showToast('مشاهده هایلایت پروژه‌ها')">
+                        <div class="highlight-ring">
+                            <div class="highlight-ring-inner" style="background:linear-gradient(135deg,#3a1a2a,#5a2a3a);display:flex;align-items:center;justify-content:center;font-size:20px;color:#5a6e7f;">🎯</div>
+                        </div>
+                        <span class="highlight-name">پروژه‌ها</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Tabs -->
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="switchTab(this, 'posts')">
+                    <i class="fa-solid fa-grid-2"></i> پست‌ها
+                </button>
+                <button class="profile-tab" onclick="switchTab(this, 'saved')">
+                    <i class="fa-regular fa-bookmark"></i> ذخیره‌شده
+                </button>
+                <button class="profile-tab" onclick="switchTab(this, 'tagged')">
+                    <i class="fa-regular fa-tag"></i> تگ‌شده
+                </button>
+            </div>
+
+            <!-- Posts Grid -->
+            <div class="posts-grid" id="postsGrid">
+                <!-- پست‌های گرید با استفاده از جاوااسکریپت پر می‌شود -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    BOTTOM NAV
+    ============================================================ -->
+    <nav class="bottom-nav">
+        <button class="bottom-nav-item active" onclick="goHome()" id="navHome">
+            <i class="fa-solid fa-house"></i>
+        </button>
+        <button class="bottom-nav-item" onclick="showToast('جستجو')">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="bottom-nav-item" onclick="showToast('افزودن پست جدید')">
+            <i class="fa-regular fa-square-plus"></i>
+        </button>
+        <button class="bottom-nav-item" onclick="showToast('اعلان‌ها')">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge">۵</span>
+        </button>
+        <button class="bottom-nav-item" onclick="showProfile()" id="navProfile">
+            <div class="avatar-nav">
+                <i class="fa-regular fa-user"></i>
+            </div>
+        </button>
+    </nav>
+
+    <!-- ============================================================
+    MODAL - Followers / Following
+    ============================================================ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">دنبال‌کنندگان</div>
+            <div id="modalUserList">
+                <!-- Users will be rendered here -->
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕ بستن</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // CONFIG - Pexels API
+        // ============================================================
+        const PEXELS_API_KEY = 'uRBUhV4fJBBtcM6y02iczlqZ8zge2TAS9Yi2i4CcAAbrQDnxgpJihYXp';
+        const PEXELS_VIDEO_URL = 'https://api.pexels.com/videos';
+
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+
+        // ============================================================
+        // TOAST SYSTEM
+        // ============================================================
+        let toastTimeout = null;
+
+        function showToast(message, type = 'info') {
+            let toast = document.getElementById('customToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'customToast';
+                toast.style.cssText = `
+                    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px);
+                    background: rgba(8, 12, 20, 0.92); backdrop-filter: blur(12px);
+                    border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;
+                    padding: 12px 24px; color: #fff; font-size: 14px;
+                    z-index: 999; transition: all 0.4s ease; opacity: 0;
+                    pointer-events: none; max-width: 90%; text-align: center;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                `;
+                document.body.appendChild(toast);
+            }
+
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+            }, 2500);
+        }
+
+        // ============================================================
+        // FETCH VIDEOS FROM PEXELS API - فقط ویدیو
+        // ============================================================
+        async function fetchPexelsContent(page = 1) {
+            if (isLoading || !hasMore) return;
+
+            isLoading = true;
+            const indicator = document.getElementById('loadingIndicator');
+            indicator.classList.add('active');
+
+            try {
+                const videoResponse = await fetch(`${PEXELS_VIDEO_URL}/popular?page=${page}&per_page=10`, {
+                    headers: {
+                        'Authorization': PEXELS_API_KEY
+                    }
+                });
+
+                let videos = [];
+                if (videoResponse.ok) {
+                    const videoData = await videoResponse.json();
+                    videos = videoData.videos || [];
+                }
+
+                if (videos.length > 0) {
+                    const videoItems = videos.map(video => ({
+                        type: 'video',
+                        data: video
+                    }));
+                    renderPosts(videoItems);
+                    currentPage = page;
+                    hasMore = videos.length >= 10;
+                } else {
+                    hasMore = false;
+                    if (page === 1) {
+                        renderSamplePosts();
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error fetching videos from Pexels:', error);
+                if (page === 1) {
+                    renderSamplePosts();
+                }
+                hasMore = false;
+            }
+
+            isLoading = false;
+            indicator.classList.remove('active');
+        }
+
+        // ============================================================
+        // RENDER POSTS
+        // ============================================================
+        function renderPosts(items) {
+            const feed = document.getElementById('feedContainer');
+            const indicator = document.getElementById('loadingIndicator');
+
+            items.forEach((item, index) => {
+                const postCard = document.createElement('div');
+                postCard.className = 'post-card';
+                postCard.style.animation = `fadeInPage 0.4s ease ${index * 0.05}s both`;
+
+                let contentHtml = '';
+                let photographer = '';
+                let photographerUrl = '';
+                let username = '';
+                let caption = '';
+                let videoId = '';
+
+                if (item.type === 'video') {
+                    const video = item.data;
+                    const videoFile = video.video_files?.find(f => f.quality === 'hd') ||
+                        video.video_files?.find(f => f.quality === 'sd') ||
+                        video.video_files?.[0];
+                    const videoUrl = videoFile?.link || '';
+                    const poster = video.image || '';
+                    videoId = video.id || 'video-' + index;
+
+                    username = video.user?.name || 'کاربر ناشناس';
+                    photographer = username;
+                    photographerUrl = video.user?.url || '#';
+                    caption = 'یک ویدیو زیبا از Pexels';
+
+                    contentHtml = `
+                        <video id="video-${videoId}" 
+                               poster="${poster}" 
+                               muted 
+                               loop 
+                               playsinline 
+                               preload="metadata"
+                               data-src="${videoUrl}"
+                               class="lazyload">
+                            <source data-src="${videoUrl}" type="video/mp4">
+                            مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                        </video>
+                        <button class="video-sound-btn" onclick="toggleSound('video-${videoId}')" id="sound-btn-${videoId}">
+                            <i class="fa-solid fa-volume-xmark"></i>
+                        </button>
+                    `;
+                }
+
+                postCard.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-avatar" onclick="showProfile()">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=1a2a3a&color=fff&size=34" alt="${username}">
+                        </div>
+                        <div class="post-user">
+                            <span class="name" onclick="showProfile()">${username}</span>
+                        </div>
+                        <span class="post-more" onclick="showToast('گزینه‌های بیشتر')"><i class="fa-solid fa-ellipsis"></i></span>
+                    </div>
+                    <div class="post-image" id="postImage-${index}">
+                        ${contentHtml}
+                        <div class="image-overlay"></div>
+                    </div>
+                    <div class="post-actions">
+                        <button onclick="toggleLike(this)"><i class="fa-regular fa-heart"></i></button>
+                        <button onclick="showToast('نظر دادن')"><i class="fa-regular fa-comment"></i></button>
+                        <button onclick="showToast('اشتراک‌گذاری')"><i class="fa-regular fa-paper-plane"></i></button>
+                        <span class="action-spacer"></span>
+                        <button onclick="toggleSave(this)"><i class="fa-regular fa-bookmark"></i></button>
+                    </div>
+                    <div class="post-likes" onclick="showToast('مشاهده لایک‌ها')">${Math.floor(Math.random() * 5000 + 100).toLocaleString()} پسند</div>
+                    <div class="post-caption">
+                        <strong onclick="showProfile()">${username}</strong>
+                        ${caption}
+                    </div>
+                    <div class="post-time">${Math.floor(Math.random() * 24 + 1)} ساعت پیش</div>
+                    <div class="pexels-credit">
+                        <a href="${photographerUrl}" target="_blank">${photographer}</a> 
+                        روی <a href="https://www.pexels.com" target="_blank">Pexels</a>
+                    </div>
+                `;
+
+                feed.insertBefore(postCard, indicator);
+
+                if (item.type === 'video') {
+                    const videoEl = document.getElementById(`video-${videoId}`);
+                    if (videoEl) {
+                        setupVideoObserver(videoEl, videoId);
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // TOGGLE SOUND - فعال/غیرفعال کردن صدا
+        // ============================================================
+        function toggleSound(videoId) {
+            const video = document.getElementById(`video-${videoId}`);
+            const btn = document.getElementById(`sound-btn-${videoId}`);
+            if (!video || !btn) return;
+
+            if (video.muted) {
+                video.muted = false;
+                video.volume = 0.5;
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btn.classList.add('active');
+                showToast('🔊 صدا فعال شد');
+            } else {
+                video.muted = true;
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+                btn.classList.remove('active');
+                showToast('🔇 صدا غیرفعال شد');
+            }
+        }
+
+        // ============================================================
+        // VIDEO OBSERVER - پخش خودکار و توقف
+        // ============================================================
+        function setupVideoObserver(videoEl, videoId) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        videoEl.play().catch(() => {});
+                    } else {
+                        videoEl.pause();
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '50px'
+            });
+
+            observer.observe(videoEl);
+
+            if (videoEl.dataset.src) {
+                videoEl.src = videoEl.dataset.src;
+                videoEl.load();
+            }
+
+            // کلیک روی ویدیو برای تغییر صدا
+            videoEl.addEventListener('click', () => {
+                toggleSound(videoId);
+            });
+
+            videoEl.addEventListener('mouseenter', () => {
+                videoEl.controls = true;
+            });
+            videoEl.addEventListener('mouseleave', () => {
+                videoEl.controls = false;
+            });
+        }
+
+        // ============================================================
+        // SAMPLE POSTS (Fallback)
+        // ============================================================
+        function renderSamplePosts() {
+            const sampleData = [
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/1/600/600', user: { name: 'کاربر_ویدیو_۱' } } },
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/2/600/600', user: { name: 'کاربر_ویدیو_۲' } } },
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/3/600/600', user: { name: 'کاربر_ویدیو_۳' } } },
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/4/600/600', user: { name: 'کاربر_ویدیو_۴' } } },
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/5/600/600', user: { name: 'کاربر_ویدیو_۵' } } },
+                { type: 'video', data: { video_files: [{ link: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4' }],
+                        image: 'https://picsum.photos/seed/6/600/600', user: { name: 'کاربر_ویدیو_۶' } } },
+            ];
+            renderPosts(sampleData);
+            hasMore = false;
+        }
+
+        // ============================================================
+        // INFINITE SCROLL
+        // ============================================================
+        let scrollTimeout = null;
+
+        function handleScroll() {
+            if (scrollTimeout) return;
+            scrollTimeout = setTimeout(() => {
+                const scrollHeight = document.documentElement.scrollHeight;
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const clientHeight = document.documentElement.clientHeight;
+
+                if (scrollTop + clientHeight >= scrollHeight - 300) {
+                    if (hasMore && !isLoading) {
+                        fetchPexelsContent(currentPage + 1);
+                    }
+                }
+                scrollTimeout = null;
+            }, 200);
+        }
+
+        // ============================================================
+        // LIKE TOGGLE
+        // ============================================================
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            const postCard = btn.closest('.post-card');
+            const likesEl = postCard?.querySelector('.post-likes');
+
+            if (icon.classList.contains('fa-regular')) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                btn.classList.add('liked');
+                if (likesEl) {
+                    let current = parseInt(likesEl.textContent.replace(/,/g, '')) || 0;
+                    likesEl.textContent = (current + 1).toLocaleString() + ' پسند';
+                }
+                if (typeof gsap !== 'undefined') {
+                    gsap.from(icon, { scale: 1.5, duration: 0.3, ease: 'back.out(2)' });
+                }
+            } else {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+                btn.classList.remove('liked');
+                if (likesEl) {
+                    let current = parseInt(likesEl.textContent.replace(/,/g, '')) || 0;
+                    likesEl.textContent = (current - 1).toLocaleString() + ' پسند';
+                }
+            }
+        }
+
+        // ============================================================
+        // SAVE TOGGLE
+        // ============================================================
+        function toggleSave(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('fa-regular')) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                btn.style.color = '#f3c97a';
+                showToast('پست ذخیره شد');
+            } else {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+                btn.style.color = '';
+                showToast('پست حذف شد');
+            }
+        }
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        function goHome() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-home').classList.add('active');
+            document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('navHome').classList.add('active');
+            const logo = document.querySelector('.topbar .logo span');
+            if (logo) logo.textContent = 'اینستاگرام';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showProfile() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-profile').classList.add('active');
+            document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('navProfile').classList.add('active');
+            const logo = document.querySelector('.topbar .logo span');
+            if (logo) logo.textContent = 'پروفایل';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (typeof gsap !== 'undefined') {
+                gsap.from('.profile-header', { opacity: 0.5, y: -10, duration: 0.4, ease: 'power2.out' });
+            }
+            loadProfileGrid();
+        }
+
+        // ============================================================
+        // PROFILE TAB SWITCH
+        // ============================================================
+        function switchTab(element, tab) {
+            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            if (tab !== 'posts') {
+                showToast(tab === 'saved' ? 'پست‌های ذخیره‌شده' : 'پست‌های تگ‌شده');
+            }
+            loadProfileGrid(tab);
+        }
+
+        // ============================================================
+        // LOAD PROFILE GRID
+        // ============================================================
+        async function loadProfileGrid(tab = 'posts') {
+            const grid = document.getElementById('postsGrid');
+            if (tab !== 'posts') return;
+
+            try {
+                const response = await fetch(`${PEXELS_VIDEO_URL}/popular?page=1&per_page=9`, {
+                    headers: {
+                        'Authorization': PEXELS_API_KEY
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const videos = data.videos || [];
+                    grid.innerHTML = '';
+                    videos.forEach(video => {
+                        const item = document.createElement('div');
+                        item.className = 'post-grid-item';
+                        item.innerHTML = `
+                            <img src="${video.image || 'https://picsum.photos/seed/' + video.id + '/400/400'}" alt="${video.user?.name || ''}" loading="lazy" class="lazyload">
+                            <div class="overlay">
+                                <span><i class="fa-regular fa-heart"></i> ${Math.floor(Math.random() * 1000)}</span>
+                                <span><i class="fa-regular fa-comment"></i> ${Math.floor(Math.random() * 100)}</span>
+                            </div>
+                        `;
+                        item.onclick = () => showToast('مشاهده ویدیو');
+                        grid.appendChild(item);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading profile grid:', error);
+            }
+        }
+
+        // ============================================================
+        // MODAL - FOLLOWERS / FOLLOWING
+        // ============================================================
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalUserList = document.getElementById('modalUserList');
+
+        function openFollowersModal() {
+            modalTitle.textContent = 'دنبال‌کنندگان';
+            renderUserList([
+                { name: 'زهرا_رضایی', username: '@zahra_r', avatar: '👩' },
+                { name: 'محمد_کریمی', username: '@mohammad_k', avatar: '👨' },
+                { name: 'سارا_احمدی', username: '@sara_a', avatar: '👩' },
+                { name: 'علی_محمدی', username: '@ali_m', avatar: '👨' },
+                { name: 'فاطمه_زارع', username: '@fateme_z', avatar: '👩' },
+                { name: 'رضا_نوری', username: '@reza_n', avatar: '👨' },
+                { name: 'مریم_حسینی', username: '@maryam_h', avatar: '👩' },
+                { name: 'حسین_جعفری', username: '@hossein_j', avatar: '👨' },
+            ]);
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openFollowingModal() {
+            modalTitle.textContent = 'دنبال‌شوندگان';
+            renderUserList([
+                { name: 'نازنین_محمدی', username: '@nazanin_m', avatar: '👩' },
+                { name: 'امیر_حسینی', username: '@amir_h', avatar: '👨' },
+                { name: 'سعید_کریمی', username: '@saeed_k', avatar: '👨' },
+                { name: 'الهام_رضایی', username: '@elham_r', avatar: '👩' },
+                { name: 'مهدی_احمدی', username: '@mehdi_a', avatar: '👨' },
+                { name: 'نرگس_زارع', username: '@narges_z', avatar: '👩' },
+            ]);
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderUserList(users) {
+            modalUserList.innerHTML = '';
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'modal-user-item';
+                div.innerHTML = `
+                    <div class="avatar">${user.avatar || '👤'}</div>
+                    <div class="info">
+                        <div class="name">${user.name}</div>
+                        <div class="username">${user.username}</div>
+                    </div>
+                    <span class="follow-btn" onclick="showToast('${user.name} دنبال شد')">دنبال کردن</span>
+                `;
+                div.onclick = function(e) {
+                    if (e.target.classList.contains('follow-btn')) return;
+                    showToast('مشاهده پروفایل ' + user.name);
+                };
+                modalUserList.appendChild(div);
+            });
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ============================================================
+        // PROFILE HEADER SCROLL EFFECT
+        // ============================================================
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('profileHeader');
+            if (header && document.getElementById('page-profile').classList.contains('active')) {
+                header.classList.toggle('scrolled', window.scrollY > 20);
+            }
+        });
+
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'p' || e.key === 'P') { e.preventDefault();
+                showProfile(); }
+            if (e.key === 'h' || e.key === 'H') { e.preventDefault();
+                goHome(); }
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                fetchPexelsContent(1);
+            }, 300);
+
+            window.addEventListener('scroll', handleScroll);
+
+            if (typeof lazySizes !== 'undefined') {
+                lazySizes.init();
+            }
+
+            console.log('📱 اینستاگرام - فقط ویدیو از Pexels');
+            console.log('🎬 دریافت ویدیوهای محبوب از Pexels');
+            console.log('🔊 دکمه صدا روی ویدیوها اضافه شد');
+            console.log('♾️ اسکرول بی‌نهایت فعال');
+            console.log('⌨️ میانبرها: P = پروفایل, H = خانه, ESC = بستن مودال');
+        });
+    </script>
+
+</body>
+</html>
