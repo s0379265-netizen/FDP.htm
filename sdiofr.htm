@@ -357,7 +357,7 @@
         window.addEventListener('load', function() {
             // ======  بررسی وجود Ably  ======
             if (typeof Ably === 'undefined') {
-                document.getElementById('loadingMessage').innerHTML = '❌ خطا: کتابخانه Ably بارگذاری نشد. اینترنت خود را بررسی کنید.';
+                document.getElementById('loadingMessage').innerHTML = '❌ خطا: کتابخانه  بارگذاری نشد. اینترنت خود را بررسی کنید.';
                 console.error('Ably not loaded!');
                 return;
             }
@@ -449,9 +449,9 @@
                     // بروزرسانی اولیه تعداد
                     setTimeout(updateOnlineCount, 500);
 
-                    console.log('✅ Ably متصل شد');
+                    console.log('✅  متصل شد');
                 } catch (e) {
-                    console.error('❌ خطا در اتصال Ably:', e);
+                    console.error('❌ خطا در اتصال :', e);
                     document.getElementById('loadingMessage').style.display = 'block';
                     document.getElementById('loadingMessage').innerHTML = '❌ خطا در اتصال به سرور. صفحه را مجدد بارگذاری کنید.';
                     document.getElementById('mainContent').style.display = 'none';
