@@ -20,73 +20,22 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            position: relative;
-            overflow: hidden;
         }
 
-        /* ====== پس‌زمینه با ذرات شناور ====== */
-        .bg-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(66, 133, 244, 0.08);
-            animation: float-particle linear infinite;
-        }
-
-        @keyframes float-particle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        /* ====== کانتینر اصلی ====== */
+        /* ====== کانتینر اصلی (دقیقاً مثل گوگل) ====== */
         .container {
-            position: relative;
-            z-index: 1;
             max-width: 600px;
             width: 100%;
             text-align: center;
-            padding: 40px 30px;
-            animation: fadeIn 0.8s ease;
+            padding: 20px;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ====== لوگوی گوگل (مینیمال) ====== */
+        /* ====== لوگوی گوگل (دقیقاً مثل اصلی) ====== */
         .google-logo {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 600;
             letter-spacing: -1.5px;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             display: inline-block;
         }
 
@@ -96,168 +45,96 @@
         .google-logo .l { color: #34a853; }
         .google-logo .e { color: #ea4335; }
 
-        /* ====== عدد ۴۰۴ با افکت ====== */
+        /* ====== عدد ۴۰۴ (دقیقاً مثل گوگل) ====== */
         .error-number {
             font-size: 140px;
-            font-weight: 800;
+            font-weight: 700;
             line-height: 1;
-            margin: 10px 0 5px;
-            letter-spacing: -8px;
-            background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc05, #34a853);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 4s ease-in-out infinite;
-            position: relative;
-            display: inline-block;
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* خط زیر عدد */
-        .error-number::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, #4285f4, #ea4335);
-            border-radius: 10px;
-            animation: line-pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes line-pulse {
-            0%, 100% { width: 60px; opacity: 1; }
-            50% { width: 100px; opacity: 0.5; }
-        }
-
-        /* ====== عنوان ====== */
-        .error-title {
-            font-size: 22px;
-            font-weight: 500;
+            margin: 5px 0;
             color: #202124;
-            margin-top: 15px;
-            margin-bottom: 8px;
+            letter-spacing: -5px;
         }
 
-        /* ====== متن اصلی (کوچک و شیک) ====== */
+        /* ====== عنوان (دقیقاً مثل گوگل) ====== */
+        .error-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #202124;
+            margin: 10px 0 5px;
+        }
+
+        /* ====== متن خطا (دقیقاً مثل گوگل) ====== */
         .error-message {
             font-size: 15px;
             color: #5f6368;
             line-height: 1.8;
-            margin-bottom: 8px;
+            margin-top: 5px;
         }
 
         .error-message .farsi {
             display: block;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 15px;
             color: #d93025;
-            background: #fce8e6;
-            padding: 10px 20px;
-            border-radius: 8px;
             margin-top: 12px;
-            border-right: 3px solid #d93025;
+            padding: 8px 0;
         }
 
-        /* ====== دکمه ====== */
-        .btn {
-            display: inline-block;
-            padding: 10px 30px;
-            margin-top: 18px;
-            border: none;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-            background: #1a73e8;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 2px 10px rgba(26, 115, 232, 0.25);
-            position: relative;
-            overflow: hidden;
+        .error-message .farsi small {
+            display: block;
+            font-size: 13px;
+            color: #5f6368;
+            font-weight: 400;
+            margin-top: 2px;
         }
 
-        .btn:hover {
-            background: #1557b0;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(26, 115, 232, 0.35);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        /* افکت موج روی دکمه */
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::after {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* ====== خط جداکننده نازک ====== */
+        /* ====== خط جداکننده نازک (مثل گوگل) ====== */
         .divider {
             width: 40px;
-            height: 2px;
+            height: 1px;
             background: #dadce0;
-            margin: 15px auto;
-            border-radius: 10px;
+            margin: 18px auto 12px;
         }
 
-        /* ====== فوتر مینیمال ====== */
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #9aa0a6;
-        }
-
-        .footer span {
+        /* ====== لینک بازگشت (دقیقاً مثل گوگل) ====== */
+        .back-link {
             display: inline-block;
-            animation: blink 2s ease-in-out infinite;
+            color: #1a73e8;
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 0;
+            transition: all 0.2s ease;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ====== فوتر مینیمال (مثل گوگل) ====== */
+        .footer {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #9aa0a6;
+            letter-spacing: 0.3px;
         }
 
         /* ====== حالت موبایل ====== */
         @media (max-width: 500px) {
             .error-number {
-                font-size: 90px;
-                letter-spacing: -4px;
+                font-size: 100px;
+                letter-spacing: -3px;
             }
             .error-title {
-                font-size: 18px;
+                font-size: 20px;
             }
             .error-message {
                 font-size: 14px;
             }
             .container {
-                padding: 20px 15px;
+                padding: 15px;
             }
             .google-logo {
-                font-size: 26px;
+                font-size: 24px;
             }
         }
 
@@ -269,12 +146,8 @@
 </head>
 <body>
 
-    <!-- ====== ذرات پس‌زمینه (با جاوااسکریپت ساخته میشن) ====== -->
-    <div class="bg-particles" id="particles"></div>
-
-    <!-- ====== محتوای اصلی ====== -->
     <div class="container">
-        <!-- لوگو -->
+        <!-- لوگوی گوگل -->
         <div class="google-logo">
             <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="l">g</span><span class="e">l</span><span class="o1">e</span>
         </div>
@@ -290,84 +163,31 @@
             متأسفیم، صفحه مورد نظر شما در دسترس نیست.
             <span class="farsi">
                 ⚠️ این برنامه به زبان فارسی در دسترس نمی‌باشد
+                <small>سرویس از دسترس خارج شده است</small>
             </span>
         </div>
 
-        <div class="divider"></div>
-
-        <!-- دکمه -->
-        <button class="btn" onclick="window.location.reload();">تلاش مجدد</button>
+    
 
         <!-- فوتر -->
-        <div class="footer">
-            <span>●</span> سرویس غیرفعال شده است
-        </div>
+        <div class="footer">© 2026 Google</div>
     </div>
 
     <script>
-        // ======  تولید ذرات پس‌زمینه ======
-        (function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['#4285f4', '#ea4335', '#fbbc05', '#34a853'];
-            const count = 30;
-
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 8 + 4;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)] + '30';
-                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-                particle.style.animationDelay = (Math.random() * 10) + 's';
-                container.appendChild(particle);
-            }
-        })();
-
-        // ======  کلیک روی دکمه با افکت ======
-        document.querySelector('.btn').addEventListener('click', function(e) {
-            // افکت رipple
-            const ripple = document.createElement('span');
-            ripple.style.position = 'absolute';
-            ripple.style.borderRadius = '50%';
-            ripple.style.background = 'rgba(255,255,255,0.4)';
-            ripple.style.width = '100px';
-            ripple.style.height = '100px';
-            ripple.style.left = '50%';
-            ripple.style.top = '50%';
-            ripple.style.transform = 'translate(-50%, -50%) scale(0)';
-            ripple.style.transition = 'all 0.6s ease';
-            ripple.style.pointerEvents = 'none';
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.style.transform = 'translate(-50%, -50%) scale(3)';
-                ripple.style.opacity = '0';
-            }, 10);
-
-            setTimeout(() => {
-                ripple.remove();
-                window.location.reload();
-            }, 600);
-        });
-
-        // ======  تغییر عدد ۴۰۴ با افکت ======
-        const errorNumber = document.querySelector('.error-number');
-        let hoverCount = 0;
-        errorNumber.addEventListener('mouseenter', function() {
-            hoverCount++;
-            if (hoverCount % 3 === 0) {
-                this.style.transform = 'scale(1.1) rotate(-5deg)';
-                this.style.transition = 'all 0.5s ease';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1) rotate(0)';
-                }, 500);
-            }
-        });
-
+        // ======  فقط برای نمایش در کنسول ======
         console.log('🚫 404 - صفحه پیدا نشد');
         console.log('⛔ این سرویس در دسترس نیست');
+
+        // ======  کلیک روی عدد ۴۰۴ (خفن! مثل گوگل) ======
+        document.querySelector('.error-number').addEventListener('dblclick', function() {
+            this.style.transition = 'all 0.3s ease';
+            this.style.transform = 'scale(0.9)';
+            this.style.color = '#ea4335';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+                this.style.color = '#202124';
+            }, 300);
+        });
     </script>
 </body>
 </html>
