@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سینما آنلاین - اشتراک فیلم و چت</title>
-    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <title>404 - صفحه پیدا نشد</title>
     <style>
+        /* ====== ریست کامل ====== */
         * {
             margin: 0;
             padding: 0;
@@ -13,594 +13,361 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0f0f1a;
-            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #333;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(45deg, #f7971e, #ffd200);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-status {
-            background: #1e1e2f;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 14px;
-            border: 1px solid #444;
-        }
-
-        .user-status span {
-            color: #4caf50;
-            font-weight: bold;
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 25px;
-        }
-
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .video-section {
-            background: #181825;
-            border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .video-wrapper {
             position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background: #0a0a12;
-            border-radius: 15px;
             overflow: hidden;
-            margin-bottom: 20px;
         }
 
-        #videoPlayer {
-            position: absolute;
+        /* ====== پس‌زمینه با ذرات شناور ====== */
+        .bg-particles {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
-            border: none;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .video-controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(66, 133, 244, 0.08);
+            animation: float-particle linear infinite;
         }
 
-        .video-controls input {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 18px;
-            border-radius: 30px;
-            border: 1px solid #333;
-            background: #12121f;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            transition: 0.3s;
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
         }
 
-        .video-controls input:focus {
-            border-color: #f7971e;
-            box-shadow: 0 0 15px rgba(247, 151, 30, 0.2);
+        /* ====== کانتینر اصلی ====== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 30px;
+            animation: fadeIn 0.8s ease;
         }
 
-        .video-controls button {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 30px;
-            background: linear-gradient(45deg, #f7971e, #ffd200);
-            color: #1a1a2e;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .video-controls button:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 20px rgba(247, 151, 30, 0.4);
-        }
-
-        .video-controls button.secondary {
-            background: #2a2a40;
-            color: #ddd;
-        }
-
-        .video-controls button.secondary:hover {
-            background: #3a3a55;
-        }
-
-        .current-movie {
-            padding: 10px 0;
-            font-size: 14px;
-            color: #aaa;
-            border-top: 1px solid #2a2a3e;
-            margin-top: 5px;
-        }
-
-        .current-movie strong {
-            color: #ffd700;
-        }
-
-        .chat-section {
-            background: #181825;
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: fit-content;
-            max-height: 700px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #2a2a3e;
-            margin-bottom: 15px;
-        }
-
-        .chat-header h3 {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        .chat-header .badge {
-            background: #4caf50;
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            color: #fff;
-        }
-
-        #chatMessages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 5px 0;
-            margin-bottom: 15px;
-            max-height: 450px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        #chatMessages::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        #chatMessages::-webkit-scrollbar-track {
-            background: #1a1a2e;
-            border-radius: 10px;
-        }
-
-        #chatMessages::-webkit-scrollbar-thumb {
-            background: #f7971e;
-            border-radius: 10px;
-        }
-
-        .message {
-            padding: 8px 14px;
-            border-radius: 18px;
-            background: #26263a;
-            max-width: 90%;
-            word-break: break-word;
-            font-size: 14px;
-            line-height: 1.5;
-            align-self: flex-start;
-        }
-
-        .message.own {
-            background: #f7971e;
-            color: #0f0f1a;
-            align-self: flex-end;
-        }
-
-        .message .msg-user {
+        /* ====== لوگوی گوگل (مینیمال) ====== */
+        .google-logo {
+            font-size: 32px;
             font-weight: 600;
-            font-size: 12px;
-            opacity: 0.7;
+            letter-spacing: -1.5px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .google-logo .g { color: #4285f4; }
+        .google-logo .o1 { color: #ea4335; }
+        .google-logo .o2 { color: #fbbc05; }
+        .google-logo .l { color: #34a853; }
+        .google-logo .e { color: #ea4335; }
+
+        /* ====== عدد ۴۰۴ با افکت ====== */
+        .error-number {
+            font-size: 140px;
+            font-weight: 800;
+            line-height: 1;
+            margin: 10px 0 5px;
+            letter-spacing: -8px;
+            background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc05, #34a853);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease-in-out infinite;
+            position: relative;
+            display: inline-block;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* خط زیر عدد */
+        .error-number::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4285f4, #ea4335);
+            border-radius: 10px;
+            animation: line-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes line-pulse {
+            0%, 100% { width: 60px; opacity: 1; }
+            50% { width: 100px; opacity: 0.5; }
+        }
+
+        /* ====== عنوان ====== */
+        .error-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #202124;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        /* ====== متن اصلی (کوچک و شیک) ====== */
+        .error-message {
+            font-size: 15px;
+            color: #5f6368;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .error-message .farsi {
             display: block;
-            margin-bottom: 2px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #d93025;
+            background: #fce8e6;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-right: 3px solid #d93025;
         }
 
-        .chat-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .chat-input input {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 30px;
-            border: 1px solid #333;
-            background: #12121f;
-            color: #fff;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .chat-input input:focus {
-            border-color: #f7971e;
-        }
-
-        .chat-input button {
-            padding: 12px 20px;
+        /* ====== دکمه ====== */
+        .btn {
+            display: inline-block;
+            padding: 10px 30px;
+            margin-top: 18px;
             border: none;
             border-radius: 30px;
-            background: #f7971e;
-            color: #1a1a2e;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #1a73e8;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(26, 115, 232, 0.25);
+            position: relative;
+            overflow: hidden;
         }
 
-        .chat-input button:hover {
-            background: #ffd200;
+        .btn:hover {
+            background: #1557b0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(26, 115, 232, 0.35);
         }
 
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* افکت موج روی دکمه */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* ====== خط جداکننده نازک ====== */
+        .divider {
+            width: 40px;
+            height: 2px;
+            background: #dadce0;
+            margin: 15px auto;
+            border-radius: 10px;
+        }
+
+        /* ====== فوتر مینیمال ====== */
         .footer {
-            margin-top: 30px;
-            text-align: center;
+            margin-top: 20px;
             font-size: 12px;
-            color: #555;
-            border-top: 1px solid #1e1e30;
-            padding-top: 20px;
+            color: #9aa0a6;
         }
 
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #ffd700;
-            font-size: 18px;
+        .footer span {
+            display: inline-block;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ====== حالت موبایل ====== */
+        @media (max-width: 500px) {
+            .error-number {
+                font-size: 90px;
+                letter-spacing: -4px;
+            }
+            .error-title {
+                font-size: 18px;
+            }
+            .error-message {
+                font-size: 14px;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            .google-logo {
+                font-size: 26px;
+            }
+        }
+
+        /* ====== اسکرول مخفی ====== */
+        ::-webkit-scrollbar {
+            width: 0;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <div class="loading" id="loadingMessage">⏳ در حال اتصال به سرور...</div>
-        
-        <!-- محتوای اصلی که در ابتدا مخفی است -->
-        <div id="mainContent" style="display: none;">
-            <div class="header">
-                <div class="logo">🎬 سینما آنلاین</div>
-                <div class="user-status">👤 <span id="userNameDisplay">کاربر</span> · آنلاین</div>
-            </div>
 
-            <div class="main-grid">
-                <div class="video-section">
-                    <div class="video-wrapper">
-                        <video id="videoPlayer" controls autoplay playsinline>
-                            <source src="" type="video/mp4">
-                            مرورگر شما از پخش ویدئو پشتیبانی نمی‌کند.
-                        </video>
-                    </div>
+    <!-- ====== ذرات پس‌زمینه (با جاوااسکریپت ساخته میشن) ====== -->
+    <div class="bg-particles" id="particles"></div>
 
-                    <div class="video-controls">
-                        <input type="text" id="videoUrlInput" placeholder="لینک فیلم را وارد کنید (mp4, m3u8, ...)" />
-                        <button id="playBtn">▶️ پخش</button>
-                        <button id="shareBtn" class="secondary">📤 اشتراک برای همه</button>
-                    </div>
+    <!-- ====== محتوای اصلی ====== -->
+    <div class="container">
+        <!-- لوگو -->
+        <div class="google-logo">
+            <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="l">g</span><span class="e">l</span><span class="o1">e</span>
+        </div>
 
-                    <div class="current-movie">
-                        🎥 در حال پخش: <strong id="currentMovieTitle">هیچ فیلمی انتخاب نشده</strong>
-                    </div>
-                </div>
+        <!-- عدد ۴۰۴ -->
+        <div class="error-number">404</div>
 
-                <div class="chat-section">
-                    <div class="chat-header">
-                        <h3>💬 چت زنده</h3>
-                        <span class="badge" id="onlineCount">● ۰ آنلاین</span>
-                    </div>
-                    <div id="chatMessages">
-                        <div class="message"><span class="msg-user">سیستم</span>در حال اتصال به سرور...</div>
-                    </div>
-                    <div class="chat-input">
-                        <input type="text" id="chatInput" placeholder="پیام خود را بنویسید..." disabled />
-                        <button id="sendChatBtn" disabled>➤</button>
-                    </div>
-                </div>
-            </div>
+        <!-- عنوان -->
+        <div class="error-title">صفحه پیدا نشد</div>
 
-            <div class="footer">
-                🔗 متصل به سرور Ably · تمامی ارتباطات به صورت زنده و رمزگذاری شده
-            </div>
+        <!-- متن -->
+        <div class="error-message">
+            متأسفیم، صفحه مورد نظر شما در دسترس نیست.
+            <span class="farsi">
+                ⚠️ این برنامه به زبان فارسی در دسترس نمی‌باشد
+            </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- دکمه -->
+        <button class="btn" onclick="window.location.reload();">تلاش مجدد</button>
+
+        <!-- فوتر -->
+        <div class="footer">
+            <span>●</span> سرویس غیرفعال شده است
         </div>
     </div>
 
     <script>
-        // ======  صبر می‌کنیم تا صفحه کامل بارگذاری شود  ======
-        window.addEventListener('load', function() {
-            // ======  بررسی وجود Ably  ======
-            if (typeof Ably === 'undefined') {
-                document.getElementById('loadingMessage').innerHTML = '❌ خطا: کتابخانه  بارگذاری نشد. اینترنت خود را بررسی کنید.';
-                console.error('Ably not loaded!');
-                return;
+        // ======  تولید ذرات پس‌زمینه ======
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4285f4', '#ea4335', '#fbbc05', '#34a853'];
+            const count = 30;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 8 + 4;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)] + '30';
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(particle);
             }
+        })();
 
-            // ======  نمایش محتوای اصلی و مخفی کردن لودینگ  ======
-            document.getElementById('loadingMessage').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
+        // ======  کلیک روی دکمه با افکت ======
+        document.querySelector('.btn').addEventListener('click', function(e) {
+            // افکت رipple
+            const ripple = document.createElement('span');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(255,255,255,0.4)';
+            ripple.style.width = '100px';
+            ripple.style.height = '100px';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+            ripple.style.transition = 'all 0.6s ease';
+            ripple.style.pointerEvents = 'none';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.style.transform = 'translate(-50%, -50%) scale(3)';
+                ripple.style.opacity = '0';
+            }, 10);
 
-            // ======  CONFIG  ======
-            const ABLY_API_KEY = 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM';
-            const CHANNEL_NAME = 'cinema-live';
-
-            // ======  DOM refs  ======
-            const videoPlayer = document.getElementById('videoPlayer');
-            const videoUrlInput = document.getElementById('videoUrlInput');
-            const playBtn = document.getElementById('playBtn');
-            const shareBtn = document.getElementById('shareBtn');
-            const currentMovieTitle = document.getElementById('currentMovieTitle');
-
-            const chatMessages = document.getElementById('chatMessages');
-            const chatInput = document.getElementById('chatInput');
-            const sendChatBtn = document.getElementById('sendChatBtn');
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            const onlineCount = document.getElementById('onlineCount');
-
-            // ======  STATE  ======
-            let ably = null;
-            let channel = null;
-            let currentUser = 'کاربر_' + Math.floor(Math.random() * 10000);
-            let isConnected = false;
-
-            // ======  فعال/غیرفعال کردن چت  ======
-            function setChatEnabled(enabled) {
-                chatInput.disabled = !enabled;
-                sendChatBtn.disabled = !enabled;
-                if (enabled) {
-                    chatInput.placeholder = 'پیام خود را بنویسید...';
-                } else {
-                    chatInput.placeholder = 'در حال اتصال...';
-                }
-            }
-
-            // ======  INIT Ably  ======
-            function initAbly() {
-                try {
-                    ably = new Ably.Realtime(ABLY_API_KEY);
-                    channel = ably.channels.get(CHANNEL_NAME);
-
-                    // نمایش نام کاربر
-                    userNameDisplay.textContent = currentUser;
-
-                    // ======  دریافت پیام‌های چت  ======
-                    channel.subscribe('chat', function(message) {
-                        const data = message.data;
-                        if (!data) return;
-                        appendMessage(data.user, data.text, data.user === currentUser);
-                    });
-
-                    // ======  دریافت لینک فیلم  ======
-                    channel.subscribe('video', function(message) {
-                        const data = message.data;
-                        if (!data || !data.url) return;
-                        playVideo(data.url, data.title || 'فیلم اشتراکی');
-                        appendMessage('سیستم', `📽️ فیلم جدید: ${data.title || 'بدون عنوان'}`, false);
-                    });
-
-                    // ======  تعداد آنلاین‌ها (Presence)  ======
-                    channel.presence.subscribe('enter', function(member) {
-                        updateOnlineCount();
-                    });
-                    channel.presence.subscribe('leave', function(member) {
-                        updateOnlineCount();
-                    });
-                    channel.presence.subscribe('update', function(member) {
-                        updateOnlineCount();
-                    });
-
-                    // وارد کردن خود به حضور
-                    channel.presence.enter({ name: currentUser }, function(err) {
-                        if (err) {
-                            console.warn('Presence enter error:', err);
-                        } else {
-                            isConnected = true;
-                            setChatEnabled(true);
-                            appendMessage('سیستم', '✅ به سرور متصل شدید!', false);
-                        }
-                    });
-
-                    // بروزرسانی اولیه تعداد
-                    setTimeout(updateOnlineCount, 500);
-
-                    console.log('✅  متصل شد');
-                } catch (e) {
-                    console.error('❌ خطا در اتصال :', e);
-                    document.getElementById('loadingMessage').style.display = 'block';
-                    document.getElementById('loadingMessage').innerHTML = '❌ خطا در اتصال به سرور. صفحه را مجدد بارگذاری کنید.';
-                    document.getElementById('mainContent').style.display = 'none';
-                }
-            }
-
-            // ======  بروزرسانی تعداد آنلاین  ======
-            function updateOnlineCount() {
-                if (!channel) return;
-                channel.presence.get(function(err, members) {
-                    if (err) {
-                        console.warn('Presence get error:', err);
-                        return;
-                    }
-                    const count = members ? members.length : 0;
-                    onlineCount.textContent = `● ${count} آنلاین`;
-                });
-            }
-
-            // ======  افزودن پیام به چت  ======
-            function appendMessage(user, text, isOwn = false) {
-                const div = document.createElement('div');
-                div.className = 'message' + (isOwn ? ' own' : '');
-                const userSpan = document.createElement('span');
-                userSpan.className = 'msg-user';
-                userSpan.textContent = user;
-                div.appendChild(userSpan);
-                const textNode = document.createTextNode(text);
-                div.appendChild(textNode);
-                chatMessages.appendChild(div);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-
-            // ======  پخش فیلم  ======
-            function playVideo(url, title = 'فیلم') {
-                if (!url) return;
-                videoPlayer.src = url;
-                videoPlayer.load();
-                videoPlayer.play().catch(e => console.warn('Auto-play prevented:', e));
-                currentMovieTitle.textContent = title || 'بدون عنوان';
-                localStorage.setItem('lastVideoUrl', url);
-                localStorage.setItem('lastVideoTitle', title || '');
-            }
-
-            // ======  اشتراک لینک فیلم برای همه  ======
-            function shareVideo(url, title) {
-                if (!url) {
-                    alert('لطفا ابتدا یک لینک وارد کنید.');
-                    return;
-                }
-                if (!channel || !isConnected) {
-                    alert('اتصال به سرور برقرار نیست.');
-                    return;
-                }
-                channel.publish('video', {
-                    url: url,
-                    title: title || 'فیلم اشتراکی',
-                    sharedBy: currentUser
-                }, function(err) {
-                    if (err) {
-                        console.error('Publish error:', err);
-                        alert('خطا در اشتراک فیلم. دوباره تلاش کنید.');
-                    } else {
-                        appendMessage('شما', `📤 فیلم "${title || 'بدون عنوان'}" را برای همه به اشتراک گذاشتید.`, true);
-                        playVideo(url, title);
-                    }
-                });
-            }
-
-            // ======  ارسال پیام چت  ======
-            function sendChatMessage(text) {
-                if (!text.trim()) return;
-                if (!channel || !isConnected) {
-                    alert('اتصال به سرور برقرار نیست.');
-                    return;
-                }
-                channel.publish('chat', {
-                    user: currentUser,
-                    text: text.trim()
-                }, function(err) {
-                    if (err) {
-                        console.error('Chat publish error:', err);
-                        alert('خطا در ارسال پیام.');
-                    }
-                });
-                appendMessage(currentUser, text.trim(), true);
-                chatInput.value = '';
-                chatInput.focus();
-            }
-
-            // ======  EVENT LISTENERS  ======
-
-            playBtn.addEventListener('click', function() {
-                const url = videoUrlInput.value.trim();
-                if (!url) {
-                    alert('لطفا لینک فیلم را وارد کنید.');
-                    return;
-                }
-                const title = prompt('عنوان فیلم را وارد کنید (اختیاری):', 'فیلم من') || 'فیلم';
-                playVideo(url, title);
-                localStorage.setItem('lastVideoUrl', url);
-                localStorage.setItem('lastVideoTitle', title);
-            });
-
-            shareBtn.addEventListener('click', function() {
-                const url = videoUrlInput.value.trim();
-                if (!url) {
-                    alert('لطفا لینک فیلم را در کادر بالا وارد کنید.');
-                    return;
-                }
-                const title = prompt('عنوان فیلم را برای دیگران مشخص کنید:', 'فیلم اشتراکی') || 'فیلم اشتراکی';
-                shareVideo(url, title);
-            });
-
-            sendChatBtn.addEventListener('click', function() {
-                sendChatMessage(chatInput.value);
-            });
-
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    sendChatMessage(chatInput.value);
-                }
-            });
-
-            // ======  بازیابی آخرین فیلم از localStorage  ======
-            function loadLastVideo() {
-                const lastUrl = localStorage.getItem('lastVideoUrl');
-                const lastTitle = localStorage.getItem('lastVideoTitle');
-                if (lastUrl) {
-                    videoUrlInput.value = lastUrl;
-                    playVideo(lastUrl, lastTitle || 'آخرین فیلم');
-                }
-            }
-
-            // ======  START  ======
-            initAbly();
-            loadLastVideo();
-
-            // ======  خروج ایمن (cleanup)  ======
-            window.addEventListener('beforeunload', function() {
-                if (channel && channel.presence) {
-                    channel.presence.leave();
-                }
-                if (ably) {
-                    ably.close();
-                }
-            });
+            setTimeout(() => {
+                ripple.remove();
+                window.location.reload();
+            }, 600);
         });
+
+        // ======  تغییر عدد ۴۰۴ با افکت ======
+        const errorNumber = document.querySelector('.error-number');
+        let hoverCount = 0;
+        errorNumber.addEventListener('mouseenter', function() {
+            hoverCount++;
+            if (hoverCount % 3 === 0) {
+                this.style.transform = 'scale(1.1) rotate(-5deg)';
+                this.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1) rotate(0)';
+                }, 500);
+            }
+        });
+
+        console.log('🚫 404 - صفحه پیدا نشد');
+        console.log('⛔ این سرویس در دسترس نیست');
     </script>
 </body>
 </html>
