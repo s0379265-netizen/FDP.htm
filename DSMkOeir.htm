@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Call of Duty - Lobby</title>
   
-  <!-- فونت‌ها و کتابخونه‌های گرافیکی -->
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   
-  <!-- اسکریپت‌های گرافیکی پیشرفته -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -60,39 +58,20 @@
     .play-btn:hover{transform:translateX(-50%) scale(1.04) translateY(-2px);filter:drop-shadow(0 8px 28px rgba(255,180,0,0.45));}
     .play-btn:active{transform:translateX(-50%) scale(0.97);}
 
-    /* ============ BOTTOM AREA ============ */
+    /* ============ BOTTOM AREA (بدون چت) ============ */
     .bottom-area{position:fixed;bottom:0;left:0;right:0;z-index:14;display:flex;flex-direction:column;gap:0;}
 
-    .chat-row{display:flex;align-items:stretch;gap:4px;padding:5px 8px 4px;background:rgba(4,8,16,0.70);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,180,0,0.14);}
-    
-    .chat-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.15);border-radius:6px;cursor:pointer;transition:all 0.3s ease;flex-shrink:0;position:relative;}
-    .chat-icon-btn:hover{background:rgba(255,180,0,0.2);transform:scale(1.05);border-color:rgba(255,180,0,0.4);}
-    .chat-icon-btn i{font-size:18px;color:#ffb300;}
-    .chat-icon-btn .badge-chat{position:absolute;top:-4px;right:-4px;background:#ff4444;color:#fff;font-size:8px;padding:2px 6px;border-radius:50%;font-weight:700;}
+    /* دکمه‌های بالای کارت‌ها - چت و دوستان */
+    .bottom-toolbar{display:flex;align-items:center;gap:8px;padding:4px 10px 2px;background:rgba(4,8,16,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,180,0,0.08);}
+    .bottom-toolbar .tool-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.08);border-radius:6px;color:#8899aa;font-size:9px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Oswald',sans-serif;letter-spacing:0.5px;}
+    .bottom-toolbar .tool-btn:hover{background:rgba(255,180,0,0.12);border-color:rgba(255,180,0,0.2);color:#ffb300;}
+    .bottom-toolbar .tool-btn i{font-size:12px;}
+    .bottom-toolbar .tool-btn.active{background:rgba(255,180,0,0.12);border-color:#ffb300;color:#ffb300;}
+    .bottom-toolbar .tool-btn .badge{background:#ff4444;color:#fff;font-size:7px;padding:1px 6px;border-radius:50%;margin-right:4px;}
 
-    .chat-box{flex:1;min-width:0;background:rgba(6,12,22,0.60);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,180,0,0.14);border-radius:3px;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;}
-    .chat-header-mini{display:flex;align-items:center;justify-content:space-between;padding:3px 8px;background:rgba(255,180,0,0.04);border-bottom:1px solid rgba(255,180,0,0.07);}
-    .chat-header-mini-left{display:flex;align-items:center;gap:5px;}
-    .chat-bar{width:2px;height:10px;background:linear-gradient(to bottom,#f7d48b,#7a5200);border-radius:2px;}
-    .chat-title-mini{font-size:8px;font-weight:700;color:#d8a34d;letter-spacing:1.5px;text-transform:uppercase;font-family:'Oswald',sans-serif;}
-    .chat-online-mini{font-size:8px;color:#5dc44a;font-weight:600;display:flex;align-items:center;gap:3px;}
-    .chat-online-mini .dot{width:5px;height:5px;background:#5dc44a;border-radius:50%;animation:blink 1.8s infinite;}
-    .chat-msgs{flex:1;overflow:hidden;padding:3px 7px;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;max-height:38px;}
-    .cmsg{font-size:9px;line-height:1.35;color:rgba(255,255,255,0.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .cmsg .cu{color:#ffb300;font-weight:700;margin-left:3px;font-family:'Oswald',sans-serif;}
-    .cmsg.own .cu{color:#80c8ff;}
-    .cmsg.sys{color:rgba(255,180,0,0.35);font-style:italic;font-size:8px;}
-    .chat-input-row{display:flex;border-top:1px solid rgba(255,180,0,0.07);}
-    .chat-input-row input{flex:1;padding:4px 8px;background:transparent;border:none;color:#cfd8e0;font-size:10px;outline:none;min-width:0;direction:rtl;}
-    .chat-input-row input::placeholder{color:rgba(255,255,255,0.16);font-size:9px;}
-    .chat-input-row button{padding:0 10px;background:rgba(255,180,0,0.08);border:none;border-right:1px solid rgba(255,180,0,0.08);color:#ffb300;font-size:11px;cursor:pointer;transition:background 0.2s;}
-    .chat-input-row button:hover{background:rgba(255,180,0,0.2);}
-
-    .chat-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
-    .btn-join-cod{height:28px;padding:0 14px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,rgba(50,160,50,0.85),rgba(30,200,80,0.9));backdrop-filter:blur(8px);color:#fff;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);border-left:2px solid rgba(80,255,120,0.5);transition:all 0.18s;text-shadow:0 1px 4px rgba(0,0,0,0.5);}
-    .btn-join-cod:hover{background:linear-gradient(135deg,rgba(60,190,60,0.95),rgba(40,230,100,1));filter:brightness(1.1);}
-    .btn-teamup-cod{height:28px;padding:0 12px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(255,180,0,0.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,180,0,0.32);color:#ffd966;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:all 0.18s;}
-    .btn-teamup-cod:hover{background:rgba(255,180,0,0.22);border-color:rgba(255,180,0,0.6);}
+    /* دکمه مدیریت برای ادمین */
+    .admin-tool-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,50,50,0.06);border:1px solid rgba(255,50,50,0.08);border-radius:6px;color:#ff5555;font-size:9px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Oswald',sans-serif;letter-spacing:0.5px;}
+    .admin-tool-btn:hover{background:rgba(255,50,50,0.12);border-color:rgba(255,50,50,0.2);}
 
     .bottom-cards{display:flex;gap:0;background:rgba(4,8,16,0.80);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:2px solid rgba(255,180,0,0.28);padding:6px 8px 10px;justify-content:center;gap:6px;}
     .mode-card{position:relative;flex:1;max-width:90px;height:68px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,180,0,0.16);transition:all 0.22s ease;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));background:rgba(10,18,30,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
@@ -104,16 +83,44 @@
     .mode-card.active .mode-card-top{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffb300,transparent);z-index:3;}
     .mode-card img{width:100%;height:100%;object-fit:cover;display:block;}
 
-    /* ============ دوستان و درخواست دوستی ============ */
-    .friend-section{position:fixed;top:54px;right:0;width:280px;height:calc(100% - 54px);background:rgba(4,8,16,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:18;display:none;flex-direction:column;border-left:1px solid rgba(255,180,0,0.08);animation:slideInRight 0.3s ease;}
+    /* ============ FULLSCREEN CHAT (تنها راه دسترسی به چت) ============ */
+    .fullscreen-chat{position:fixed;inset:0;z-index:999;background:rgba(4,8,16,0.94);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);display:none;flex-direction:column;animation:fadeIn 0.3s ease;padding-top:0;}
+    .fullscreen-chat.active{display:flex;}
+    .fullscreen-chat .fs-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,180,0,0.12);flex-shrink:0;background:rgba(0,0,0,0.3);}
+    .fullscreen-chat .fs-header h2{color:#ffb300;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:'Orbitron',sans-serif;display:flex;align-items:center;gap:10px;}
+    .fullscreen-chat .fs-header h2 i{font-size:20px;color:#ffb300;}
+    .fullscreen-chat .fs-header-left{display:flex;align-items:center;gap:12px;}
+    .fullscreen-chat .fs-close{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#8899aa;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
+    .fullscreen-chat .fs-close:hover{background:rgba(255,50,50,0.15);border-color:rgba(255,50,50,0.3);color:#ff5555;transform:rotate(90deg) scale(1.05);}
+    .fullscreen-chat .fs-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:6px;}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar{width:5px;}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar-thumb{background:rgba(255,180,0,0.25);border-radius:4px;}
+    .fs-msg{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.85);padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.03);border-right:3px solid rgba(255,180,0,0.15);animation:slideMsg 0.25s ease;max-width:85%;}
+    .fs-msg .fu{color:#ffb300;font-weight:700;margin-left:8px;font-family:'Oswald',sans-serif;cursor:pointer;}
+    .fs-msg .fu:hover{text-decoration:underline;color:#ffcc44;}
+    .fs-msg.own{background:rgba(60,120,255,0.06);border-right-color:rgba(60,120,255,0.3);margin-right:auto;}
+    .fs-msg.own .fu{color:#80c8ff;}
+    .fs-msg.sys{color:rgba(255,180,0,0.25);font-style:italic;font-size:12px;border-right-color:transparent;text-align:center;max-width:100%;background:transparent;}
+    @keyframes slideMsg{from{transform:translateX(-15px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+    .fullscreen-chat .fs-input-row{display:flex;padding:12px 18px 18px;border-top:1px solid rgba(255,255,255,0.03);flex-shrink:0;gap:10px;background:rgba(0,0,0,0.2);}
+    .fullscreen-chat .fs-input-row input{flex:1;padding:12px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,180,0,0.12);border-radius:10px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;direction:rtl;font-family:'Rajdhani',sans-serif;}
+    .fullscreen-chat .fs-input-row input:focus{border-color:#ffb300;box-shadow:0 0 20px rgba(255,180,0,0.05);}
+    .fullscreen-chat .fs-input-row input::placeholder{color:rgba(255,255,255,0.15);}
+    .fullscreen-chat .fs-input-row button{padding:12px 28px;background:linear-gradient(135deg,#a06000,#ffb300);border:none;border-radius:10px;color:#000;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.3s;font-family:'Oswald',sans-serif;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+    .fullscreen-chat .fs-input-row button:hover{filter:brightness(1.15);transform:scale(1.02);box-shadow:0 4px 20px rgba(255,180,0,0.2);}
+    .fs-online-count{font-size:12px;color:#5dc44a;font-weight:600;display:flex;align-items:center;gap:6px;}
+
+    /* ============ FRIENDS SECTION ============ */
+    .friend-section{position:fixed;top:54px;right:0;width:300px;height:calc(100% - 54px);background:rgba(4,8,16,0.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:18;display:none;flex-direction:column;border-left:1px solid rgba(255,180,0,0.08);animation:slideInRight 0.3s ease;}
     .friend-section.active{display:flex;}
     @keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
-    .friend-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,180,0,0.08);}
+    .friend-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,180,0,0.08);flex-shrink:0;}
     .friend-header h3{color:#ffb300;font-size:14px;font-weight:700;letter-spacing:1px;font-family:'Orbitron',sans-serif;}
-    .friend-header .close-friend{background:transparent;border:none;color:#5a6e7f;font-size:18px;cursor:pointer;transition:0.3s;}
+    .friend-header .close-friend{background:transparent;border:none;color:#5a6e7f;font-size:18px;cursor:pointer;transition:0.3s;padding:4px 8px;}
     .friend-header .close-friend:hover{color:#ff5555;transform:rotate(90deg);}
-    .friend-search{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.03);}
-    .friend-search input{width:100%;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,180,0,0.08);border-radius:6px;color:#fff;font-size:11px;outline:none;transition:0.3s;}
+    .friend-search{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.03);flex-shrink:0;}
+    .friend-search input{width:100%;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,180,0,0.08);border-radius:6px;color:#fff;font-size:11px;outline:none;transition:0.3s;direction:rtl;}
     .friend-search input:focus{border-color:#ffb300;}
     .friend-search input::placeholder{color:rgba(255,255,255,0.15);}
     .friend-list{flex:1;overflow-y:auto;padding:6px 0;}
@@ -129,64 +136,37 @@
     .friend-item .f-status .dot{width:5px;height:5px;border-radius:50%;background:#5dc44a;display:inline-block;}
     .friend-item .f-status .dot.offline{background:#4e6270;}
     .friend-item .f-actions{display:flex;gap:4px;}
-    .friend-item .f-actions button{background:transparent;border:none;color:#5a6e7f;cursor:pointer;padding:4px;border-radius:4px;transition:0.2s;font-size:11px;}
+    .friend-item .f-actions button{background:transparent;border:none;color:#5a6e7f;cursor:pointer;padding:4px 6px;border-radius:4px;transition:0.2s;font-size:11px;}
     .friend-item .f-actions button:hover{background:rgba(255,180,0,0.08);color:#ffb300;}
     .friend-item .f-actions .accept{color:#5dc44a;}
     .friend-item .f-actions .accept:hover{background:rgba(93,196,74,0.1);}
     .friend-item .f-actions .reject{color:#ff5555;}
     .friend-item .f-actions .reject:hover{background:rgba(255,50,50,0.1);}
 
-    /* ============ چت خصوصی ============ */
+    /* ============ PRIVATE CHAT ============ */
     .private-chat{position:fixed;bottom:80px;right:20px;width:340px;max-height:460px;background:rgba(6,12,22,0.94);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,180,0,0.12);border-radius:12px;z-index:50;display:none;flex-direction:column;animation:fadeIn 0.25s ease;box-shadow:0 12px 48px rgba(0,0,0,0.6);}
     .private-chat.active{display:flex;}
-    .pc-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,180,0,0.06);}
+    .pc-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,180,0,0.06);flex-shrink:0;}
     .pc-header .pc-user{display:flex;align-items:center;gap:8px;}
     .pc-header .pc-user .pc-avatar{width:28px;height:28px;border-radius:50%;background:#1a2535;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid rgba(255,180,0,0.1);}
     .pc-header .pc-user .pc-name{font-size:12px;font-weight:600;color:#cfd8e0;}
     .pc-header .pc-user .pc-status{font-size:8px;color:#5dc44a;}
-    .pc-header .pc-close{background:transparent;border:none;color:#5a6e7f;cursor:pointer;font-size:16px;transition:0.3s;}
+    .pc-header .pc-close{background:transparent;border:none;color:#5a6e7f;cursor:pointer;font-size:16px;transition:0.3s;padding:4px;}
     .pc-header .pc-close:hover{color:#ff5555;transform:rotate(90deg);}
     .pc-msgs{flex:1;overflow-y:auto;padding:10px 14px;max-height:280px;}
     .pc-msgs::-webkit-scrollbar{width:3px;}
     .pc-msgs::-webkit-scrollbar-thumb{background:rgba(255,180,0,0.2);border-radius:3px;}
-    .pc-msg{font-size:12px;line-height:1.4;padding:6px 12px;border-radius:8px;margin-bottom:4px;max-width:85%;}
+    .pc-msg{font-size:12px;line-height:1.4;padding:6px 12px;border-radius:8px;margin-bottom:4px;max-width:85%;word-wrap:break-word;}
     .pc-msg.pc-own{background:rgba(255,180,0,0.08);margin-right:auto;border-right:2px solid rgba(255,180,0,0.2);}
     .pc-msg.pc-other{background:rgba(255,255,255,0.04);margin-left:auto;border-right:2px solid rgba(255,255,255,0.04);}
     .pc-msg .pu{font-weight:600;color:#ffb300;margin-left:4px;font-size:10px;}
     .pc-msg.pc-own .pu{color:#80c8ff;}
-    .pc-input{display:flex;padding:8px 12px;border-top:1px solid rgba(255,180,0,0.04);gap:6px;}
+    .pc-input{display:flex;padding:8px 12px;border-top:1px solid rgba(255,180,0,0.04);gap:6px;flex-shrink:0;}
     .pc-input input{flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,180,0,0.06);border-radius:6px;color:#fff;font-size:11px;outline:none;direction:rtl;}
     .pc-input input:focus{border-color:#ffb300;}
     .pc-input input::placeholder{color:rgba(255,255,255,0.12);}
     .pc-input button{padding:6px 14px;background:rgba(255,180,0,0.12);border:1px solid rgba(255,180,0,0.1);border-radius:6px;color:#ffb300;cursor:pointer;transition:0.2s;font-size:11px;}
     .pc-input button:hover{background:rgba(255,180,0,0.2);}
-
-    /* ============ چت تمام صفحه ============ */
-    .fullscreen-chat{position:fixed;inset:0;z-index:999;background:rgba(4,8,16,0.94);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);display:none;flex-direction:column;animation:fadeIn 0.3s ease;padding-top:0;}
-    .fullscreen-chat.active{display:flex;}
-    .fullscreen-chat .fs-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,180,0,0.12);flex-shrink:0;background:rgba(0,0,0,0.3);}
-    .fullscreen-chat .fs-header h2{color:#ffb300;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:'Orbitron',sans-serif;display:flex;align-items:center;gap:10px;}
-    .fullscreen-chat .fs-header h2 i{font-size:20px;color:#ffb300;}
-    .fullscreen-chat .fs-header-left{display:flex;align-items:center;gap:12px;}
-    .fullscreen-chat .fs-close{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#8899aa;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
-    .fullscreen-chat .fs-close:hover{background:rgba(255,50,50,0.15);border-color:rgba(255,50,50,0.3);color:#ff5555;transform:rotate(90deg) scale(1.05);}
-    .fullscreen-chat .fs-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:6px;}
-    .fullscreen-chat .fs-msgs::-webkit-scrollbar{width:5px;}
-    .fullscreen-chat .fs-msgs::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);}
-    .fullscreen-chat .fs-msgs::-webkit-scrollbar-thumb{background:rgba(255,180,0,0.25);border-radius:4px;}
-    .fs-msg{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.85);padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.03);border-right:3px solid rgba(255,180,0,0.15);animation:slideMsg 0.25s ease;max-width:85%;}
-    .fs-msg .fu{color:#ffb300;font-weight:700;margin-left:8px;font-family:'Oswald',sans-serif;}
-    .fs-msg.own{background:rgba(60,120,255,0.06);border-right-color:rgba(60,120,255,0.3);margin-right:auto;}
-    .fs-msg.own .fu{color:#80c8ff;}
-    .fs-msg.sys{color:rgba(255,180,0,0.25);font-style:italic;font-size:12px;border-right-color:transparent;text-align:center;max-width:100%;background:transparent;}
-    @keyframes slideMsg{from{transform:translateX(-15px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-    .fullscreen-chat .fs-input-row{display:flex;padding:12px 18px 18px;border-top:1px solid rgba(255,255,255,0.03);flex-shrink:0;gap:10px;background:rgba(0,0,0,0.2);}
-    .fullscreen-chat .fs-input-row input{flex:1;padding:12px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,180,0,0.12);border-radius:10px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;direction:rtl;font-family:'Rajdhani',sans-serif;}
-    .fullscreen-chat .fs-input-row input:focus{border-color:#ffb300;box-shadow:0 0 20px rgba(255,180,0,0.05);}
-    .fullscreen-chat .fs-input-row input::placeholder{color:rgba(255,255,255,0.15);}
-    .fullscreen-chat .fs-input-row button{padding:12px 28px;background:linear-gradient(135deg,#a06000,#ffb300);border:none;border-radius:10px;color:#000;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.3s;font-family:'Oswald',sans-serif;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
-    .fullscreen-chat .fs-input-row button:hover{filter:brightness(1.15);transform:scale(1.02);box-shadow:0 4px 20px rgba(255,180,0,0.2);}
-    .fs-online-count{font-size:12px;color:#5dc44a;font-weight:600;display:flex;align-items:center;gap:6px;}
 
     /* ============ MODAL ورود ============ */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.4s ease;}
@@ -226,7 +206,9 @@
     .player-meta-profile{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
     .player-id-profile{font-size:10px;color:#5a6e7f;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
     .player-id-profile b{color:#d8a34d;}
-    .flag-selector-btn{background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;padding:4px 14px;border-radius:4px;font-size:9px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;transition:all 0.2s;}
+    .copy-id-btn{background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;padding:2px 10px;border-radius:4px;font-size:9px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;}
+    .copy-id-btn:hover{background:rgba(216,163,77,0.2);border-color:#d8a34d;}
+    .flag-selector-btn{background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;padding:4px 14px;border-radius:4px;font-size:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:600;transition:all 0.2s;}
     .flag-selector-btn:hover{background:rgba(216,163,77,0.15);border-color:#d8a34d;}
     .tags-profile{display:flex;gap:5px;flex-wrap:wrap;}
     .tag-profile{padding:2px 10px;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);font-family:'Oswald',sans-serif;}
@@ -288,7 +270,7 @@
     .flag-modal-close{display:block;margin:18px auto 0;padding:8px 28px;background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;border-radius:6px;cursor:pointer;font-size:12px;}
     .flag-modal-close:hover{background:rgba(216,163,77,0.18);}
 
-    /* ADMIN PANEL */
+    /* ADMIN PANEL - دکمه مدیریت جدا */
     .admin-panel{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.3s ease;}
     .admin-panel.active{display:flex;}
     .admin-box{width:100%;max-width:500px;background:rgba(8,14,24,0.96);border:1px solid rgba(255,180,0,0.2);border-top:3px solid #ffb300;border-radius:12px;padding:24px;max-height:80vh;overflow-y:auto;}
@@ -308,9 +290,13 @@
     .admin-close:hover{background:rgba(255,255,255,0.06);}
     .admin-badge{background:#ffb300;color:#000;font-size:7px;font-weight:800;padding:1px 8px;border-radius:20px;margin-right:6px;letter-spacing:0.5px;font-family:'Oswald',sans-serif;}
 
-    .friend-btn{background:transparent;border:none;color:#8899aa;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:4px;transition:0.3s;}
+    .friend-btn{background:transparent;border:none;color:#8899aa;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:4px;transition:0.3s;position:relative;}
     .friend-btn:hover{color:#ffb300;background:rgba(255,180,0,0.05);}
     .friend-btn .badge-friend{position:absolute;top:-2px;right:-2px;background:#ff4444;color:#fff;font-size:7px;padding:1px 5px;border-radius:50%;font-weight:700;}
+
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);color:#fff;padding:10px 20px;border-radius:8px;border:1px solid rgba(255,180,0,0.15);font-size:12px;z-index:100;animation:toastAnim 0.3s ease;display:none;}
+    .toast.show{display:block;}
+    @keyframes toastAnim{from{transform:translateX(-50%) translateY(20px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
 
     @media(max-width:500px){
       .topbar{height:48px;padding:0 7px;}
@@ -320,7 +306,6 @@
       .play-btn{width:160px;height:46px;bottom:118px;}
       .bottom-cards{padding:5px 6px 8px;}
       .mode-card{height:60px;}
-      .chat-msgs{max-height:30px;}
       .chat-icon-btn{width:32px;height:32px;}
       .chat-icon-btn i{font-size:14px;}
       .friend-section{width:100%;top:48px;height:calc(100% - 48px);}
@@ -329,6 +314,9 @@
       .fullscreen-chat .fs-input-row{padding:10px 14px 14px;}
       .fullscreen-chat .fs-header h2{font-size:14px;}
       .fs-msg{font-size:12px;max-width:92%;}
+      .profile-panel{max-width:98%;}
+      .bottom-toolbar .tool-btn{padding:4px 8px;font-size:8px;}
+      .bottom-toolbar .tool-btn i{font-size:10px;}
     }
     @media(orientation:landscape){
       .topbar{height:44px;}
@@ -352,6 +340,9 @@
   </style>
 </head>
 <body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <!-- MODAL ورود -->
 <div class="modal-overlay" id="modalOverlay">
@@ -381,7 +372,11 @@
       <div class="player-info-profile">
         <div class="player-name-profile" id="profileNameDisplay">PLAYER<em>NAME</em></div>
         <div class="player-meta-profile">
-          <div class="player-id-profile">📱 <b id="profilePhoneDisplay">0937...</b> | ID: <b id="profileIdDisplay">123456</b></div>
+          <div class="player-id-profile">
+            📱 <b id="profilePhoneDisplay">0937...</b> | 
+            ID: <b id="profileIdDisplay">123456</b>
+            <button class="copy-id-btn" onclick="copyId()"><i class="fas fa-copy"></i> کپی</button>
+          </div>
           <button class="flag-selector-btn" onclick="openFlagSelector()">
             <span id="flagEmojiDisplay">🇮🇷</span> تغییر پرچم
           </button>
@@ -499,17 +494,12 @@
 <div class="friend-section" id="friendSection">
   <div class="friend-header">
     <h3><i class="fas fa-user-friends"></i> دوستان</h3>
-    <button class="close-friend" onclick="toggleFriends()"><i class="fas fa-times"></i></button>
+    <button class="close-friend" onclick="closeFriends()"><i class="fas fa-times"></i></button>
   </div>
   <div class="friend-search">
-    <input id="friendSearch" type="text" placeholder="جستجوی کاربر..." oninput="searchFriends(this.value)">
+    <input id="friendSearch" type="text" placeholder="جستجوی کاربر با نام یا ID..." oninput="renderFriends()">
   </div>
-  <div class="friend-list" id="friendList">
-    <div style="padding:20px;text-align:center;color:#4e6270;font-size:12px;">
-      <i class="fas fa-user-plus" style="font-size:24px;display:block;margin-bottom:8px;color:#ffb300;"></i>
-      کاربری را جستجو کنید و درخواست دوستی بدهید
-    </div>
-  </div>
+  <div class="friend-list" id="friendList"></div>
 </div>
 
 <!-- PRIVATE CHAT -->
@@ -549,7 +539,7 @@
     </div>
   </div>
   <div class="topbar-right">
-    <div style="display:flex;align-items:center;gap:6px;position:relative;">
+    <div style="display:flex;align-items:center;gap:6px;">
       <button class="friend-btn" onclick="toggleFriends()" title="دوستان">
         <i class="fas fa-user-friends"></i>
         <span class="badge-friend" id="friendBadge" style="display:none;">0</span>
@@ -577,33 +567,24 @@
 
 <!-- BOTTOM AREA -->
 <div class="bottom-area">
-  <div class="chat-row">
-    <div class="chat-icon-btn" onclick="openFullscreenChat()" title="باز کردن چت تمام صفحه">
-      <i class="fas fa-comment"></i>
-    </div>
-    
-    <div class="chat-box" onclick="openFullscreenChat()">
-      <div class="chat-header-mini">
-        <div class="chat-header-mini-left">
-          <div class="chat-bar"></div>
-          <div class="chat-title-mini"><i class="fas fa-comment"></i> چت جهانی</div>
-        </div>
-        <div class="chat-online-mini">
-          <span class="dot"></span>
-          <span id="onlineCountChat">0</span> آنلاین
-        </div>
-      </div>
-      <div class="chat-msgs" id="chatMsgs"></div>
-      <div class="chat-input-row" onclick="event.stopPropagation();">
-        <input id="chatInput" type="text" placeholder="پیام بنویس ..." maxlength="100" dir="rtl">
-        <button id="sendBtn">➤</button>
-      </div>
-    </div>
-    <div class="chat-actions">
-      <button class="btn-join-cod" onclick="event.stopPropagation();alert('پیوستن به اتاق')">🎮 JOIN</button>
-      <button class="btn-teamup-cod" onclick="event.stopPropagation();alert('تیم آپ')">🚩 TEAM UP</button>
-    </div>
+  <!-- نوار ابزار پایین با دکمه‌های چت و دوستان -->
+  <div class="bottom-toolbar">
+    <button class="tool-btn" onclick="openFullscreenChat()">
+      <i class="fas fa-comment"></i> چت جهانی
+      <span class="badge" id="chatBadge" style="display:none;">0</span>
+    </button>
+    <button class="tool-btn" onclick="toggleFriends()">
+      <i class="fas fa-user-friends"></i> دوستان
+      <span class="badge" id="friendBadgeTool" style="display:none;">0</span>
+    </button>
+    <!-- دکمه مدیریت فقط برای ادمین -->
+    <button class="admin-tool-btn" id="adminToolBtn" style="display:none;" onclick="openAdminPanel()">
+      <i class="fas fa-shield-alt"></i> مدیریت
+    </button>
+    <div style="flex:1;"></div>
+    <span style="font-size:8px;color:#4e6270;letter-spacing:0.5px;" id="onlineStatusBottom">🔴 آفلاین</span>
   </div>
+  
   <div class="bottom-cards">
     <div class="mode-card active" onclick="openShop()">
       <div class="mode-card-top"></div>
@@ -626,6 +607,15 @@
 </div>
 
 <script>
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
 // ===== USERNAME & PHONE =====
 let playerName='', playerPhone='', playerLevel=2, playerId='';
 const ADMIN_PHONE = '09373467527';
@@ -658,22 +648,22 @@ function setUsername(){
   if(isAdmin){
     document.getElementById('adminBadgeTop').style.display='inline';
     document.getElementById('adminNameDisplay').textContent=playerPhone;
-    document.getElementById('adminPanel').classList.add('active');
+    document.getElementById('adminToolBtn').style.display='flex';
+    // پنل مدیریت باز میشه
+    setTimeout(()=>{
+      document.getElementById('adminPanel').classList.add('active');
+    },500);
   }
   
-  // ذخیره در localStorage
   localStorage.setItem('cod_player_name',playerName);
   localStorage.setItem('cod_player_phone',playerPhone);
   localStorage.setItem('cod_player_id',playerId);
   localStorage.setItem('cod_is_admin',isAdmin?'true':'false');
   
-  // ذخیره دوستان
   loadFriendsData();
-  
   initChat();
   updateProfileUI();
   
-  // انیمیشن ورود
   gsap.from('.topbar', {duration:0.6, y:-40, opacity:0, ease:'power3.out'});
   gsap.from('.logo', {duration:0.6, scale:0.8, opacity:0, delay:0.2, ease:'back.out(1.7)'});
   gsap.from('.play-btn', {duration:0.5, scale:0.5, opacity:0, delay:0.3, ease:'back.out(2)'});
@@ -696,6 +686,7 @@ function checkSavedUsername(){
     if(isAdmin){
       document.getElementById('adminBadgeTop').style.display='inline';
       document.getElementById('adminNameDisplay').textContent=playerPhone;
+      document.getElementById('adminToolBtn').style.display='flex';
     }
     loadFriendsData();
     setTimeout(initChat,500);
@@ -703,6 +694,35 @@ function checkSavedUsername(){
     return true;
   }
   return false;
+}
+
+// ===== COPY ID =====
+function copyId(){
+  const id = document.getElementById('profileIdDisplay').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(id).then(()=>{
+      showToast('✅ ID کپی شد: '+id);
+    }).catch(()=>{
+      fallbackCopy(id);
+    });
+  }else{
+    fallbackCopy(id);
+  }
+}
+
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand('copy');
+    showToast('✅ ID کپی شد: '+text);
+  }catch(e){
+    showToast('❌ کپی نشد، لطفاً دستی کپی کنید');
+  }
+  document.body.removeChild(ta);
 }
 
 // ===== دوستان =====
@@ -723,33 +743,43 @@ function saveFriendsData(){
 }
 
 function updateFriendBadge(){
+  const pending = friendRequests.filter(r => r.to === playerName);
+  const count = pending.length;
   const badge = document.getElementById('friendBadge');
-  const count = friendRequests.length;
+  const badgeTool = document.getElementById('friendBadgeTool');
   if(count>0){
     badge.style.display='inline';
     badge.textContent=count;
+    badgeTool.style.display='inline';
+    badgeTool.textContent=count;
   }else{
     badge.style.display='none';
+    badgeTool.style.display='none';
   }
 }
 
 function toggleFriends(){
   const section = document.getElementById('friendSection');
-  section.classList.toggle('active');
   if(section.classList.contains('active')){
+    section.classList.remove('active');
+  }else{
+    section.classList.add('active');
     renderFriends();
-    // انیمیشن ورود
     gsap.from('.friend-section', {duration:0.3, x:30, opacity:0, ease:'power3.out'});
   }
 }
 
+function closeFriends(){
+  document.getElementById('friendSection').classList.remove('active');
+}
+
 function renderFriends(){
   const list = document.getElementById('friendList');
-  const search = document.getElementById('friendSearch').value.toLowerCase();
+  const search = document.getElementById('friendSearch').value.toLowerCase().trim();
   
   let html = '';
   
-  // درخواست‌های دوستی
+  // درخواست‌های دوستی (دریافتی)
   const pending = friendRequests.filter(r => r.to === playerName);
   if(pending.length > 0){
     html += '<div style="padding:6px 16px;font-size:9px;color:#ffb300;letter-spacing:1px;font-weight:600;">📩 درخواست‌های دوستی</div>';
@@ -771,10 +801,23 @@ function renderFriends(){
   }
   
   // لیست دوستان
-  const friendsList = friends.filter(f => {
-    if(!search) return true;
-    return f.name.toLowerCase().includes(search);
-  });
+  let friendsList = friends;
+  if(search){
+    friendsList = friends.filter(f => 
+      f.name.toLowerCase().includes(search) || 
+      (f.id && f.id.toLowerCase().includes(search))
+    );
+  }
+  
+  // کاربران آنلاین (برای جستجو)
+  const allUsers = Object.keys(onlineUsers);
+  const searchUsers = allUsers.filter(u => 
+    u !== playerName && 
+    u.toLowerCase().includes(search) && 
+    !friends.find(f => f.name === u) &&
+    !friendRequests.find(r => r.from === u && r.to === playerName) &&
+    !friendRequests.find(r => r.from === playerName && r.to === u)
+  );
   
   if(friendsList.length > 0 || pending.length > 0){
     if(pending.length > 0) html += '<div style="padding:6px 16px;font-size:9px;color:#4e6270;letter-spacing:1px;font-weight:600;margin-top:4px;">👥 دوستان</div>';
@@ -797,7 +840,28 @@ function renderFriends(){
         </div>
       `;
     });
-  } else {
+  }
+  
+  // کاربران آنلاین برای درخواست دوستی
+  if(searchUsers.length > 0 && search){
+    html += '<div style="padding:6px 16px;font-size:9px;color:#4e6270;letter-spacing:1px;font-weight:600;margin-top:4px;">🔍 کاربران آنلاین</div>';
+    searchUsers.forEach(u => {
+      html += `
+        <div class="friend-item">
+          <div class="f-avatar">${u.charAt(0).toUpperCase()}</div>
+          <div class="f-info">
+            <div class="f-name">${u}</div>
+            <div class="f-status"><span class="dot"></span> آنلاین</div>
+          </div>
+          <div class="f-actions">
+            <button onclick="sendFriendRequest('${u}')" style="color:#5dc44a;"><i class="fas fa-user-plus"></i></button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  if(!html){
     html = `
       <div style="padding:30px 20px;text-align:center;color:#4e6270;font-size:12px;">
         <i class="fas fa-user-plus" style="font-size:28px;display:block;margin-bottom:10px;color:#ffb300;opacity:0.5;"></i>
@@ -810,35 +874,31 @@ function renderFriends(){
   list.innerHTML = html;
 }
 
-function searchFriends(query){
-  renderFriends();
-}
-
 function sendFriendRequest(username){
   if(username === playerName){
-    alert('نمیتوانید به خودتان درخواست بدهید!');
+    showToast('❌ نمیتوانید به خودتان درخواست بدهید!');
     return;
   }
   if(friends.find(f => f.name === username)){
-    alert('این کاربر قبلاً دوست شماست!');
+    showToast('⚠️ این کاربر قبلاً دوست شماست!');
     return;
   }
   if(friendRequests.find(r => r.from === username && r.to === playerName)){
-    alert('درخواست دوستی از این کاربر دارید!');
+    showToast('📩 درخواست دوستی از این کاربر دارید!');
     return;
   }
   if(friendRequests.find(r => r.from === playerName && r.to === username)){
-    alert('شما قبلاً به این کاربر درخواست دادید!');
+    showToast('⏳ شما قبلاً به این کاربر درخواست دادید!');
     return;
   }
   
   friendRequests.push({from: playerName, to: username});
   saveFriendsData();
   
-  // ارسال نوتیفیکیشن در چت جهانی
+  // ارسال پیام در چت جهانی
   addSys('📨 '+playerName+' درخواست دوستی برای '+username+' ارسال کرد');
   renderFriends();
-  alert('درخواست دوستی برای '+username+' ارسال شد');
+  showToast('✅ درخواست دوستی برای '+username+' ارسال شد');
 }
 
 function acceptFriend(username){
@@ -846,12 +906,13 @@ function acceptFriend(username){
   if(idx === -1) return;
   friendRequests.splice(idx, 1);
   if(!friends.find(f => f.name === username)){
-    friends.push({name: username, added: Date.now()});
+    friends.push({name: username, id: 'COD' + String(Math.floor(10000 + Math.random() * 90000)), added: Date.now()});
   }
   saveFriendsData();
   addSys('✅ '+username+' درخواست دوستی شما را پذیرفت');
   renderFriends();
   updateFriendBadge();
+  showToast('✅ '+username+' به دوستان اضافه شد');
 }
 
 function rejectFriend(username){
@@ -861,6 +922,7 @@ function rejectFriend(username){
   saveFriendsData();
   renderFriends();
   updateFriendBadge();
+  showToast('❌ درخواست '+username+' رد شد');
 }
 
 function removeFriend(username){
@@ -871,6 +933,7 @@ function removeFriend(username){
   saveFriendsData();
   renderFriends();
   addSys('❌ '+username+' از دوستان حذف شد');
+  showToast('❌ '+username+' حذف شد');
 }
 
 // ===== چت خصوصی =====
@@ -880,7 +943,6 @@ function openPrivateChat(username){
   document.getElementById('pcStatus').textContent = onlineUsers[username] === 'online' ? '● آنلاین' : '● آفلاین';
   document.getElementById('pcAvatar').textContent = username.charAt(0).toUpperCase();
   
-  // نمایش پیام‌های قبلی
   const pcMsgs = document.getElementById('pcMsgs');
   pcMsgs.innerHTML = '';
   const key = [playerName, username].sort().join('_');
@@ -920,7 +982,6 @@ function sendPrivateMsg(){
   pcMsgs.scrollTop = pcMsgs.scrollHeight;
   input.value = '';
   
-  // ارسال به چت جهانی به عنوان نوتیفیکیشن خصوصی (فقط برای نمایش)
   addSys('🔒 پیام خصوصی برای '+privateChatTarget+' ارسال شد');
 }
 
@@ -993,9 +1054,8 @@ function updateProfileUI(){
 // ===== LOGOUT =====
 function logoutUser(){
   if(confirm('آیا مطمئن هستید میخواهید از حساب خود خارج شوید؟')){
-    // بستن چت‌ها
     closePrivateChat();
-    document.getElementById('friendSection').classList.remove('active');
+    closeFriends();
     
     localStorage.removeItem('cod_player_name');
     localStorage.removeItem('cod_player_phone');
@@ -1010,6 +1070,7 @@ function logoutUser(){
     document.getElementById('displayNameText').textContent='کاربر';
     document.getElementById('displayLevel').textContent='LV 1';
     document.getElementById('adminBadgeTop').style.display='none';
+    document.getElementById('adminToolBtn').style.display='none';
     isAdmin=false;
     chatMuted=false;
     
@@ -1018,7 +1079,7 @@ function logoutUser(){
     document.getElementById('usernameInput').value='';
     setTimeout(()=>document.getElementById('phoneInput').focus(),100);
     
-    document.getElementById('chatMsgs').innerHTML='';
+    document.getElementById('fullscreenChat').classList.remove('active');
     document.getElementById('fsMsgs').innerHTML='';
     friends=[];
     friendRequests=[];
@@ -1035,28 +1096,37 @@ function logoutUser(){
 // ===== FULLSCREEN CHAT =====
 function openFullscreenChat(){
   document.getElementById('fullscreenChat').classList.add('active');
-  syncFsMessages();
-  setTimeout(()=>{
-    const fsMsgs=document.getElementById('fsMsgs');
-    fsMsgs.scrollTop=fsMsgs.scrollHeight;
-  },100);
+  // همگام‌سازی پیام‌ها
+  const fsMsgs = document.getElementById('fsMsgs');
+  fsMsgs.innerHTML = '';
+  // پیام‌های قبلی رو از حافظه می‌گیریم (در addMsg ذخیره می‌شوند)
+  if(window._chatHistory){
+    window._chatHistory.forEach(msg => {
+      const div = document.createElement('div');
+      div.className = 'fs-msg' + (msg.isOwn ? ' own' : '');
+      div.innerHTML = '<span class="fu">'+msg.user+'</span>'+msg.text;
+      if(!msg.isOwn && !msg.isSys){
+        div.querySelector('.fu')?.addEventListener('click', function(e){
+          e.stopPropagation();
+          const name = this.textContent.trim();
+          if(name && name !== playerName){
+            if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
+              sendFriendRequest(name);
+            }
+          }
+        });
+      }
+      fsMsgs.appendChild(div);
+    });
+  }
+  fsMsgs.scrollTop = fsMsgs.scrollHeight;
+  
   gsap.from('.fullscreen-chat .fs-header', {duration:0.4, y:-30, opacity:0, ease:'power3.out'});
   gsap.from('.fullscreen-chat .fs-msgs', {duration:0.5, opacity:0, delay:0.1, ease:'power2.out'});
 }
 
-function closeFullscreenChat(){document.getElementById('fullscreenChat').classList.remove('active');}
-
-function syncFsMessages(){
-  const container=document.getElementById('fsMsgs');
-  container.innerHTML='';
-  const miniMsgs=document.querySelectorAll('#chatMsgs .cmsg');
-  miniMsgs.forEach(el=>{
-    const clone=document.createElement('div');
-    clone.className='fs-msg'+(el.classList.contains('own')?' own':'')+(el.classList.contains('sys')?' sys':'');
-    clone.innerHTML=el.innerHTML;
-    container.appendChild(clone);
-  });
-  container.scrollTop=container.scrollHeight;
+function closeFullscreenChat(){
+  document.getElementById('fullscreenChat').classList.remove('active');
 }
 
 function sendFsMsg(){
@@ -1064,13 +1134,13 @@ function sendFsMsg(){
   const text=input.value.trim();
   if(!text)return;
   if(chatMuted && !isAdmin){
-    addSys('🔇 چت توسط مدیر قطع شده');
+    showToast('🔇 چت توسط مدیر قطع شده');
     input.value='';
     return;
   }
   if(!isChatReady||!channel)return;
   channel.publish('message',{username,text},function(err){
-    if(!err){input.value='';addMsg(username,text,true);syncFsMessages();}
+    if(!err){input.value='';addMsg(username,text,true);}
     else{isChatReady=false;ably.close();tryConnect(currentKeyIndex+1);}
   });
 }
@@ -1080,14 +1150,21 @@ document.getElementById('fsChatInput').addEventListener('keydown',function(e){
 });
 
 // ===== ADMIN PANEL =====
-function closeAdminPanel(){document.getElementById('adminPanel').classList.remove('active');}
+function openAdminPanel(){
+  document.getElementById('adminPanel').classList.add('active');
+}
+
+function closeAdminPanel(){
+  document.getElementById('adminPanel').classList.remove('active');
+}
+
 let chatMuted = false;
 
 function adminClearChat(){
   if(!isAdmin)return;
-  document.getElementById('chatMsgs').innerHTML='';
   document.getElementById('fsMsgs').innerHTML='';
-  addSys('🗑 چت توسط مدیر پاک شد');
+  if(window._chatHistory) window._chatHistory = [];
+  showToast('🗑 چت پاک شد');
 }
 
 function adminMuteAll(){
@@ -1095,8 +1172,9 @@ function adminMuteAll(){
   chatMuted=true;
   document.getElementById('adminStatus').textContent='● قطع شده';
   document.getElementById('adminStatus').style.color='#ff5555';
+  showToast('🔇 چت برای همه کاربران قطع شد');
+  // ارسال پیام سیستمی
   addSys('🔇 چت توسط مدیر قطع شد');
-  syncFsMessages();
 }
 
 function adminUnmuteAll(){
@@ -1104,8 +1182,8 @@ function adminUnmuteAll(){
   chatMuted=false;
   document.getElementById('adminStatus').textContent='● فعال';
   document.getElementById('adminStatus').style.color='#5dc44a';
+  showToast('🔊 چت برای همه کاربران فعال شد');
   addSys('🔊 چت توسط مدیر فعال شد');
-  syncFsMessages();
 }
 
 // ===== MUSIC =====
@@ -1127,59 +1205,75 @@ const CHANNEL_NAME='cod-lobby-chat';
 let ably=null,channel=null,username='کاربر_'+Math.floor(Math.random()*1000);
 let isChatReady=false,currentKeyIndex=0,reconnectAttempts=0;
 const MAX_RECONNECT=30;
-const chatMsgs=document.getElementById('chatMsgs');
-const chatInput=document.getElementById('chatInput');
-const sendBtn=document.getElementById('sendBtn');
 const onlineEl=document.getElementById('onlineCount');
-const onlineChatEl=document.getElementById('onlineCountChat');
 const fsOnlineEl=document.getElementById('fsOnlineCount');
+const onlineStatusBottom=document.getElementById('onlineStatusBottom');
+
+// ذخیره تاریخچه چت
+window._chatHistory = [];
 
 function setDot(s){
   document.querySelectorAll('.online-dot').forEach(d=>{
     d.style.background=s==='connected'?'#5dc44a':s==='connecting'?'#ffaa00':'#ff4444';
   });
+  if(s==='connected'){
+    onlineStatusBottom.textContent='🟢 آنلاین';
+    onlineStatusBottom.style.color='#5dc44a';
+  }else if(s==='connecting'){
+    onlineStatusBottom.textContent='🟡 در حال اتصال';
+    onlineStatusBottom.style.color='#ffaa00';
+  }else{
+    onlineStatusBottom.textContent='🔴 آفلاین';
+    onlineStatusBottom.style.color='#ff4444';
+  }
 }
 
 function addMsg(user,text,isOwn){
   if(chatMuted && !isAdmin && user!==username) return;
   
+  // ذخیره در تاریخچه
+  if(!window._chatHistory) window._chatHistory = [];
+  window._chatHistory.push({user, text, isOwn, isSys: false});
+  if(window._chatHistory.length > 100) window._chatHistory.shift();
+  
   // چک کردن درخواست دوستی در پیام‌ها
   if(text.includes('درخواست دوستی') && !isOwn){
     const match = text.match(/درخواست دوستی برای (\S+)/);
     if(match && match[1] === playerName){
-      // درخواست دوستی برای من
       if(!friendRequests.find(r => r.from === user && r.to === playerName)){
         friendRequests.push({from: user, to: playerName});
         saveFriendsData();
         renderFriends();
-        addSys('📩 درخواست دوستی از '+user+' دریافت شد!');
-        // نمایش نوتیفیکیشن
-        showNotification('درخواست دوستی', user+' میخواهد دوست شما شود');
+        showToast('📩 درخواست دوستی از '+user);
       }
     }
   }
   
-  const d=document.createElement('div');
-  d.className='cmsg'+(isOwn?' own':'');
-  d.innerHTML='<span class="cu">'+user+'</span>'+text;
-  chatMsgs.appendChild(d);
-  while(chatMsgs.children.length>5)chatMsgs.removeChild(chatMsgs.firstChild);
-  chatMsgs.scrollTop=chatMsgs.scrollHeight;
-  
+  // نمایش در چت تمام صفحه
   const fs=document.getElementById('fsMsgs');
   const fd=document.createElement('div');
   fd.className='fs-msg'+(isOwn?' own':'');
   fd.innerHTML='<span class="fu">'+user+'</span>'+text;
+  if(!isOwn && !text.includes('درخواست دوستی')){
+    fd.querySelector('.fu')?.addEventListener('click', function(e){
+      e.stopPropagation();
+      const name = this.textContent.trim();
+      if(name && name !== playerName){
+        if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
+          sendFriendRequest(name);
+        }
+      }
+    });
+  }
   fs.appendChild(fd);
   while(fs.children.length>50)fs.removeChild(fs.firstChild);
   fs.scrollTop=fs.scrollHeight;
 }
 
 function addSys(text){
-  const d=document.createElement('div');
-  d.className='cmsg sys';d.textContent=text;
-  chatMsgs.appendChild(d);
-  while(chatMsgs.children.length>5)chatMsgs.removeChild(chatMsgs.firstChild);
+  if(!window._chatHistory) window._chatHistory = [];
+  window._chatHistory.push({user: 'سیستم', text, isOwn: false, isSys: true});
+  if(window._chatHistory.length > 100) window._chatHistory.shift();
   
   const fs=document.getElementById('fsMsgs');
   const fd=document.createElement('div');
@@ -1187,15 +1281,6 @@ function addSys(text){
   fs.appendChild(fd);
   while(fs.children.length>50)fs.removeChild(fs.firstChild);
   fs.scrollTop=fs.scrollHeight;
-}
-
-// نوتیفیکیشن ساده
-function showNotification(title, body){
-  try{
-    if('Notification' in window && Notification.permission === 'granted'){
-      new Notification(title, {body: body, icon: 'https://cdn.imgurl.ir/uploads/e05760_BackgroundEraser__.png'});
-    }
-  }catch(e){}
 }
 
 function initChat(){
@@ -1222,7 +1307,32 @@ function tryConnect(idx){
         if(err){ably.close();tryConnect(currentKeyIndex+1);return;}
         channel.presence.enter({username},()=>updateOnline());
         channel.history({limit:5},function(err,r){
-          if(!err&&r&&r.items)r.items.reverse().forEach(i=>{if(i.data&&i.data.text)addMsg(i.data.username||'?',i.data.text,false);});
+          if(!err&&r&&r.items)r.items.reverse().forEach(i=>{
+            if(i.data&&i.data.text){
+              // اضافه کردن به تاریخچه
+              if(!window._chatHistory) window._chatHistory = [];
+              window._chatHistory.push({user: i.data.username||'?', text: i.data.text, isOwn: (i.data.username===username), isSys: false});
+              if(window._chatHistory.length > 100) window._chatHistory.shift();
+              // نمایش در چت
+              const fs=document.getElementById('fsMsgs');
+              const fd=document.createElement('div');
+              fd.className='fs-msg'+(i.data.username===username?' own':'');
+              fd.innerHTML='<span class="fu">'+(i.data.username||'?')+'</span>'+i.data.text;
+              if(i.data.username!==username){
+                fd.querySelector('.fu')?.addEventListener('click', function(e){
+                  e.stopPropagation();
+                  const name = this.textContent.trim();
+                  if(name && name !== playerName){
+                    if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
+                      sendFriendRequest(name);
+                    }
+                  }
+                });
+              }
+              fs.appendChild(fd);
+            }
+          });
+          fs.scrollTop=fs.scrollHeight;
         });
         channel.subscribe(function(msg){
           if(msg.data&&msg.data.text){
@@ -1234,7 +1344,6 @@ function tryConnect(idx){
           if(msg.data && msg.data.username){
             onlineUsers[msg.data.username] = 'online';
             renderFriends();
-            // اگر کاربر دوست ما باشد، نوتیفیکیشن
             if(friends.find(f => f.name === msg.data.username)){
               addSys('🟢 '+msg.data.username+' آنلاین شد');
             }
@@ -1266,7 +1375,6 @@ function updateOnline(){
   if(channel&&channel.presence)channel.presence.get(function(err,m){
     if(!err&&m){
       onlineEl.textContent=m.length;
-      onlineChatEl.textContent=m.length;
       fsOnlineEl.textContent=m.length;
       m.forEach(p => {
         if(p.data && p.data.username){
@@ -1278,25 +1386,9 @@ function updateOnline(){
   });
 }
 
-function sendMsg(){
-  if(chatMuted && !isAdmin){
-    addSys('🔇 چت توسط مدیر قطع شده');
-    return;
-  }
-  const text=chatInput.value.trim();
-  if(!text||!isChatReady||!channel)return;
-  channel.publish('message',{username,text},function(err){
-    if(!err){chatInput.value='';addMsg(username,text,true);}
-    else{isChatReady=false;ably.close();tryConnect(currentKeyIndex+1);}
-  });
-}
-
-chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMsg();}});
-sendBtn.addEventListener('click',e=>{e.preventDefault();sendMsg();});
-
 // ===== ACTIONS =====
-function playGame(){alert('شروع بازی!');}
-function openShop(){alert('فروشگاه');}
+function playGame(){showToast('🎮 شروع بازی!');}
+function openShop(){showToast('🛒 فروشگاه');}
 
 // ===== INIT =====
 document.addEventListener('visibilitychange',function(){
@@ -1306,9 +1398,7 @@ document.addEventListener('visibilitychange',function(){
 document.getElementById('flagModal').addEventListener('click',function(e){if(e.target===this)closeFlagSelector();});
 document.getElementById('adminPanel').addEventListener('click',function(e){if(e.target===this)closeAdminPanel();});
 document.getElementById('fullscreenChat').addEventListener('click',function(e){if(e.target===this)closeFullscreenChat();});
-document.getElementById('friendSection').addEventListener('click',function(e){if(e.target===this)toggleFriends();});
 
-// درخواست نوتیفیکیشن
 if('Notification' in window && Notification.permission === 'default'){
   Notification.requestPermission();
 }
@@ -1348,6 +1438,7 @@ function adminKickUser(name){
   if(!isAdmin)return;
   if(confirm('آیا میخواهید کاربر '+name+' را از چت خارج کنید؟')){
     addSys('⛔ کاربر '+name+' توسط مدیر اخراج شد');
+    showToast('⛔ '+name+' اخراج شد');
   }
 }
 </script>
