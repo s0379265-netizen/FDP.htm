@@ -4,120 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Call of Duty - Lobby</title>
+  
+  <!-- اسکریپت‌های گرافیکی پیشرفته -->
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
+  <!-- اسکریپت‌های جاوااسکریپت پیشرفته -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+  
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;user-select:none;}
-    html,body{width:100%;height:100%;overflow:hidden;position:fixed;top:0;left:0;background:#000;}
+    html,body{width:100%;height:100%;overflow:hidden;position:fixed;top:0;left:0;background:#000;font-family:'Oswald',sans-serif;}
 
-    /* BG */
     body{color:#fff;background:#000 url('https://uploadkon.ir/uploads/2ae119_26IMG-20260619-231125-192.jpg') no-repeat center center;background-size:cover;}
-    body::before{content:'';position:fixed;inset:0;background:
-      radial-gradient(ellipse at 50% 35%,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.72) 100%),
-      linear-gradient(to bottom,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 62%,rgba(0,0,0,0.88) 100%);
-      z-index:0;pointer-events:none;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.72) 100%),linear-gradient(to bottom,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 62%,rgba(0,0,0,0.88) 100%);z-index:0;pointer-events:none;}
     body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.028) 3px,rgba(0,0,0,0.028) 4px);pointer-events:none;z-index:1;}
 
-    /* Glass mixin via backdrop-filter */
-    .glass{
-      background:rgba(8,14,24,0.52);
-      backdrop-filter:blur(14px) saturate(1.4);
-      -webkit-backdrop-filter:blur(14px) saturate(1.4);
-      border:1px solid rgba(255,180,0,0.13);
-    }
-    .glass-dark{
-      background:rgba(4,8,16,0.72);
-      backdrop-filter:blur(18px) saturate(1.2);
-      -webkit-backdrop-filter:blur(18px) saturate(1.2);
-      border:1px solid rgba(255,180,0,0.12);
-    }
+    .glass{background:rgba(8,14,24,0.52);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border:1px solid rgba(255,180,0,0.13);}
+    .glass-dark{background:rgba(4,8,16,0.72);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);border:1px solid rgba(255,180,0,0.12);}
 
     /* ============ TOP BAR ============ */
-    .topbar{
-      position:fixed;top:0;left:0;right:0;height:54px;z-index:20;
-      display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:8px;
-      background:rgba(4,8,16,0.82);
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      border-bottom:1px solid rgba(255,180,0,0.18);
-    }
-    .topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,transparent,rgba(255,180,0,0.45) 25%,rgba(255,220,100,0.9) 50%,rgba(255,180,0,0.45) 75%,transparent);}
+    .topbar{position:fixed;top:0;left:0;right:0;height:54px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:8px;background:rgba(4,8,16,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,180,0,0.18);}
+    .topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,180,0,0.45) 25%,rgba(255,220,100,0.9) 50%,rgba(255,180,0,0.45) 75%,transparent);}
 
-    /* پروفایل */
     .profile{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
     .avatar-frame{position:relative;width:36px;height:36px;flex-shrink:0;}
-    .avatar-frame img{width:36px;height:36px;object-fit:cover;display:block;
-      clip-path:polygon(10% 0%,90% 0%,100% 10%,100% 90%,90% 100%,10% 100%,0% 90%,0% 10%);
-      background:#1a2535;border:1px solid rgba(255,180,0,0.3);}
-    .avatar-lv-badge{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
-      background:linear-gradient(90deg,#7a5200,#ffb300,#7a5200);color:#000;
-      font-size:7px;font-weight:900;letter-spacing:0.8px;padding:2px 6px;white-space:nowrap;
-      clip-path:polygon(4px 0%,calc(100% - 4px) 0%,100% 50%,calc(100% - 4px) 100%,4px 100%,0% 50%);z-index:2;}
+    .avatar-frame img{width:36px;height:36px;object-fit:cover;display:block;clip-path:polygon(10% 0%,90% 0%,100% 10%,100% 90%,90% 100%,10% 100%,0% 90%,0% 10%);background:#1a2535;border:1px solid rgba(255,180,0,0.3);}
+    .avatar-lv-badge{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#7a5200,#ffb300,#7a5200);color:#000;font-size:7px;font-weight:900;letter-spacing:0.8px;padding:2px 6px;white-space:nowrap;clip-path:polygon(4px 0%,calc(100% - 4px) 0%,100% 50%,calc(100% - 4px) 100%,4px 100%,0% 50%);z-index:2;}
     .player-info{display:flex;flex-direction:column;gap:1px;}
     .player-name-top{font-size:11px;font-weight:700;color:#fff;letter-spacing:0.8px;font-family:'Oswald',sans-serif;text-transform:uppercase;}
     .player-rank-top{font-size:9px;color:rgba(255,180,0,0.8);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:4px;}
     .xp-strip{width:60px;height:2px;background:rgba(255,255,255,0.07);margin-top:2px;}
     .xp-strip-fill{height:100%;width:65%;background:linear-gradient(90deg,#7a4800,#ffb300);}
 
-    /* ارز + آنلاین راست */
     .topbar-right{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-    .online-pill{display:flex;align-items:center;gap:3px;font-size:9px;color:#5dc44a;font-weight:700;
-      background:rgba(10,30,10,0.55);border:1px solid rgba(93,196,74,0.22);
-      padding:3px 8px;border-radius:20px;backdrop-filter:blur(8px);}
-    .online-dot{width:6px;height:6px;background:#5dc44a;border-radius:50%;
-      animation:blink 1.8s infinite;box-shadow:0 0 6px rgba(93,196,74,0.5);}
+    .online-pill{display:flex;align-items:center;gap:3px;font-size:9px;color:#5dc44a;font-weight:700;background:rgba(10,30,10,0.55);border:1px solid rgba(93,196,74,0.22);padding:3px 8px;border-radius:20px;backdrop-filter:blur(8px);}
+    .online-dot{width:6px;height:6px;background:#5dc44a;border-radius:50%;animation:blink 1.8s infinite;box-shadow:0 0 6px rgba(93,196,74,0.5);}
     @keyframes blink{0%,100%{opacity:0.25;transform:scale(0.7);}50%{opacity:1;transform:scale(1.1);}}
+    
     .currency{display:flex;gap:4px;}
-    .currency-box{height:26px;padding:0 10px;
-      background:rgba(12,20,8,0.6);
-      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-      border:1px solid rgba(255,180,0,0.22);
-      display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#ffd966;
-      clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
-      font-family:'Oswald',sans-serif;}
+    .currency-box{height:26px;padding:0 10px;background:rgba(12,20,8,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,180,0,0.22);display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#ffd966;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);font-family:'Oswald',sans-serif;}
 
-    /* ============ LOGO ============ */
     .logo{position:fixed;top:62px;left:50%;transform:translateX(-50%);z-index:8;}
     .logo img{height:34px;filter:drop-shadow(0 4px 18px rgba(255,180,0,0.35)) drop-shadow(0 0 10px rgba(255,180,0,0.18));}
 
-    /* ============ PLAY BUTTON ============ */
-    .play-btn{position:fixed;bottom:126px;left:50%;transform:translateX(-50%);
-      width:195px;height:52px;border:none;padding:0;cursor:pointer;overflow:hidden;z-index:15;
-      background:transparent;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
-      transition:all 0.2s ease;box-shadow:0 6px 32px rgba(0,0,0,0.5);}
+    .play-btn{position:fixed;bottom:126px;left:50%;transform:translateX(-50%);width:195px;height:52px;border:none;padding:0;cursor:pointer;overflow:hidden;z-index:15;background:transparent;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all 0.2s ease;box-shadow:0 6px 32px rgba(0,0,0,0.5);}
     .play-btn img{width:100%;height:100%;object-fit:cover;display:block;}
-    .play-btn:hover{transform:translateX(-50%) scale(1.04) translateY(-2px);
-      filter:drop-shadow(0 8px 28px rgba(255,180,0,0.45));}
+    .play-btn:hover{transform:translateX(-50%) scale(1.04) translateY(-2px);filter:drop-shadow(0 8px 28px rgba(255,180,0,0.45));}
     .play-btn:active{transform:translateX(-50%) scale(0.97);}
 
     /* ============ BOTTOM AREA ============ */
-    /* کانتینر کلی پایین */
-    .bottom-area{
-      position:fixed;bottom:0;left:0;right:0;z-index:14;
-      display:flex;flex-direction:column;gap:0;
-    }
+    .bottom-area{position:fixed;bottom:0;left:0;right:0;z-index:14;display:flex;flex-direction:column;gap:0;}
 
-    /* --- ردیف چت + دکمه‌های JOIN/TEAMUP (شبیه CoD) --- */
-    .chat-row{
-      display:flex;align-items:stretch;gap:4px;
-      padding:5px 8px 4px;
-      background:rgba(4,8,16,0.70);
-      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-      border-top:1px solid rgba(255,180,0,0.14);
-    }
-    /* باکس چت اصلی */
-    .chat-box{
-      flex:1;min-width:0;
-      background:rgba(6,12,22,0.60);
-      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-      border:1px solid rgba(255,180,0,0.14);
-      border-radius:3px;
-      display:flex;flex-direction:column;overflow:hidden;
-    }
-    .chat-header-mini{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:3px 8px;background:rgba(255,180,0,0.04);border-bottom:1px solid rgba(255,180,0,0.07);
-    }
+    .chat-row{display:flex;align-items:stretch;gap:4px;padding:5px 8px 4px;background:rgba(4,8,16,0.70);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,180,0,0.14);}
+    
+    /* آیکون چت برای باز کردن صفحه کامل */
+    .chat-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.15);border-radius:6px;cursor:pointer;transition:all 0.3s ease;flex-shrink:0;}
+    .chat-icon-btn:hover{background:rgba(255,180,0,0.2);transform:scale(1.05);border-color:rgba(255,180,0,0.4);}
+    .chat-icon-btn i{font-size:18px;color:#ffb300;}
+    .chat-icon-btn .badge-chat{position:absolute;top:-4px;right:-4px;background:#ff4444;color:#fff;font-size:8px;padding:2px 6px;border-radius:50%;font-weight:700;}
+
+    .chat-box{flex:1;min-width:0;background:rgba(6,12,22,0.60);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,180,0,0.14);border-radius:3px;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;}
+    .chat-header-mini{display:flex;align-items:center;justify-content:space-between;padding:3px 8px;background:rgba(255,180,0,0.04);border-bottom:1px solid rgba(255,180,0,0.07);}
     .chat-header-mini-left{display:flex;align-items:center;gap:5px;}
     .chat-bar{width:2px;height:10px;background:linear-gradient(to bottom,#f7d48b,#7a5200);border-radius:2px;}
     .chat-title-mini{font-size:8px;font-weight:700;color:#d8a34d;letter-spacing:1.5px;text-transform:uppercase;font-family:'Oswald',sans-serif;}
@@ -134,133 +93,80 @@
     .chat-input-row button{padding:0 10px;background:rgba(255,180,0,0.08);border:none;border-right:1px solid rgba(255,180,0,0.08);color:#ffb300;font-size:11px;cursor:pointer;transition:background 0.2s;}
     .chat-input-row button:hover{background:rgba(255,180,0,0.2);}
 
-    /* دکمه‌های JOIN + TEAM UP کنار چت */
     .chat-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
-    .btn-join-cod{
-      height:28px;padding:0 14px;border:none;cursor:pointer;
-      font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;
-      text-transform:uppercase;
-      background:linear-gradient(135deg,rgba(50,160,50,0.85),rgba(30,200,80,0.9));
-      backdrop-filter:blur(8px);
-      color:#fff;
-      clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
-      border-left:2px solid rgba(80,255,120,0.5);
-      transition:all 0.18s;
-      text-shadow:0 1px 4px rgba(0,0,0,0.5);
-    }
+    .btn-join-cod{height:28px;padding:0 14px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,rgba(50,160,50,0.85),rgba(30,200,80,0.9));backdrop-filter:blur(8px);color:#fff;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);border-left:2px solid rgba(80,255,120,0.5);transition:all 0.18s;text-shadow:0 1px 4px rgba(0,0,0,0.5);}
     .btn-join-cod:hover{background:linear-gradient(135deg,rgba(60,190,60,0.95),rgba(40,230,100,1));filter:brightness(1.1);}
-    .btn-teamup-cod{
-      height:28px;padding:0 12px;border:none;cursor:pointer;
-      font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;
-      text-transform:uppercase;
-      background:rgba(255,180,0,0.12);
-      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-      border:1px solid rgba(255,180,0,0.32);
-      color:#ffd966;
-      clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
-      transition:all 0.18s;
-    }
+    .btn-teamup-cod{height:28px;padding:0 12px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(255,180,0,0.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,180,0,0.32);color:#ffd966;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:all 0.18s;}
     .btn-teamup-cod:hover{background:rgba(255,180,0,0.22);border-color:rgba(255,180,0,0.6);}
 
-    /* --- ردیف کارت‌های پایین --- */
-    .bottom-cards{
-      display:flex;gap:0;
-      background:rgba(4,8,16,0.80);
-      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-      border-top:2px solid rgba(255,180,0,0.28);
-      padding:6px 8px 10px;
-      justify-content:center;gap:6px;
-    }
-    .mode-card{
-      position:relative;flex:1;max-width:90px;height:68px;overflow:hidden;cursor:pointer;
-      border:1px solid rgba(255,180,0,0.16);
-      transition:all 0.22s ease;
-      clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
-      background:rgba(10,18,30,0.55);
-      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    }
-    .mode-card::after{content:'';position:absolute;inset:0;
-      background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.1) 55%);
-      pointer-events:none;z-index:1;}
-    .mode-card::before{content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%);
-      pointer-events:none;z-index:2;}
-    .mode-card-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;
-      font-size:7px;font-weight:700;color:rgba(255,215,100,0.9);letter-spacing:0.8px;
-      text-transform:uppercase;z-index:3;font-family:'Oswald',sans-serif;
-      text-shadow:0 1px 4px rgba(0,0,0,0.9);}
-    .mode-card:hover{border-color:rgba(255,180,0,0.6);transform:translateY(-4px);
-      box-shadow:0 8px 24px rgba(255,180,0,0.2);}
+    .bottom-cards{display:flex;gap:0;background:rgba(4,8,16,0.80);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:2px solid rgba(255,180,0,0.28);padding:6px 8px 10px;justify-content:center;gap:6px;}
+    .mode-card{position:relative;flex:1;max-width:90px;height:68px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,180,0,0.16);transition:all 0.22s ease;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));background:rgba(10,18,30,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+    .mode-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.1) 55%);pointer-events:none;z-index:1;}
+    .mode-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%);pointer-events:none;z-index:2;}
+    .mode-card-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:7px;font-weight:700;color:rgba(255,215,100,0.9);letter-spacing:0.8px;text-transform:uppercase;z-index:3;font-family:'Oswald',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,0.9);}
+    .mode-card:hover{border-color:rgba(255,180,0,0.6);transform:translateY(-4px);box-shadow:0 8px 24px rgba(255,180,0,0.2);}
     .mode-card.active{border-color:#ffb300;border-width:2px;box-shadow:0 0 22px rgba(255,180,0,0.22);}
-    .mode-card.active .mode-card-top{position:absolute;top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,transparent,#ffb300,transparent);z-index:3;}
+    .mode-card.active .mode-card-top{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffb300,transparent);z-index:3;}
     .mode-card img{width:100%;height:100%;object-fit:cover;display:block;}
 
+    /* ============ چت تمام صفحه ============ */
+    .fullscreen-chat{position:fixed;inset:0;z-index:999;background:rgba(4,8,16,0.94);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);display:none;flex-direction:column;animation:fadeIn 0.3s ease;padding-top:0;}
+    .fullscreen-chat.active{display:flex;}
+    .fullscreen-chat .fs-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,180,0,0.12);flex-shrink:0;background:rgba(0,0,0,0.3);}
+    .fullscreen-chat .fs-header h2{color:#ffb300;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:'Orbitron',sans-serif;display:flex;align-items:center;gap:10px;}
+    .fullscreen-chat .fs-header h2 i{font-size:20px;color:#ffb300;}
+    .fullscreen-chat .fs-header-left{display:flex;align-items:center;gap:12px;}
+    .fullscreen-chat .fs-close{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#8899aa;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
+    .fullscreen-chat .fs-close:hover{background:rgba(255,50,50,0.15);border-color:rgba(255,50,50,0.3);color:#ff5555;transform:rotate(90deg) scale(1.05);}
+    .fullscreen-chat .fs-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:6px;}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar{width:5px;}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);}
+    .fullscreen-chat .fs-msgs::-webkit-scrollbar-thumb{background:rgba(255,180,0,0.25);border-radius:4px;}
+    .fs-msg{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.85);padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.03);border-right:3px solid rgba(255,180,0,0.15);animation:slideMsg 0.25s ease;max-width:85%;}
+    .fs-msg .fu{color:#ffb300;font-weight:700;margin-left:8px;font-family:'Oswald',sans-serif;}
+    .fs-msg.own{background:rgba(60,120,255,0.06);border-right-color:rgba(60,120,255,0.3);margin-right:auto;}
+    .fs-msg.own .fu{color:#80c8ff;}
+    .fs-msg.sys{color:rgba(255,180,0,0.25);font-style:italic;font-size:12px;border-right-color:transparent;text-align:center;max-width:100%;background:transparent;}
+    @keyframes slideMsg{from{transform:translateX(-15px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+    .fullscreen-chat .fs-input-row{display:flex;padding:12px 18px 18px;border-top:1px solid rgba(255,255,255,0.03);flex-shrink:0;gap:10px;background:rgba(0,0,0,0.2);}
+    .fullscreen-chat .fs-input-row input{flex:1;padding:12px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,180,0,0.12);border-radius:10px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;direction:rtl;font-family:'Rajdhani',sans-serif;}
+    .fullscreen-chat .fs-input-row input:focus{border-color:#ffb300;box-shadow:0 0 20px rgba(255,180,0,0.05);}
+    .fullscreen-chat .fs-input-row input::placeholder{color:rgba(255,255,255,0.15);}
+    .fullscreen-chat .fs-input-row button{padding:12px 28px;background:linear-gradient(135deg,#a06000,#ffb300);border:none;border-radius:10px;color:#000;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.3s;font-family:'Oswald',sans-serif;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+    .fullscreen-chat .fs-input-row button:hover{filter:brightness(1.15);transform:scale(1.02);box-shadow:0 4px 20px rgba(255,180,0,0.2);}
+    .fs-online-count{font-size:12px;color:#5dc44a;font-weight:600;display:flex;align-items:center;gap:6px;}
+
     /* ============ MODAL ورود ============ */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;
-      display:flex;align-items:center;justify-content:center;animation:fadeIn 0.4s ease;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.4s ease;}
     @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-    .modal-box{
-      padding:36px 42px;max-width:320px;width:90%;animation:slideUp 0.38s ease;
-      clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
-      background:rgba(5,10,18,0.96);
-      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-      border:1px solid rgba(255,180,0,0.22);border-top:3px solid rgba(255,180,0,0.7);
-    }
+    .modal-box{padding:36px 42px;max-width:320px;width:90%;animation:slideUp 0.38s ease;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));background:rgba(5,10,18,0.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,180,0,0.22);border-top:3px solid rgba(255,180,0,0.7);}
     @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
     .modal-title{font-size:18px;font-weight:800;color:#ffb300;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:4px;font-family:'Oswald',sans-serif;}
     .modal-sub{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;margin-bottom:22px;}
-    .modal-box input{width:100%;padding:12px 16px;
-      background:rgba(255,255,255,0.03);border:none;border-bottom:2px solid rgba(255,180,0,0.35);
-      color:#fff;font-size:14px;letter-spacing:1px;text-align:center;outline:none;transition:border-color 0.2s;display:block;}
+    .modal-box input{width:100%;padding:12px 16px;background:rgba(255,255,255,0.03);border:none;border-bottom:2px solid rgba(255,180,0,0.35);color:#fff;font-size:14px;letter-spacing:1px;text-align:center;outline:none;transition:border-color 0.2s;display:block;margin-bottom:8px;font-family:'Rajdhani',sans-serif;}
     .modal-box input:focus{border-color:#ffb300;}
     .modal-box input::placeholder{color:rgba(255,255,255,0.18);}
-    .btn-join-modal{margin-top:16px;width:100%;padding:13px;
-      background:linear-gradient(135deg,#a06000,#ffb300 60%,#a06000);
-      border:none;color:#000;font-size:13px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
-      cursor:pointer;transition:all 0.2s;display:block;
-      clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);font-family:'Oswald',sans-serif;}
+    .btn-join-modal{margin-top:16px;width:100%;padding:13px;background:linear-gradient(135deg,#a06000,#ffb300 60%,#a06000);border:none;color:#000;font-size:13px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:block;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);font-family:'Oswald',sans-serif;}
     .btn-join-modal:hover{filter:brightness(1.12);transform:translateY(-1px);}
 
     /* ============ PROFILE POPUP ============ */
-    .profile-popup{position:fixed;inset:0;
-      background:rgba(0,0,0,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      z-index:9999;display:none;align-items:center;justify-content:center;animation:fadeIn 0.35s ease;padding:12px;}
+    .profile-popup{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);z-index:9999;display:none;align-items:center;justify-content:center;animation:fadeIn 0.35s ease;padding:12px;}
     .profile-popup.active{display:flex;}
-    .profile-panel{width:100%;max-width:780px;max-height:92vh;
-      background:linear-gradient(160deg,rgba(8,14,22,0.96) 0%,rgba(14,22,36,0.96) 100%);
-      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-      border:1px solid rgba(216,163,77,0.15);border-top:2px solid rgba(216,163,77,0.5);
-      border-radius:12px;overflow-y:auto;overflow-x:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.85);position:relative;}
+    .profile-panel{width:100%;max-width:780px;max-height:92vh;background:linear-gradient(160deg,rgba(8,14,22,0.97) 0%,rgba(14,22,36,0.97) 100%);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(216,163,77,0.15);border-top:2px solid rgba(216,163,77,0.5);border-radius:12px;overflow-y:auto;overflow-x:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.85);position:relative;}
     .profile-panel::-webkit-scrollbar{width:4px;}
     .profile-panel::-webkit-scrollbar-thumb{background:rgba(216,163,77,0.4);border-radius:4px;}
-    .profile-banner{position:relative;width:100%;height:130px;
-      background:linear-gradient(145deg,rgba(10,20,34,0.9) 0%,rgba(22,38,58,0.9) 40%,rgba(10,20,34,0.9) 100%);
-      overflow:hidden;border-radius:12px 12px 0 0;}
-    .profile-banner::before{content:"";position:absolute;inset:0;
-      background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(216,163,77,0.02) 40px,rgba(216,163,77,0.02) 41px);}
-    .profile-banner::after{content:"";position:absolute;bottom:0;left:0;right:0;height:50px;
-      background:linear-gradient(to top,rgba(8,14,22,0.96),transparent);z-index:2;}
-    .banner-emblem{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-      font-size:64px;opacity:0.04;color:#d8a34d;font-weight:900;text-transform:uppercase;white-space:nowrap;z-index:1;font-family:'Oswald',sans-serif;}
+    .profile-banner{position:relative;width:100%;height:130px;background:linear-gradient(145deg,rgba(10,20,34,0.9) 0%,rgba(22,38,58,0.9) 40%,rgba(10,20,34,0.9) 100%);overflow:hidden;border-radius:12px 12px 0 0;}
+    .profile-banner::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(216,163,77,0.02) 40px,rgba(216,163,77,0.02) 41px);}
+    .profile-banner::after{content:"";position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,rgba(8,14,22,0.96),transparent);z-index:2;}
+    .banner-emblem{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:64px;opacity:0.04;color:#d8a34d;font-weight:900;text-transform:uppercase;white-space:nowrap;z-index:1;font-family:'Oswald',sans-serif;}
     .profile-head{display:flex;align-items:center;gap:18px;padding:0 22px 18px;margin-top:-30px;position:relative;z-index:10;flex-wrap:wrap;}
     .avatar-wrap{position:relative;flex-shrink:0;}
-    .avatar{width:80px;height:80px;padding:3px;
-      background:linear-gradient(135deg,#f7d48b,#d8a34d,#8c6328,#d8a34d);
-      clip-path:polygon(15% 0%,85% 0%,100% 15%,100% 85%,85% 100%,15% 100%,0% 85%,0% 15%);
-      box-shadow:0 0 32px rgba(216,163,77,0.28);}
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block;
-      clip-path:polygon(15% 0%,85% 0%,100% 15%,100% 85%,85% 100%,15% 100%,0% 85%,0% 15%);background:#1a2633;}
-    .avatar-flag{position:absolute;bottom:-4px;right:-4px;width:36px;height:36px;border-radius:50%;
-      border:3px solid rgba(8,14,22,0.95);box-shadow:0 0 20px rgba(216,163,77,0.4);
-      background:#1a2633;overflow:hidden;z-index:6;cursor:pointer;transition:transform 0.2s;}
+    .avatar{width:80px;height:80px;padding:3px;background:linear-gradient(135deg,#f7d48b,#d8a34d,#8c6328,#d8a34d);clip-path:polygon(15% 0%,85% 0%,100% 15%,100% 85%,85% 100%,15% 100%,0% 85%,0% 15%);box-shadow:0 0 32px rgba(216,163,77,0.28);}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block;clip-path:polygon(15% 0%,85% 0%,100% 15%,100% 85%,85% 100%,15% 100%,0% 85%,0% 15%);background:#1a2633;}
+    .avatar-flag{position:absolute;bottom:-4px;right:-4px;width:36px;height:36px;border-radius:50%;border:3px solid rgba(8,14,22,0.95);box-shadow:0 0 20px rgba(216,163,77,0.4);background:#1a2633;overflow:hidden;z-index:6;cursor:pointer;transition:transform 0.2s;}
     .avatar-flag:hover{transform:scale(1.15);}
     .avatar-flag img{width:100%;height:100%;object-fit:cover;}
-    .avatar-lv{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
-      background:linear-gradient(90deg,#6b4a1e,#d8a34d,#f7d48b,#d8a34d,#6b4a1e);background-size:200%;
-      color:#0b111a;font-size:8px;font-weight:800;letter-spacing:1.5px;padding:3px 14px;white-space:nowrap;
-      clip-path:polygon(6px 0%,calc(100% - 6px) 0%,100% 50%,calc(100% - 6px) 100%,6px 100%,0% 50%);
-      z-index:5;animation:lvShine 3s infinite linear;font-family:'Oswald',sans-serif;}
+    .avatar-lv{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#6b4a1e,#d8a34d,#f7d48b,#d8a34d,#6b4a1e);background-size:200%;color:#0b111a;font-size:8px;font-weight:800;letter-spacing:1.5px;padding:3px 14px;white-space:nowrap;clip-path:polygon(6px 0%,calc(100% - 6px) 0%,100% 50%,calc(100% - 6px) 100%,6px 100%,0% 50%);z-index:5;animation:lvShine 3s infinite linear;font-family:'Oswald',sans-serif;}
     @keyframes lvShine{0%{background-position:0%;}100%{background-position:200%;}}
     .player-info-profile{flex:1;display:flex;flex-direction:column;gap:4px;min-width:140px;}
     .player-name-profile{font-size:24px;font-weight:800;letter-spacing:1.5px;color:#fff;text-transform:uppercase;font-family:'Oswald',sans-serif;}
@@ -268,20 +174,14 @@
     .player-meta-profile{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
     .player-id-profile{font-size:10px;color:#5a6e7f;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
     .player-id-profile b{color:#d8a34d;}
-    .flag-selector-btn{background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);
-      color:#d8a34d;padding:4px 14px;border-radius:4px;font-size:9px;cursor:pointer;
-      display:flex;align-items:center;gap:6px;font-weight:600;transition:all 0.2s;}
+    .flag-selector-btn{background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;padding:4px 14px;border-radius:4px;font-size:9px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;transition:all 0.2s;}
     .flag-selector-btn:hover{background:rgba(216,163,77,0.15);border-color:#d8a34d;}
     .tags-profile{display:flex;gap:5px;flex-wrap:wrap;}
     .tag-profile{padding:2px 10px;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);font-family:'Oswald',sans-serif;}
     .tag-gold-profile{color:#f3c97a;border-color:rgba(243,201,122,0.35);background:rgba(243,201,122,0.07);}
     .tag-red-profile{color:#e05c5c;border-color:rgba(224,92,92,0.35);background:rgba(224,92,92,0.07);}
     .tag-olive-profile{color:#8fb870;border-color:rgba(143,184,112,0.35);background:rgba(143,184,112,0.07);}
-    .rank-side-profile{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;
-      padding:10px 20px;
-      background:rgba(255,220,120,0.04);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,210,120,0.10);
-      clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));position:relative;min-width:90px;}
+    .rank-side-profile{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 20px;background:rgba(255,220,120,0.04);backdrop-filter:blur(8px);border:1px solid rgba(255,210,120,0.10);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));position:relative;min-width:90px;}
     .rank-side-profile::before{content:"";position:absolute;top:0;right:0;width:2px;height:100%;background:linear-gradient(to bottom,#f7d48b,#8c6328);}
     .rank-icon-profile{font-size:26px;line-height:1;}
     .rank-title-profile{font-size:11px;font-weight:800;color:#f3c97a;letter-spacing:1px;text-transform:uppercase;font-family:'Oswald',sans-serif;}
@@ -302,21 +202,18 @@
     .stat-value-profile.green{color:#7ecc6a;}
     .stat-value-profile.red{color:#e05c5c;}
     .badges-grid-profile{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px 16px;}
-    .badge-item-profile{width:46px;height:46px;display:flex;align-items:center;justify-content:center;
-      background:rgba(14,24,40,0.7);backdrop-filter:blur(6px);
-      border:1px solid rgba(216,163,77,0.10);border-radius:4px;font-size:20px;cursor:default;transition:all 0.25s ease;position:relative;}
+    .badge-item-profile{width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:rgba(14,24,40,0.7);backdrop-filter:blur(6px);border:1px solid rgba(216,163,77,0.10);border-radius:4px;font-size:20px;cursor:default;transition:all 0.25s ease;position:relative;}
     .badge-item-profile:hover{transform:translateY(-4px);border-color:#d8a34d;box-shadow:0 8px 24px rgba(216,163,77,0.15);}
-    .badge-item-profile::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
-      background:#1a2633;border:1px solid rgba(216,163,77,0.2);color:#d8a34d;font-size:8px;letter-spacing:1px;padding:2px 10px;white-space:nowrap;
-      opacity:0;pointer-events:none;transition:opacity 0.2s;border-radius:3px;}
+    .badge-item-profile::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1a2633;border:1px solid rgba(216,163,77,0.2);color:#d8a34d;font-size:8px;letter-spacing:1px;padding:2px 10px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s;border-radius:3px;}
     .badge-item-profile:hover::after{opacity:1;}
     .xp-wrap-profile{padding:12px 20px 16px;background:rgba(0,0,0,0.12);border-top:1px solid rgba(255,255,255,0.025);border-bottom:1px solid rgba(255,255,255,0.025);}
     .xp-label-profile{display:flex;justify-content:space-between;font-size:9px;color:#4e6270;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;font-weight:600;}
     .xp-label-profile span:last-child{color:#cfd8e0;}
     .xp-bar-profile{height:4px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
     .xp-fill-profile{height:100%;background:linear-gradient(90deg,#7a4a1a,#d8a34d,#f7d48b);box-shadow:0 0 12px rgba(216,163,77,0.3);border-radius:3px;transition:width 0.6s ease;}
-    .profile-actions-profile{display:flex;gap:6px;padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03);
-      background:rgba(255,255,255,0.008);justify-content:flex-end;flex-wrap:wrap;}
+    
+    /* دکمه خروج از حساب */
+    .profile-actions-profile{display:flex;gap:6px;padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.008);justify-content:flex-end;flex-wrap:wrap;}
     .btn-profile{display:flex;align-items:center;gap:5px;padding:6px 16px;font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid;background:transparent;transition:all 0.2s ease;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);border-radius:0;}
     .btn-gold-profile{color:#f3c97a;border-color:rgba(243,201,122,0.35);}
     .btn-gold-profile:hover{background:rgba(243,201,122,0.1);border-color:#d8a34d;}
@@ -324,8 +221,9 @@
     .btn-outline-profile:hover{color:#aec0cc;border-color:rgba(90,110,127,0.6);}
     .btn-close-profile{color:#7a8a9a;border-color:rgba(120,140,160,0.2);}
     .btn-close-profile:hover{background:rgba(255,255,255,0.04);}
+    .btn-logout-profile{color:#ff5555;border-color:rgba(255,50,50,0.2);}
+    .btn-logout-profile:hover{background:rgba(255,50,50,0.1);border-color:#ff5555;}
 
-    /* FLAG MODAL */
     .flag-modal{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(12px);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;}
     .flag-modal.active{display:flex;}
     .flag-modal-content{background:rgba(8,14,24,0.95);backdrop-filter:blur(24px);border:1px solid rgba(216,163,77,0.2);border-radius:14px;padding:28px;max-width:620px;width:100%;max-height:75vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.85);}
@@ -339,7 +237,26 @@
     .flag-modal-close{display:block;margin:18px auto 0;padding:8px 28px;background:rgba(216,163,77,0.08);border:1px solid rgba(216,163,77,0.15);color:#d8a34d;border-radius:6px;cursor:pointer;font-size:12px;}
     .flag-modal-close:hover{background:rgba(216,163,77,0.18);}
 
-    /* RESPONSIVE */
+    /* ADMIN PANEL */
+    .admin-panel{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.3s ease;}
+    .admin-panel.active{display:flex;}
+    .admin-box{width:100%;max-width:500px;background:rgba(8,14,24,0.96);border:1px solid rgba(255,180,0,0.2);border-top:3px solid #ffb300;border-radius:12px;padding:24px;max-height:80vh;overflow-y:auto;}
+    .admin-box h2{color:#ffb300;font-family:'Oswald',sans-serif;font-size:20px;letter-spacing:2px;text-align:center;margin-bottom:8px;}
+    .admin-box .sub{color:rgba(255,255,255,0.3);font-size:11px;text-align:center;margin-bottom:20px;}
+    .admin-box .admin-flag{text-align:center;font-size:42px;margin-bottom:10px;}
+    .admin-user{background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.1);border-radius:6px;padding:8px 14px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#cfd8e0;}
+    .admin-user .name{font-weight:600;color:#fff;}
+    .admin-user .del-btn{background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.2);color:#ff5555;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:10px;transition:0.2s;}
+    .admin-user .del-btn:hover{background:rgba(255,50,50,0.3);}
+    .admin-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+    .admin-actions button{flex:1;min-width:80px;padding:8px;background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.15);color:#ffb300;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;transition:0.2s;font-family:'Oswald',sans-serif;}
+    .admin-actions button:hover{background:rgba(255,180,0,0.15);}
+    .admin-actions .danger{color:#ff5555;border-color:rgba(255,50,50,0.2);}
+    .admin-actions .danger:hover{background:rgba(255,50,50,0.12);}
+    .admin-close{display:block;margin:16px auto 0;padding:6px 24px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#8899aa;border-radius:4px;cursor:pointer;font-size:11px;transition:0.2s;}
+    .admin-close:hover{background:rgba(255,255,255,0.06);}
+    .admin-badge{background:#ffb300;color:#000;font-size:7px;font-weight:800;padding:1px 8px;border-radius:20px;margin-right:6px;letter-spacing:0.5px;font-family:'Oswald',sans-serif;}
+
     @media(max-width:500px){
       .topbar{height:48px;padding:0 7px;}
       .avatar-frame img,.avatar-frame{width:30px;height:30px;}
@@ -349,6 +266,12 @@
       .bottom-cards{padding:5px 6px 8px;}
       .mode-card{height:60px;}
       .chat-msgs{max-height:30px;}
+      .chat-icon-btn{width:32px;height:32px;}
+      .chat-icon-btn i{font-size:14px;}
+      .fullscreen-chat .fs-msgs{padding:10px 14px;}
+      .fullscreen-chat .fs-input-row{padding:10px 14px 14px;}
+      .fullscreen-chat .fs-header h2{font-size:14px;}
+      .fs-msg{font-size:12px;max-width:92%;}
     }
     @media(orientation:landscape){
       .topbar{height:44px;}
@@ -377,7 +300,8 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <div class="modal-title">⚔ ورود</div>
-    <div class="modal-sub">نام بازیکن خود را وارد کنید</div>
+    <div class="modal-sub">شماره و نام خود را وارد کنید</div>
+    <input type="text" id="phoneInput" placeholder="شماره موبایل ..." maxlength="11">
     <input type="text" id="usernameInput" placeholder="نام بازیکن ..." maxlength="20">
     <button class="btn-join-modal" onclick="setUsername()">ورود به بازی</button>
   </div>
@@ -400,7 +324,7 @@
       <div class="player-info-profile">
         <div class="player-name-profile" id="profileNameDisplay">PLAYER<em>NAME</em></div>
         <div class="player-meta-profile">
-          <div class="player-id-profile">ID · <b id="profileIdDisplay">123456789</b></div>
+          <div class="player-id-profile">📱 <b id="profilePhoneDisplay">0937...</b></div>
           <button class="flag-selector-btn" onclick="openFlagSelector()">
             <span id="flagEmojiDisplay">🇮🇷</span> تغییر پرچم
           </button>
@@ -455,6 +379,7 @@
       </div>
     </div>
     <div class="profile-actions-profile">
+      <button class="btn-profile btn-logout-profile" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> خروج از حساب</button>
       <button class="btn-profile btn-close-profile" onclick="closeProfile()">✕ بستن</button>
       <button class="btn-profile btn-outline-profile" onclick="alert('پیام ارسال شد')">✉ پیام</button>
       <button class="btn-profile btn-outline-profile" onclick="alert('دعوت ارسال شد')">⚡ دعوت</button>
@@ -472,6 +397,47 @@
   </div>
 </div>
 
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-box">
+    <div class="admin-flag">🏴</div>
+    <h2>🛡 پنل مدیریت</h2>
+    <div class="sub">تیم سازنده · نظارت بر چت</div>
+    <div style="background:rgba(255,180,0,0.04);border-radius:6px;padding:6px 12px;margin:8px 0;font-size:11px;color:rgba(255,255,255,0.4);">
+      <span style="color:#ffb300;">👑</span> مدیر: <span id="adminNameDisplay" style="color:#ffb300;font-weight:700;">09373467527</span>
+      <span style="float:left;">🇮🇷</span>
+    </div>
+    <div id="adminUserList" style="margin:12px 0;"></div>
+    <div class="admin-actions">
+      <button class="danger" onclick="adminClearChat()">🗑 پاک کردن چت</button>
+      <button class="danger" onclick="adminMuteAll()">🔇 قطع چت همه</button>
+      <button onclick="adminUnmuteAll()">🔊 فعال‌سازی چت</button>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#5a6e7f;text-align:center;">
+      وضعیت: <span id="adminStatus" style="color:#5dc44a;">● فعال</span>
+    </div>
+    <button class="admin-close" onclick="closeAdminPanel()">✕ بستن پنل</button>
+  </div>
+</div>
+
+<!-- FULLSCREEN CHAT -->
+<div class="fullscreen-chat" id="fullscreenChat">
+  <div class="fs-header">
+    <div class="fs-header-left">
+      <h2><i class="fas fa-comment-dots"></i> چت جهانی</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="fs-online-count"><span class="online-dot" style="display:inline-block;width:8px;height:8px;margin-left:4px;"></span> <span id="fsOnlineCount">0</span> آنلاین</span>
+      <button class="fs-close" onclick="closeFullscreenChat()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="fs-msgs" id="fsMsgs"></div>
+  <div class="fs-input-row">
+    <input id="fsChatInput" type="text" placeholder="پیام بنویس ..." maxlength="200" dir="rtl">
+    <button onclick="sendFsMsg()"><i class="fas fa-paper-plane"></i> ارسال</button>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="profile" onclick="showUserInfo()">
@@ -484,6 +450,7 @@
       <div class="player-rank-top">
         <span id="rankText">SERGEANT</span>
         <span id="topFlagEmoji">🇮🇷</span>
+        <span id="adminBadgeTop" style="display:none;" class="admin-badge">ADMIN</span>
       </div>
       <div class="xp-strip"><div class="xp-strip-fill"></div></div>
     </div>
@@ -494,15 +461,9 @@
       <span id="onlineCount">0</span>
     </div>
     <div class="currency">
-      <div class="currency-box">💎 200</div>
-      <div class="currency-box">💰 5000</div>
+      <div class="currency-box"><i class="fas fa-coins"></i> 5000</div>
     </div>
   </div>
-</div>
-
-<!-- LOGO -->
-<div class="logo">
-  <img src="https://cdn.imgurl.ir/uploads/e05760_BackgroundEraser__.png" alt="Logo">
 </div>
 
 <!-- PLAY BUTTON -->
@@ -510,15 +471,19 @@
   <img src="https://uploadkon.ir/uploads/34f918_26IMG-20260618-114710-730.jpg" alt="PLAY">
 </button>
 
-<!-- BOTTOM AREA: چت + دکمه + کارت‌ها -->
+<!-- BOTTOM AREA -->
 <div class="bottom-area">
-  <!-- ردیف چت (شبیه CoD) -->
   <div class="chat-row">
-    <div class="chat-box">
+    <!-- آیکون چت برای باز کردن صفحه کامل -->
+    <div class="chat-icon-btn" onclick="openFullscreenChat()" title="باز کردن چت تمام صفحه">
+      <i class="fas fa-comment"></i>
+    </div>
+    
+    <div class="chat-box" onclick="openFullscreenChat()">
       <div class="chat-header-mini">
         <div class="chat-header-mini-left">
           <div class="chat-bar"></div>
-          <div class="chat-title-mini">چت جهانی</div>
+          <div class="chat-title-mini"><i class="fas fa-comment"></i> چت جهانی</div>
         </div>
         <div class="chat-online-mini">
           <span class="dot"></span>
@@ -526,17 +491,16 @@
         </div>
       </div>
       <div class="chat-msgs" id="chatMsgs"></div>
-      <div class="chat-input-row">
+      <div class="chat-input-row" onclick="event.stopPropagation();">
         <input id="chatInput" type="text" placeholder="پیام بنویس ..." maxlength="100" dir="rtl">
         <button id="sendBtn">➤</button>
       </div>
     </div>
     <div class="chat-actions">
-      <button class="btn-join-cod" onclick="alert('پیوستن به اتاق')">🎮 JOIN</button>
-      <button class="btn-teamup-cod" onclick="alert('تیم آپ')">🚩 TEAM UP</button>
+      <button class="btn-join-cod" onclick="event.stopPropagation();alert('پیوستن به اتاق')">🎮 JOIN</button>
+      <button class="btn-teamup-cod" onclick="event.stopPropagation();alert('تیم آپ')">🚩 TEAM UP</button>
     </div>
   </div>
-  <!-- ردیف کارت‌ها -->
   <div class="bottom-cards">
     <div class="mode-card active" onclick="openShop()">
       <div class="mode-card-top"></div>
@@ -559,34 +523,107 @@
 </div>
 
 <script>
-// ===== USERNAME =====
-let playerName='', playerLevel=2;
+// ===== USERNAME & PHONE =====
+let playerName='', playerPhone='', playerLevel=2;
+const ADMIN_PHONE = '09373467527';
+let isAdmin = false;
+
 function setUsername(){
-  const input=document.getElementById('usernameInput');
-  const name=input.value.trim();
-  if(name.length<2){input.style.borderColor='#ff4444';input.placeholder='حداقل 2 کاراکتر';return;}
+  const phoneInput=document.getElementById('phoneInput');
+  const nameInput=document.getElementById('usernameInput');
+  const phone=phoneInput.value.trim();
+  const name=nameInput.value.trim();
+  if(phone.length<10){phoneInput.style.borderColor='#ff4444';phoneInput.placeholder='شماره معتبر وارد کن';return;}
+  if(name.length<2){nameInput.style.borderColor='#ff4444';nameInput.placeholder='حداقل 2 کاراکتر';return;}
+  playerPhone=phone;
   playerName=name;
+  isAdmin = (phone === ADMIN_PHONE);
+  
   document.getElementById('displayNameText').textContent=playerName;
   document.getElementById('displayLevel').textContent='LV '+playerLevel;
   document.getElementById('modalOverlay').style.display='none';
   username=playerName;
+  
+  if(isAdmin){
+    document.getElementById('adminBadgeTop').style.display='inline';
+    document.getElementById('adminNameDisplay').textContent=playerPhone;
+    document.getElementById('adminPanel').classList.add('active');
+  }
+  
   initChat();
   localStorage.setItem('cod_player_name',playerName);
+  localStorage.setItem('cod_player_phone',playerPhone);
+  localStorage.setItem('cod_is_admin',isAdmin?'true':'false');
   updateProfileUI();
+  
+  // GSAP animation
+  gsap.from('.topbar', {duration:0.6, y:-40, opacity:0, ease:'power3.out'});
+  gsap.from('.logo', {duration:0.6, scale:0.8, opacity:0, delay:0.2, ease:'back.out(1.7)'});
+  gsap.from('.play-btn', {duration:0.5, scale:0.5, opacity:0, delay:0.3, ease:'back.out(2)'});
+  gsap.from('.bottom-area', {duration:0.5, y:30, opacity:0, delay:0.4, ease:'power3.out'});
 }
+
 function checkSavedUsername(){
   const saved=localStorage.getItem('cod_player_name');
+  const savedPhone=localStorage.getItem('cod_player_phone');
   if(saved&&saved.length>=2){
     playerName=saved;
+    playerPhone=savedPhone||'0937...';
+    isAdmin=localStorage.getItem('cod_is_admin')==='true' || playerPhone===ADMIN_PHONE;
     document.getElementById('displayNameText').textContent=playerName;
     document.getElementById('displayLevel').textContent='LV '+playerLevel;
     document.getElementById('modalOverlay').style.display='none';
     username=playerName;
+    if(isAdmin){
+      document.getElementById('adminBadgeTop').style.display='inline';
+      document.getElementById('adminNameDisplay').textContent=playerPhone;
+    }
     setTimeout(initChat,500);
     updateProfileUI();
     return true;
   }
   return false;
+}
+
+// ===== LOGOUT =====
+function logoutUser(){
+  if(confirm('آیا مطمئن هستید میخواهید از حساب خود خارج شوید؟')){
+    // Clear local storage
+    localStorage.removeItem('cod_player_name');
+    localStorage.removeItem('cod_player_phone');
+    localStorage.removeItem('cod_is_admin');
+    localStorage.removeItem('player_flag');
+    
+    // Close profile
+    closeProfile();
+    
+    // Disconnect from chat
+    if(ably){try{ably.close();}catch(e){}}
+    
+    // Reset UI
+    document.getElementById('displayNameText').textContent='کاربر';
+    document.getElementById('displayLevel').textContent='LV 1';
+    document.getElementById('adminBadgeTop').style.display='none';
+    isAdmin=false;
+    chatMuted=false;
+    
+    // Show login modal
+    document.getElementById('modalOverlay').style.display='flex';
+    document.getElementById('phoneInput').value='';
+    document.getElementById('usernameInput').value='';
+    setTimeout(()=>document.getElementById('phoneInput').focus(),100);
+    
+    // Reset chat
+    document.getElementById('chatMsgs').innerHTML='';
+    document.getElementById('fsMsgs').innerHTML='';
+    addSys('🚪 شما از حساب خارج شدید');
+    
+    // GSAP animation for logout
+    gsap.to('.topbar', {duration:0.3, y:-30, opacity:0, ease:'power2.in'});
+    setTimeout(()=>{
+      gsap.to('.topbar', {duration:0.3, y:0, opacity:1, ease:'power2.out'});
+    },400);
+  }
 }
 
 // ===== FLAG =====
@@ -626,7 +663,7 @@ function closeProfile(){document.getElementById('profilePopup').classList.remove
 function updateProfileUI(){
   document.getElementById('profileNameDisplay').innerHTML=playerName||'PLAYER<em>NAME</em>';
   document.getElementById('profileLvBadge').textContent='LV · '+playerLevel;
-  document.getElementById('profileIdDisplay').textContent=Math.floor(1e8+Math.random()*9e8);
+  document.getElementById('profilePhoneDisplay').textContent=playerPhone||'اطلاعات...';
   const av='https://ui-avatars.com/api/?name='+encodeURIComponent(playerName||'P')+'&background=1a2535&color=f7d48b&size=128&font-size=0.5&bold=true';
   document.getElementById('profileAvatarImg').src=av;
   document.getElementById('topAvatarImg').src=av;
@@ -648,6 +685,88 @@ function updateProfileUI(){
   document.getElementById('pLosses').textContent=m-w;
   document.getElementById('pWinRate').textContent=(w/m*100).toFixed(1)+'%';
   document.getElementById('pMvp').textContent=Math.floor(50+Math.random()*200);
+}
+
+// ===== FULLSCREEN CHAT =====
+function openFullscreenChat(){
+  document.getElementById('fullscreenChat').classList.add('active');
+  syncFsMessages();
+  setTimeout(()=>{
+    const fsMsgs=document.getElementById('fsMsgs');
+    fsMsgs.scrollTop=fsMsgs.scrollHeight;
+  },100);
+  
+  // GSAP animation
+  gsap.from('.fullscreen-chat .fs-header', {duration:0.4, y:-30, opacity:0, ease:'power3.out'});
+  gsap.from('.fullscreen-chat .fs-msgs', {duration:0.5, opacity:0, delay:0.1, ease:'power2.out'});
+}
+
+function closeFullscreenChat(){
+  document.getElementById('fullscreenChat').classList.remove('active');
+}
+
+function syncFsMessages(){
+  const container=document.getElementById('fsMsgs');
+  container.innerHTML='';
+  const miniMsgs=document.querySelectorAll('#chatMsgs .cmsg');
+  miniMsgs.forEach(el=>{
+    const clone=document.createElement('div');
+    clone.className='fs-msg'+(el.classList.contains('own')?' own':'')+(el.classList.contains('sys')?' sys':'');
+    clone.innerHTML=el.innerHTML;
+    container.appendChild(clone);
+  });
+  container.scrollTop=container.scrollHeight;
+}
+
+function sendFsMsg(){
+  const input=document.getElementById('fsChatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  if(chatMuted && !isAdmin){
+    addSys('🔇 چت توسط مدیر قطع شده');
+    input.value='';
+    return;
+  }
+  if(!isChatReady||!channel)return;
+  channel.publish('message',{username,text},function(err){
+    if(!err){input.value='';addMsg(username,text,true);syncFsMessages();}
+    else{isChatReady=false;ably.close();tryConnect(currentKeyIndex+1);}
+  });
+}
+
+document.getElementById('fsChatInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();sendFsMsg();}
+});
+
+// ===== ADMIN PANEL =====
+function closeAdminPanel(){
+  document.getElementById('adminPanel').classList.remove('active');
+}
+let chatMuted = false;
+
+function adminClearChat(){
+  if(!isAdmin)return;
+  document.getElementById('chatMsgs').innerHTML='';
+  document.getElementById('fsMsgs').innerHTML='';
+  addSys('🗑 چت توسط مدیر پاک شد');
+}
+
+function adminMuteAll(){
+  if(!isAdmin)return;
+  chatMuted=true;
+  document.getElementById('adminStatus').textContent='● قطع شده';
+  document.getElementById('adminStatus').style.color='#ff5555';
+  addSys('🔇 چت توسط مدیر قطع شد');
+  syncFsMessages();
+}
+
+function adminUnmuteAll(){
+  if(!isAdmin)return;
+  chatMuted=false;
+  document.getElementById('adminStatus').textContent='● فعال';
+  document.getElementById('adminStatus').style.color='#5dc44a';
+  addSys('🔊 چت توسط مدیر فعال شد');
+  syncFsMessages();
 }
 
 // ===== MUSIC =====
@@ -674,25 +793,43 @@ const chatInput=document.getElementById('chatInput');
 const sendBtn=document.getElementById('sendBtn');
 const onlineEl=document.getElementById('onlineCount');
 const onlineChatEl=document.getElementById('onlineCountChat');
+const fsOnlineEl=document.getElementById('fsOnlineCount');
 
 function setDot(s){
-  const dot=document.querySelector('.online-dot');
-  if(!dot)return;
-  dot.style.background=s==='connected'?'#5dc44a':s==='connecting'?'#ffaa00':'#ff4444';
+  document.querySelectorAll('.online-dot').forEach(d=>{
+    d.style.background=s==='connected'?'#5dc44a':s==='connecting'?'#ffaa00':'#ff4444';
+  });
 }
 function addMsg(user,text,isOwn){
+  if(chatMuted && !isAdmin && user!==username) return;
+  
   const d=document.createElement('div');
   d.className='cmsg'+(isOwn?' own':'');
   d.innerHTML='<span class="cu">'+user+'</span>'+text;
   chatMsgs.appendChild(d);
-  while(chatMsgs.children.length>3)chatMsgs.removeChild(chatMsgs.firstChild);
+  while(chatMsgs.children.length>5)chatMsgs.removeChild(chatMsgs.firstChild);
   chatMsgs.scrollTop=chatMsgs.scrollHeight;
+  
+  const fs=document.getElementById('fsMsgs');
+  const fd=document.createElement('div');
+  fd.className='fs-msg'+(isOwn?' own':'');
+  fd.innerHTML='<span class="fu">'+user+'</span>'+text;
+  fs.appendChild(fd);
+  while(fs.children.length>50)fs.removeChild(fs.firstChild);
+  fs.scrollTop=fs.scrollHeight;
 }
 function addSys(text){
   const d=document.createElement('div');
   d.className='cmsg sys';d.textContent=text;
   chatMsgs.appendChild(d);
-  while(chatMsgs.children.length>3)chatMsgs.removeChild(chatMsgs.firstChild);
+  while(chatMsgs.children.length>5)chatMsgs.removeChild(chatMsgs.firstChild);
+  
+  const fs=document.getElementById('fsMsgs');
+  const fd=document.createElement('div');
+  fd.className='fs-msg sys';fd.textContent=text;
+  fs.appendChild(fd);
+  while(fs.children.length>50)fs.removeChild(fs.firstChild);
+  fs.scrollTop=fs.scrollHeight;
 }
 function initChat(){
   if(playerName)username=playerName;
@@ -716,10 +853,14 @@ function tryConnect(idx){
       channel.attach(function(err){
         if(err){ably.close();tryConnect(currentKeyIndex+1);return;}
         channel.presence.enter({username},()=>updateOnline());
-        channel.history({limit:3},function(err,r){
+        channel.history({limit:5},function(err,r){
           if(!err&&r&&r.items)r.items.reverse().forEach(i=>{if(i.data&&i.data.text)addMsg(i.data.username||'?',i.data.text,false);});
         });
-        channel.subscribe(function(msg){if(msg.data&&msg.data.text)addMsg(msg.data.username||'?',msg.data.text,msg.data.username===username);});
+        channel.subscribe(function(msg){
+          if(msg.data&&msg.data.text){
+            addMsg(msg.data.username||'?',msg.data.text,msg.data.username===username);
+          }
+        });
         channel.presence.subscribe('enter',updateOnline);
         channel.presence.subscribe('leave',updateOnline);
         setTimeout(updateOnline,1000);
@@ -735,10 +876,18 @@ function tryConnect(idx){
 }
 function updateOnline(){
   if(channel&&channel.presence)channel.presence.get(function(err,m){
-    if(!err&&m){onlineEl.textContent=m.length;onlineChatEl.textContent=m.length;}
+    if(!err&&m){
+      onlineEl.textContent=m.length;
+      onlineChatEl.textContent=m.length;
+      fsOnlineEl.textContent=m.length;
+    }
   });
 }
 function sendMsg(){
+  if(chatMuted && !isAdmin){
+    addSys('🔇 چت توسط مدیر قطع شده');
+    return;
+  }
   const text=chatInput.value.trim();
   if(!text||!isChatReady||!channel)return;
   channel.publish('message',{username,text},function(err){
@@ -759,13 +908,46 @@ document.addEventListener('visibilitychange',function(){
   else if(!document.hidden&&bgMusic&&isMusicPlaying)bgMusic.play().catch(()=>{});
 });
 document.getElementById('flagModal').addEventListener('click',function(e){if(e.target===this)closeFlagSelector();});
+document.getElementById('adminPanel').addEventListener('click',function(e){if(e.target===this)closeAdminPanel();});
+document.getElementById('fullscreenChat').addEventListener('click',function(e){if(e.target===this)closeFullscreenChat();});
 window.addEventListener('load',function(){
   if(!checkSavedUsername()){
     document.getElementById('modalOverlay').style.display='flex';
-    setTimeout(()=>document.getElementById('usernameInput').focus(),100);
+    setTimeout(()=>document.getElementById('phoneInput').focus(),100);
   }
   document.getElementById('profilePopup').addEventListener('click',function(e){if(e.target===this)closeProfile();});
+  
+  // GSAP entrance animation if already logged in
+  if(document.getElementById('modalOverlay').style.display==='none'){
+    gsap.from('.topbar', {duration:0.5, y:-30, opacity:0, ease:'power3.out'});
+    gsap.from('.play-btn', {duration:0.5, scale:0.5, opacity:0, delay:0.2, ease:'back.out(2)'});
+    gsap.from('.bottom-area', {duration:0.4, y:20, opacity:0, delay:0.3, ease:'power3.out'});
+  }
 });
+
+// ===== ADMIN USER LIST =====
+setInterval(function(){
+  if(isAdmin && channel && channel.presence){
+    channel.presence.get(function(err,m){
+      if(!err && m){
+        const list=document.getElementById('adminUserList');
+        let html='<div style="font-size:9px;color:#4e6270;margin-bottom:6px;">👥 کاربران آنلاین ('+m.length+'):</div>';
+        m.forEach(p=>{
+          const name=p.data?.username||'ناشناس';
+          html+='<div class="admin-user"><span class="name">'+name+'</span><button class="del-btn" onclick="adminKickUser(\''+name+'\')">⛔ حذف</button></div>';
+        });
+        list.innerHTML=html;
+      }
+    });
+  }
+},5000);
+
+function adminKickUser(name){
+  if(!isAdmin)return;
+  if(confirm('آیا میخواهید کاربر '+name+' را از چت خارج کنید؟')){
+    addSys('⛔ کاربر '+name+' توسط مدیر اخراج شد');
+  }
+}
 </script>
 </body>
 </html>
