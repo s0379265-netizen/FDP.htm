@@ -25,7 +25,6 @@
     body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.72) 100%),linear-gradient(to bottom,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 62%,rgba(0,0,0,0.88) 100%);z-index:0;pointer-events:none;}
     body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.028) 3px,rgba(0,0,0,0.028) 4px);pointer-events:none;z-index:1;}
 
-    /* ============ TOP BAR ============ */
     .topbar{position:fixed;top:0;left:0;right:0;height:54px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:8px;background:rgba(4,8,16,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,180,0,0.18);}
     .topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,180,0,0.45) 25%,rgba(255,220,100,0.9) 50%,rgba(255,180,0,0.45) 75%,transparent);}
 
@@ -55,7 +54,6 @@
     .play-btn:hover{transform:translateX(-50%) scale(1.04) translateY(-2px);filter:drop-shadow(0 8px 28px rgba(255,180,0,0.45));}
     .play-btn:active{transform:translateX(-50%) scale(0.97);}
 
-    /* ============ BOTTOM AREA ============ */
     .bottom-area{position:fixed;bottom:0;left:0;right:0;z-index:14;display:flex;flex-direction:column;gap:0;}
 
     .bottom-toolbar{display:flex;align-items:center;gap:8px;padding:4px 10px 2px;background:rgba(4,8,16,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,180,0,0.08);}
@@ -99,6 +97,7 @@
     .fs-msg.sys{color:rgba(255,180,0,0.25);font-style:italic;font-size:12px;border-right-color:transparent;text-align:center;max-width:100%;background:transparent;}
     .fs-msg.blocked{color:#ff5555;border-right-color:#ff5555;background:rgba(255,50,50,0.05);}
     .fs-msg.kicked{color:#ff5555;border-right-color:#ff5555;background:rgba(255,50,50,0.08);font-weight:bold;}
+    .fs-msg.muted{color:#ff8800;border-right-color:#ff8800;background:rgba(255,136,0,0.05);}
     @keyframes slideMsg{from{transform:translateX(-15px);opacity:0;}to{transform:translateX(0);opacity:1;}}
     .fullscreen-chat .fs-input-row{display:flex;padding:12px 18px 18px;border-top:1px solid rgba(255,255,255,0.03);flex-shrink:0;gap:10px;background:rgba(0,0,0,0.2);}
     .fullscreen-chat .fs-input-row input{flex:1;padding:12px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,180,0,0.12);border-radius:10px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;direction:rtl;font-family:'Rajdhani',sans-serif;}
@@ -109,11 +108,10 @@
     .fullscreen-chat .fs-input-row button:hover{filter:brightness(1.15);transform:scale(1.02);box-shadow:0 4px 20px rgba(255,180,0,0.2);}
     .fullscreen-chat .fs-input-row button:disabled{opacity:0.3;cursor:not-allowed;filter:grayscale(0.5);}
     .fs-online-count{font-size:12px;color:#5dc44a;font-weight:600;display:flex;align-items:center;gap:6px;}
-    .fs-mute-banner{background:rgba(255,50,50,0.08);border:1px solid rgba(255,50,50,0.15);border-radius:8px;padding:6px 14px;color:#ff5555;font-size:11px;text-align:center;margin:4px 0;display:none;}
-    .fs-kick-banner{background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.25);border-radius:8px;padding:8px 16px;color:#ff5555;font-size:13px;text-align:center;margin:4px 0;display:none;font-weight:bold;}
+    .fs-status-banner{background:rgba(255,50,50,0.12);border:1px solid rgba(255,50,50,0.2);border-radius:8px;padding:8px 16px;color:#ff5555;font-size:13px;text-align:center;margin:4px 0;display:none;font-weight:bold;}
 
     /* ============ FRIENDS SECTION ============ */
-    .friend-section{position:fixed;top:54px;right:0;width:300px;height:calc(100% - 54px);background:rgba(4,8,16,0.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:18;display:none;flex-direction:column;border-left:1px solid rgba(255,180,0,0.08);animation:slideInRight 0.3s ease;}
+    .friend-section{position:fixed;top:54px;right:0;width:320px;height:calc(100% - 54px);background:rgba(4,8,16,0.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:18;display:none;flex-direction:column;border-left:1px solid rgba(255,180,0,0.08);animation:slideInRight 0.3s ease;}
     .friend-section.active{display:flex;}
     @keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
     .friend-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,180,0,0.08);flex-shrink:0;}
@@ -136,17 +134,27 @@
     .friend-item .f-status.offline{color:#4e6270;}
     .friend-item .f-status .dot{width:5px;height:5px;border-radius:50%;background:#5dc44a;display:inline-block;}
     .friend-item .f-status .dot.offline{background:#4e6270;}
-    .friend-item .f-actions{display:flex;gap:4px;}
-    .friend-item .f-actions button{background:transparent;border:none;color:#5a6e7f;cursor:pointer;padding:4px 6px;border-radius:4px;transition:0.2s;font-size:11px;}
+    .friend-item .f-actions{display:flex;gap:4px;flex-wrap:wrap;}
+    .friend-item .f-actions button{background:transparent;border:none;color:#5a6e7f;cursor:pointer;padding:4px 6px;border-radius:4px;transition:0.2s;font-size:10px;}
     .friend-item .f-actions button:hover{background:rgba(255,180,0,0.08);color:#ffb300;}
     .friend-item .f-actions .accept{color:#5dc44a;}
     .friend-item .f-actions .accept:hover{background:rgba(93,196,74,0.1);}
     .friend-item .f-actions .reject{color:#ff5555;}
     .friend-item .f-actions .reject:hover{background:rgba(255,50,50,0.1);}
     .friend-item .f-actions .block{color:#ff5555;}
-    .friend-item .f-actions .block:hover{background:rgba(255,50,50,0.1);}
+    .friend-item .f-actions .block:hover{background:rgba(255,50,50,0.15);}
     .friend-item .f-actions .kick{color:#ff8800;}
-    .friend-item .f-actions .kick:hover{background:rgba(255,136,0,0.1);}
+    .friend-item .f-actions .kick:hover{background:rgba(255,136,0,0.15);}
+    .friend-item .f-actions .mute{color:#ffaa00;}
+    .friend-item .f-actions .mute:hover{background:rgba(255,170,0,0.15);}
+    .friend-item .f-actions .unmute{color:#5dc44a;}
+    .friend-item .f-actions .unmute:hover{background:rgba(93,196,74,0.15);}
+
+    .status-badge{font-size:8px;padding:2px 8px;border-radius:10px;display:inline-block;}
+    .status-badge.active{background:rgba(93,196,74,0.15);color:#5dc44a;}
+    .status-badge.blocked{background:rgba(255,50,50,0.15);color:#ff5555;}
+    .status-badge.kicked{background:rgba(255,136,0,0.15);color:#ff8800;}
+    .status-badge.muted{background:rgba(255,170,0,0.15);color:#ffaa00;}
 
     /* ============ PRIVATE CHAT ============ */
     .private-chat{position:fixed;bottom:80px;right:20px;width:340px;max-height:460px;background:rgba(6,12,22,0.94);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,180,0,0.12);border-radius:12px;z-index:50;display:none;flex-direction:column;animation:fadeIn 0.25s ease;box-shadow:0 12px 48px rgba(0,0,0,0.6);}
@@ -282,18 +290,19 @@
     .admin-box h2{color:#ffb300;font-family:'Oswald',sans-serif;font-size:20px;letter-spacing:2px;text-align:center;margin-bottom:8px;}
     .admin-box .sub{color:rgba(255,255,255,0.3);font-size:11px;text-align:center;margin-bottom:20px;}
     .admin-box .admin-flag{text-align:center;font-size:42px;margin-bottom:10px;}
-    .admin-user{background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.1);border-radius:6px;padding:8px 14px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#cfd8e0;}
-    .admin-user .name{font-weight:600;color:#fff;}
-    .admin-user .del-btn{background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.2);color:#ff5555;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:10px;transition:0.2s;}
-    .admin-user .del-btn:hover{background:rgba(255,50,50,0.3);}
-    .admin-user .block-btn{background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.15);color:#ff5555;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:9px;transition:0.2s;}
-    .admin-user .block-btn:hover{background:rgba(255,50,50,0.25);}
-    .admin-user .kick-btn{background:rgba(255,136,0,0.1);border:1px solid rgba(255,136,0,0.15);color:#ff8800;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:9px;transition:0.2s;}
-    .admin-user .kick-btn:hover{background:rgba(255,136,0,0.25);}
-    .admin-user .status-badge{font-size:8px;padding:2px 8px;border-radius:10px;}
-    .admin-user .status-badge.active{background:rgba(93,196,74,0.15);color:#5dc44a;}
-    .admin-user .status-badge.blocked{background:rgba(255,50,50,0.15);color:#ff5555;}
-    .admin-user .status-badge.kicked{background:rgba(255,136,0,0.15);color:#ff8800;}
+    .admin-user{background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.1);border-radius:6px;padding:8px 14px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#cfd8e0;flex-wrap:wrap;gap:4px;}
+    .admin-user .name{font-weight:600;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .admin-user .actions{display:flex;gap:4px;flex-wrap:wrap;}
+    .admin-user .actions button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#5a6e7f;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:9px;transition:0.2s;}
+    .admin-user .actions button:hover{background:rgba(255,180,0,0.1);color:#ffb300;}
+    .admin-user .actions .block{color:#ff5555;border-color:rgba(255,50,50,0.15);}
+    .admin-user .actions .block:hover{background:rgba(255,50,50,0.15);}
+    .admin-user .actions .kick{color:#ff8800;border-color:rgba(255,136,0,0.15);}
+    .admin-user .actions .kick:hover{background:rgba(255,136,0,0.15);}
+    .admin-user .actions .mute{color:#ffaa00;border-color:rgba(255,170,0,0.15);}
+    .admin-user .actions .mute:hover{background:rgba(255,170,0,0.15);}
+    .admin-user .actions .delete{color:#ff5555;border-color:rgba(255,50,50,0.15);}
+    .admin-user .actions .delete:hover{background:rgba(255,50,50,0.15);}
     .admin-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
     .admin-actions button{flex:1;min-width:80px;padding:8px;background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.15);color:#ffb300;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;transition:0.2s;font-family:'Oswald',sans-serif;}
     .admin-actions button:hover{background:rgba(255,180,0,0.15);}
@@ -314,14 +323,28 @@
     .toast.show{display:block;}
     @keyframes toastAnim{from{transform:translateX(-50%) translateY(20px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
 
-    /* ============ BLOCKED OVERLAY ============ */
-    .blocked-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(30px);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
-    .blocked-overlay.active{display:flex;}
-    .blocked-overlay .icon{font-size:64px;color:#ff5555;}
-    .blocked-overlay .title{font-size:24px;color:#ff5555;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:2px;}
-    .blocked-overlay .sub{font-size:14px;color:rgba(255,255,255,0.4);text-align:center;max-width:400px;line-height:1.6;}
-    .blocked-overlay .btn-retry{padding:10px 30px;background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.2);color:#ff5555;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:0.3s;font-family:'Oswald',sans-serif;}
-    .blocked-overlay .btn-retry:hover{background:rgba(255,50,50,0.25);}
+    /* ============ BLOCKED/KICKED OVERLAY ============ */
+    .mod-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(30px);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:20px;}
+    .mod-overlay.active{display:flex;}
+    .mod-overlay .icon{font-size:64px;}
+    .mod-overlay .title{font-size:24px;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:2px;}
+    .mod-overlay .sub{font-size:14px;color:rgba(255,255,255,0.4);text-align:center;max-width:400px;line-height:1.6;}
+    .mod-overlay .btn-retry{padding:10px 30px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#8899aa;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:0.3s;font-family:'Oswald',sans-serif;}
+    .mod-overlay .btn-retry:hover{background:rgba(255,255,255,0.06);}
+    .mod-overlay.blocked .icon{color:#ff5555;}
+    .mod-overlay.blocked .title{color:#ff5555;}
+    .mod-overlay.kicked .icon{color:#ff8800;}
+    .mod-overlay.kicked .title{color:#ff8800;}
+
+    .log-console{position:fixed;bottom:0;left:0;right:0;height:80px;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);border-top:1px solid rgba(255,180,0,0.1);z-index:100;overflow:hidden;display:none;padding:4px 10px;}
+    .log-console.active{display:block;}
+    .log-console .log-header{display:flex;justify-content:space-between;font-size:8px;color:#4e6270;padding:2px 0;}
+    .log-console .log-body{overflow-y:auto;height:60px;font-family:'Rajdhani',monospace;font-size:10px;color:#5dc44a;line-height:1.6;}
+    .log-console .log-body .log-entry{opacity:0.8;}
+    .log-console .log-body .log-entry.error{color:#ff5555;}
+    .log-console .log-body .log-entry.warn{color:#ffaa00;}
+    .log-console .log-body .log-entry.info{color:#5dc44a;}
+    .log-console .log-body .log-entry.admin{color:#ffb300;}
 
     @media(max-width:500px){
       .topbar{height:48px;padding:0 7px;}
@@ -340,6 +363,8 @@
       .profile-panel{max-width:98%;}
       .bottom-toolbar .tool-btn{padding:4px 8px;font-size:8px;}
       .bottom-toolbar .tool-btn i{font-size:10px;}
+      .admin-user{flex-direction:column;align-items:flex-start;}
+      .admin-user .actions{margin-top:4px;}
     }
     @media(orientation:landscape){
       .topbar{height:44px;}
@@ -364,16 +389,15 @@
 </head>
 <body>
 
-<!-- BLOCKED OVERLAY -->
-<div class="blocked-overlay" id="blockedOverlay">
+<!-- MOD OVERLAYS -->
+<div class="mod-overlay blocked" id="blockedOverlay">
   <div class="icon">🚫</div>
   <div class="title">شما مسدود شدید</div>
   <div class="sub">توسط مدیر بازی مسدود شده‌اید و نمی‌توانید به چت دسترسی داشته باشید.</div>
   <button class="btn-retry" onclick="location.reload()">🔄 تلاش مجدد</button>
 </div>
 
-<!-- KICKED OVERLAY -->
-<div class="blocked-overlay" id="kickedOverlay" style="display:none;">
+<div class="mod-overlay kicked" id="kickedOverlay" style="display:none;">
   <div class="icon">👢</div>
   <div class="title">شما اخراج شدید</div>
   <div class="sub">توسط مدیر بازی از چت اخراج شده‌اید.</div>
@@ -382,6 +406,15 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- LOG CONSOLE -->
+<div class="log-console" id="logConsole">
+  <div class="log-header">
+    <span>📋 CONSOLE LOG</span>
+    <span id="logTime"></span>
+  </div>
+  <div class="log-body" id="logBody"></div>
+</div>
 
 <!-- MODAL ورود -->
 <div class="modal-overlay" id="modalOverlay">
@@ -503,6 +536,7 @@
       <button class="danger" onclick="adminClearChat()">🗑 پاک کردن چت</button>
       <button class="danger" onclick="adminMuteAll()">🔇 قطع چت همه</button>
       <button onclick="adminUnmuteAll()">🔊 فعال‌سازی چت</button>
+      <button onclick="toggleLogConsole()">📋 نمایش لاگ</button>
     </div>
     <div style="margin-top:10px;font-size:10px;color:#5a6e7f;text-align:center;">
       وضعیت چت: <span id="adminStatus" class="admin-status-badge active">● فعال</span>
@@ -522,8 +556,7 @@
       <button class="fs-close" onclick="closeFullscreenChat()"><i class="fas fa-times"></i></button>
     </div>
   </div>
-  <div id="fsMuteBanner" class="fs-mute-banner">🔇 چت توسط مدیر قطع شده است</div>
-  <div id="fsKickBanner" class="fs-kick-banner">⛔ شما از چت اخراج شده‌اید</div>
+  <div id="fsStatusBanner" class="fs-status-banner"></div>
   <div class="fs-msgs" id="fsMsgs"></div>
   <div class="fs-input-row">
     <input id="fsChatInput" type="text" placeholder="پیام بنویس ..." maxlength="200" dir="rtl">
@@ -645,10 +678,64 @@
 </div>
 
 <script>
-// ===== CONFIG =====
+// ============================================================
+// ======================== LOGGING SYSTEM ====================
+// ============================================================
+const LOG = {
+  entries: [],
+  maxEntries: 100,
+  
+  log(type, message, data) {
+    const entry = {
+      time: new Date().toLocaleTimeString(),
+      type: type || 'info', // info, warn, error, admin
+      message: message,
+      data: data || null
+    };
+    this.entries.push(entry);
+    if (this.entries.length > this.maxEntries) {
+      this.entries.shift();
+    }
+    this.render();
+    console.log(`[${entry.time}] [${entry.type.toUpperCase()}] ${message}`, data || '');
+  },
+  
+  info(msg, data) { this.log('info', msg, data); },
+  warn(msg, data) { this.log('warn', msg, data); },
+  error(msg, data) { this.log('error', msg, data); },
+  admin(msg, data) { this.log('admin', msg, data); },
+  
+  render() {
+    const body = document.getElementById('logBody');
+    if (!body) return;
+    body.innerHTML = this.entries.map(e => 
+      `<div class="log-entry ${e.type}">[${e.time}] ${e.message}</div>`
+    ).join('');
+    body.scrollTop = body.scrollHeight;
+    document.getElementById('logTime').textContent = new Date().toLocaleString();
+  },
+  
+  toggle() {
+    const el = document.getElementById('logConsole');
+    el.classList.toggle('active');
+    if (el.classList.contains('active')) {
+      this.render();
+    }
+  }
+};
+
+function toggleLogConsole() {
+  LOG.toggle();
+}
+
+// ============================================================
+// ======================== CONFIG ============================
+// ============================================================
 const ADMIN_PHONE = '09373467527';
 
-// ===== STATE =====
+// ============================================================
+// ======================== STATE ============================
+// ============================================================
 let playerName = '', playerPhone = '', playerLevel = 2, playerId = '';
 let isAdmin = false;
 let friends = [];
@@ -656,169 +743,494 @@ let friendRequests = [];
 let onlineUsers = {};
 let privateChatTarget = null;
 let privateMessages = {};
-let blockedUsers = [];
-let kickedUsers = [];
-let isUserBlocked = false;
-let isUserKicked = false;
 
-// ===== TOAST =====
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  clearTimeout(t._timeout);
-  t._timeout=setTimeout(()=>t.classList.remove('show'),3000);
+// ===== MODERATION STATE =====
+// اینجا لیست کاربران مسدود، اخراج و میوت شده نگهداری میشه
+// این داده‌ها باید در localStorage یا دیتابیس ذخیره بشن
+let moderationData = {
+  blocked: [],    // لیست نام کاربران مسدود شده
+  kicked: [],     // لیست نام کاربران اخراج شده
+  muted: [],      // لیست نام کاربران میوت شده
+  banned: []      // لیست نام کاربران بن شده (با مدت زمان)
+};
+
+// ============================================================
+// ======================== MODERATION CHECKS ================
+// ============================================================
+function isUserBlocked(username) {
+  return moderationData.blocked.includes(username);
 }
 
-// ===== SET USERNAME =====
-function setUsername(){
-  const phoneInput=document.getElementById('phoneInput');
-  const nameInput=document.getElementById('usernameInput');
-  const phone=phoneInput.value.trim();
-  const name=nameInput.value.trim();
-  if(phone.length<10){phoneInput.style.borderColor='#ff4444';phoneInput.placeholder='شماره معتبر وارد کن';return;}
-  if(name.length<2){nameInput.style.borderColor='#ff4444';nameInput.placeholder='حداقل 2 کاراکتر';return;}
-  playerPhone=phone;
-  playerName=name;
+function isUserKicked(username) {
+  return moderationData.kicked.includes(username);
+}
+
+function isUserMuted(username) {
+  return moderationData.muted.includes(username);
+}
+
+function isUserBanned(username) {
+  return moderationData.banned.some(b => b.username === username);
+}
+
+function canUserChat(username) {
+  // بررسی کامل قبل از اجازه چت
+  if (isUserBlocked(username)) {
+    LOG.warn(`🚫 ${username} مسدود است و نمیتواند چت کند`);
+    return false;
+  }
+  if (isUserKicked(username)) {
+    LOG.warn(`👢 ${username} اخراج شده و نمیتواند چت کند`);
+    return false;
+  }
+  if (isUserMuted(username)) {
+    LOG.warn(`🔇 ${username} میوت شده و نمیتواند چت کند`);
+    return false;
+  }
+  if (isUserBanned(username)) {
+    LOG.warn(`⛔ ${username} بن شده و نمیتواند چت کند`);
+    return false;
+  }
+  return true;
+}
+
+// ============================================================
+// ======================== MODERATION ACTIONS ===============
+// ============================================================
+function adminBlockUser(username) {
+  if (!isAdmin) {
+    LOG.error('❌ فقط مدیر میتواند مسدود کند');
+    return;
+  }
+  if (username === playerName) {
+    LOG.warn('⚠️ مدیر نمیتواند خودش را مسدود کند');
+    showToast('❌ نمیتوانید خودتان را مسدود کنید!');
+    return;
+  }
+  
+  LOG.admin(`🛡️ مدیر ${playerName} در حال مسدود کردن ${username}...`);
+  
+  // اضافه به لیست مسدودها
+  if (!moderationData.blocked.includes(username)) {
+    moderationData.blocked.push(username);
+    LOG.info(`✅ ${username} به لیست مسدودها اضافه شد`);
+  }
+  
+  // ذخیره در localStorage
+  saveModerationData();
+  
+  // ارسال پیام سیستمی
+  addSys(`🚫 کاربر ${username} توسط مدیر مسدود شد`);
+  showToast(`🚫 ${username} مسدود شد`);
+  
+  // بروزرسانی UI
+  renderFriends();
+  updateAdminUserList();
+  
+  // اگر کاربر مسدود شده خودش باشد
+  if (username === playerName) {
+    LOG.warn(`⚠️ کاربر ${username} خودش را مسدود کرد!`);
+    showBlockedOverlay();
+  }
+  
+  // بروزرسانی وضعیت چت برای کاربر مسدود شده
+  updateChatStatus();
+}
+
+function adminKickUser(username) {
+  if (!isAdmin) {
+    LOG.error('❌ فقط مدیر میتواند اخراج کند');
+    return;
+  }
+  if (username === playerName) {
+    LOG.warn('⚠️ مدیر نمیتواند خودش را اخراج کند');
+    showToast('❌ نمیتوانید خودتان را اخراج کنید!');
+    return;
+  }
+  
+  LOG.admin(`🛡️ مدیر ${playerName} در حال اخراج ${username}...`);
+  
+  // اضافه به لیست اخراج‌ها
+  if (!moderationData.kicked.includes(username)) {
+    moderationData.kicked.push(username);
+    LOG.info(`✅ ${username} به لیست اخراج‌ها اضافه شد`);
+  }
+  
+  // ذخیره در localStorage
+  saveModerationData();
+  
+  // ارسال پیام سیستمی
+  addSys(`👢 کاربر ${username} توسط مدیر اخراج شد`);
+  showToast(`👢 ${username} اخراج شد`);
+  
+  // بروزرسانی UI
+  renderFriends();
+  updateAdminUserList();
+  
+  // اگر کاربر اخراج شده خودش باشد
+  if (username === playerName) {
+    LOG.warn(`⚠️ کاربر ${username} خودش را اخراج کرد!`);
+    showKickedOverlay();
+  }
+  
+  updateChatStatus();
+}
+
+function adminMuteUser(username) {
+  if (!isAdmin) {
+    LOG.error('❌ فقط مدیر میتواند میوت کند');
+    return;
+  }
+  if (username === playerName) {
+    showToast('❌ نمیتوانید خودتان را میوت کنید!');
+    return;
+  }
+  
+  LOG.admin(`🛡️ مدیر ${playerName} در حال میوت کردن ${username}...`);
+  
+  if (!moderationData.muted.includes(username)) {
+    moderationData.muted.push(username);
+    LOG.info(`✅ ${username} به لیست میوت‌ها اضافه شد`);
+  }
+  
+  saveModerationData();
+  addSys(`🔇 کاربر ${username} توسط مدیر میوت شد`);
+  showToast(`🔇 ${username} میوت شد`);
+  
+  renderFriends();
+  updateAdminUserList();
+  updateChatStatus();
+}
+
+function adminUnmuteUser(username) {
+  if (!isAdmin) return;
+  
+  const idx = moderationData.muted.indexOf(username);
+  if (idx > -1) {
+    moderationData.muted.splice(idx, 1);
+    LOG.info(`🔊 ${username} از لیست میوت‌ها حذف شد`);
+  }
+  
+  saveModerationData();
+  addSys(`🔊 کاربر ${username} توسط مدیر آنمیت شد`);
+  showToast(`🔊 ${username} آنمیت شد`);
+  
+  renderFriends();
+  updateAdminUserList();
+  updateChatStatus();
+}
+
+function adminClearChat() {
+  if (!isAdmin) return;
+  LOG.admin('🗑️ مدیر چت را پاک کرد');
+  document.getElementById('fsMsgs').innerHTML = '';
+  if (window._chatHistory) window._chatHistory = [];
+  showToast('🗑 چت پاک شد');
+  addSys('🗑 چت توسط مدیر پاک شد');
+}
+
+function adminMuteAll() {
+  if (!isAdmin) return;
+  window.chatMuted = true;
+  document.getElementById('adminStatus').className = 'admin-status-badge muted';
+  document.getElementById('adminStatus').textContent = '● قطع شده';
+  LOG.admin('🔇 مدیر چت همه را قطع کرد');
+  showToast('🔇 چت برای همه کاربران قطع شد');
+  addSys('🔇 چت توسط مدیر قطع شد');
+  updateChatStatus();
+}
+
+function adminUnmuteAll() {
+  if (!isAdmin) return;
+  window.chatMuted = false;
+  document.getElementById('adminStatus').className = 'admin-status-badge active';
+  document.getElementById('adminStatus').textContent = '● فعال';
+  LOG.admin('🔊 مدیر چت همه را فعال کرد');
+  showToast('🔊 چت برای همه کاربران فعال شد');
+  addSys('🔊 چت توسط مدیر فعال شد');
+  updateChatStatus();
+}
+
+// ============================================================
+// ======================== SAVE/LOAD MODERATION DATA =======
+// ============================================================
+function saveModerationData() {
+  try {
+    localStorage.setItem('cod_moderation_' + playerPhone, JSON.stringify(moderationData));
+    LOG.info('💾 داده‌های مدیریت ذخیره شد');
+  } catch(e) {
+    LOG.error('❌ خطا در ذخیره داده‌های مدیریت', e);
+  }
+}
+
+function loadModerationData() {
+  try {
+    const data = localStorage.getItem('cod_moderation_' + playerPhone);
+    if (data) {
+      const parsed = JSON.parse(data);
+      moderationData = {
+        blocked: parsed.blocked || [],
+        kicked: parsed.kicked || [],
+        muted: parsed.muted || [],
+        banned: parsed.banned || []
+      };
+      LOG.info('📂 داده‌های مدیریت بارگذاری شد', moderationData);
+    }
+  } catch(e) {
+    LOG.error('❌ خطا در بارگذاری داده‌های مدیریت', e);
+  }
+}
+
+// ============================================================
+// ======================== CHAT STATUS ======================
+// ============================================================
+function updateChatStatus() {
+  const banner = document.getElementById('fsStatusBanner');
+  const sendBtn = document.getElementById('fsSendBtn');
+  const input = document.getElementById('fsChatInput');
+  
+  // بررسی وضعیت کاربر
+  if (isUserBlocked(playerName)) {
+    banner.textContent = '🚫 شما توسط مدیر مسدود شده‌اید!';
+    banner.style.display = 'block';
+    banner.style.borderColor = '#ff5555';
+    banner.style.color = '#ff5555';
+    sendBtn.disabled = true;
+    input.disabled = true;
+    input.placeholder = '🚫 شما مسدود شده‌اید ...';
+    showBlockedOverlay();
+    return;
+  }
+  
+  if (isUserKicked(playerName)) {
+    banner.textContent = '👢 شما توسط مدیر اخراج شده‌اید!';
+    banner.style.display = 'block';
+    banner.style.borderColor = '#ff8800';
+    banner.style.color = '#ff8800';
+    sendBtn.disabled = true;
+    input.disabled = true;
+    input.placeholder = '👢 شما اخراج شده‌اید ...';
+    showKickedOverlay();
+    return;
+  }
+  
+  if (isUserMuted(playerName)) {
+    banner.textContent = '🔇 شما توسط مدیر میوت شده‌اید!';
+    banner.style.display = 'block';
+    banner.style.borderColor = '#ffaa00';
+    banner.style.color = '#ffaa00';
+    sendBtn.disabled = true;
+    input.disabled = true;
+    input.placeholder = '🔇 شما میوت شده‌اید ...';
+    return;
+  }
+  
+  // بررسی قطع چت عمومی
+  if (window.chatMuted && !isAdmin) {
+    banner.textContent = '🔇 چت توسط مدیر قطع شده است';
+    banner.style.display = 'block';
+    banner.style.borderColor = '#ff5555';
+    banner.style.color = '#ff5555';
+    sendBtn.disabled = true;
+    input.disabled = true;
+    input.placeholder = '🔇 چت قطع شده ...';
+    return;
+  }
+  
+  // حالت عادی
+  banner.style.display = 'none';
+  sendBtn.disabled = false;
+  input.disabled = false;
+  input.placeholder = 'پیام بنویس ...';
+}
+
+function showBlockedOverlay() {
+  document.getElementById('blockedOverlay').classList.add('active');
+  document.getElementById('fullscreenChat').classList.remove('active');
+  LOG.warn('🚫 صفحه مسدود شدن نمایش داده شد');
+}
+
+function showKickedOverlay() {
+  document.getElementById('kickedOverlay').style.display = 'flex';
+  document.getElementById('kickedOverlay').classList.add('active');
+  document.getElementById('fullscreenChat').classList.remove('active');
+  LOG.warn('👢 صفحه اخراج نمایش داده شد');
+}
+
+// ============================================================
+// ======================== SET USERNAME =====================
+// ============================================================
+function setUsername() {
+  const phoneInput = document.getElementById('phoneInput');
+  const nameInput = document.getElementById('usernameInput');
+  const phone = phoneInput.value.trim();
+  const name = nameInput.value.trim();
+  
+  if (phone.length < 10) {
+    phoneInput.style.borderColor = '#ff4444';
+    phoneInput.placeholder = 'شماره معتبر وارد کن';
+    return;
+  }
+  if (name.length < 2) {
+    nameInput.style.borderColor = '#ff4444';
+    nameInput.placeholder = 'حداقل 2 کاراکتر';
+    return;
+  }
+  
+  playerPhone = phone;
+  playerName = name;
   playerId = 'COD' + String(Math.floor(10000 + Math.random() * 90000));
   isAdmin = (phone === ADMIN_PHONE);
   
-  document.getElementById('displayNameText').textContent=playerName;
-  document.getElementById('displayLevel').textContent='LV '+playerLevel;
-  document.getElementById('modalOverlay').style.display='none';
-  username=playerName;
+  LOG.info(`👤 کاربر ${playerName} با شماره ${playerPhone} وارد شد`, {isAdmin});
   
-  if(isAdmin){
-    document.getElementById('adminBadgeTop').style.display='inline';
-    document.getElementById('adminNameDisplay').textContent=playerPhone;
-    document.getElementById('adminToolBtn').style.display='flex';
-    setTimeout(()=>{
+  document.getElementById('displayNameText').textContent = playerName;
+  document.getElementById('displayLevel').textContent = 'LV ' + playerLevel;
+  document.getElementById('modalOverlay').style.display = 'none';
+  username = playerName;
+  
+  if (isAdmin) {
+    document.getElementById('adminBadgeTop').style.display = 'inline';
+    document.getElementById('adminNameDisplay').textContent = playerPhone;
+    document.getElementById('adminToolBtn').style.display = 'flex';
+    LOG.admin('👑 مدیر وارد شد');
+    setTimeout(() => {
       document.getElementById('adminPanel').classList.add('active');
-    },500);
+    }, 500);
   }
   
-  localStorage.setItem('cod_player_name',playerName);
-  localStorage.setItem('cod_player_phone',playerPhone);
-  localStorage.setItem('cod_player_id',playerId);
-  localStorage.setItem('cod_is_admin',isAdmin?'true':'false');
+  localStorage.setItem('cod_player_name', playerName);
+  localStorage.setItem('cod_player_phone', playerPhone);
+  localStorage.setItem('cod_player_id', playerId);
+  localStorage.setItem('cod_is_admin', isAdmin ? 'true' : 'false');
   
   loadFriendsData();
+  loadModerationData();
   initChat();
   updateProfileUI();
+  updateChatStatus();
   
-  gsap.from('.topbar', {duration:0.6, y:-40, opacity:0, ease:'power3.out'});
-  gsap.from('.logo', {duration:0.6, scale:0.8, opacity:0, delay:0.2, ease:'back.out(1.7)'});
-  gsap.from('.play-btn', {duration:0.5, scale:0.5, opacity:0, delay:0.3, ease:'back.out(2)'});
-  gsap.from('.bottom-area', {duration:0.5, y:30, opacity:0, delay:0.4, ease:'power3.out'});
+  gsap.from('.topbar', {duration: 0.6, y: -40, opacity: 0, ease: 'power3.out'});
+  gsap.from('.logo', {duration: 0.6, scale: 0.8, opacity: 0, delay: 0.2, ease: 'back.out(1.7)'});
+  gsap.from('.play-btn', {duration: 0.5, scale: 0.5, opacity: 0, delay: 0.3, ease: 'back.out(2)'});
+  gsap.from('.bottom-area', {duration: 0.5, y: 30, opacity: 0, delay: 0.4, ease: 'power3.out'});
 }
 
-function checkSavedUsername(){
-  const saved=localStorage.getItem('cod_player_name');
-  const savedPhone=localStorage.getItem('cod_player_phone');
-  const savedId=localStorage.getItem('cod_player_id');
-  if(saved&&saved.length>=2){
-    playerName=saved;
-    playerPhone=savedPhone||'0937...';
-    playerId=savedId||'COD' + String(Math.floor(10000 + Math.random() * 90000));
-    isAdmin=localStorage.getItem('cod_is_admin')==='true' || playerPhone===ADMIN_PHONE;
-    document.getElementById('displayNameText').textContent=playerName;
-    document.getElementById('displayLevel').textContent='LV '+playerLevel;
-    document.getElementById('modalOverlay').style.display='none';
-    username=playerName;
-    if(isAdmin){
-      document.getElementById('adminBadgeTop').style.display='inline';
-      document.getElementById('adminNameDisplay').textContent=playerPhone;
-      document.getElementById('adminToolBtn').style.display='flex';
+function checkSavedUsername() {
+  const saved = localStorage.getItem('cod_player_name');
+  const savedPhone = localStorage.getItem('cod_player_phone');
+  const savedId = localStorage.getItem('cod_player_id');
+  
+  if (saved && saved.length >= 2) {
+    playerName = saved;
+    playerPhone = savedPhone || '0937...';
+    playerId = savedId || 'COD' + String(Math.floor(10000 + Math.random() * 90000));
+    isAdmin = localStorage.getItem('cod_is_admin') === 'true' || playerPhone === ADMIN_PHONE;
+    
+    document.getElementById('displayNameText').textContent = playerName;
+    document.getElementById('displayLevel').textContent = 'LV ' + playerLevel;
+    document.getElementById('modalOverlay').style.display = 'none';
+    username = playerName;
+    
+    if (isAdmin) {
+      document.getElementById('adminBadgeTop').style.display = 'inline';
+      document.getElementById('adminNameDisplay').textContent = playerPhone;
+      document.getElementById('adminToolBtn').style.display = 'flex';
     }
+    
     loadFriendsData();
-    setTimeout(initChat,500);
+    loadModerationData();
+    setTimeout(initChat, 500);
     updateProfileUI();
+    updateChatStatus();
     return true;
   }
   return false;
 }
 
-// ===== COPY ID =====
-function copyId(){
+// ============================================================
+// ======================== COPY ID ==========================
+// ============================================================
+function copyId() {
   const id = document.getElementById('profileIdDisplay').textContent;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(id).then(()=>{
-      showToast('✅ ID کپی شد: '+id);
-    }).catch(()=>{
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(id).then(() => {
+      showToast('✅ ID کپی شد: ' + id);
+    }).catch(() => {
       fallbackCopy(id);
     });
-  }else{
+  } else {
     fallbackCopy(id);
   }
 }
 
-function fallbackCopy(text){
-  const ta=document.createElement('textarea');
-  ta.value=text;
-  ta.style.position='fixed';ta.style.opacity='0';
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
   document.body.appendChild(ta);
   ta.select();
-  try{
+  try {
     document.execCommand('copy');
-    showToast('✅ ID کپی شد: '+text);
-  }catch(e){
+    showToast('✅ ID کپی شد: ' + text);
+  } catch (e) {
     showToast('❌ کپی نشد، لطفاً دستی کپی کنید');
   }
   document.body.removeChild(ta);
 }
 
-// ===== FRIENDS =====
-function loadFriendsData(){
-  try{
-    const f = localStorage.getItem('cod_friends_'+playerPhone);
-    if(f) friends = JSON.parse(f);
-    const r = localStorage.getItem('cod_friend_requests_'+playerPhone);
-    if(r) friendRequests = JSON.parse(r);
-    const b = localStorage.getItem('cod_blocked_'+playerPhone);
-    if(b) blockedUsers = JSON.parse(b);
+// ============================================================
+// ======================== FRIENDS ==========================
+// ============================================================
+function loadFriendsData() {
+  try {
+    const f = localStorage.getItem('cod_friends_' + playerPhone);
+    if (f) friends = JSON.parse(f);
+    const r = localStorage.getItem('cod_friend_requests_' + playerPhone);
+    if (r) friendRequests = JSON.parse(r);
     updateFriendBadge();
-  }catch(e){}
+  } catch (e) {}
 }
 
-function saveFriendsData(){
-  localStorage.setItem('cod_friends_'+playerPhone, JSON.stringify(friends));
-  localStorage.setItem('cod_friend_requests_'+playerPhone, JSON.stringify(friendRequests));
-  localStorage.setItem('cod_blocked_'+playerPhone, JSON.stringify(blockedUsers));
+function saveFriendsData() {
+  localStorage.setItem('cod_friends_' + playerPhone, JSON.stringify(friends));
+  localStorage.setItem('cod_friend_requests_' + playerPhone, JSON.stringify(friendRequests));
   updateFriendBadge();
 }
 
-function updateFriendBadge(){
+function updateFriendBadge() {
   const pending = friendRequests.filter(r => r.to === playerName);
   const count = pending.length;
   const badge = document.getElementById('friendBadge');
   const badgeTool = document.getElementById('friendBadgeTool');
-  if(count>0){
-    badge.style.display='inline';
-    badge.textContent=count;
-    badgeTool.style.display='inline';
-    badgeTool.textContent=count;
-  }else{
-    badge.style.display='none';
-    badgeTool.style.display='none';
+  if (count > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = count;
+    badgeTool.style.display = 'inline';
+    badgeTool.textContent = count;
+  } else {
+    badge.style.display = 'none';
+    badgeTool.style.display = 'none';
   }
 }
 
-function toggleFriends(){
+function toggleFriends() {
   const section = document.getElementById('friendSection');
-  if(section.classList.contains('active')){
+  if (section.classList.contains('active')) {
     section.classList.remove('active');
-  }else{
+  } else {
     section.classList.add('active');
     renderFriends();
-    gsap.from('.friend-section', {duration:0.3, x:30, opacity:0, ease:'power3.out'});
+    gsap.from('.friend-section', {duration: 0.3, x: 30, opacity: 0, ease: 'power3.out'});
   }
 }
 
-function closeFriends(){
+function closeFriends() {
   document.getElementById('friendSection').classList.remove('active');
 }
 
-function renderFriends(){
+function renderFriends() {
   const list = document.getElementById('friendList');
   const search = document.getElementById('friendSearch').value.toLowerCase().trim();
   
@@ -826,7 +1238,7 @@ function renderFriends(){
   
   // درخواست‌های دوستی
   const pending = friendRequests.filter(r => r.to === playerName);
-  if(pending.length > 0){
+  if (pending.length > 0) {
     html += '<div style="padding:6px 16px;font-size:9px;color:#ffb300;letter-spacing:1px;font-weight:600;">📩 درخواست‌های دوستی</div>';
     pending.forEach(req => {
       html += `
@@ -847,7 +1259,7 @@ function renderFriends(){
   
   // لیست دوستان
   let friendsList = friends;
-  if(search){
+  if (search) {
     friendsList = friends.filter(f => 
       f.name.toLowerCase().includes(search) || 
       (f.id && f.id.toLowerCase().includes(search))
@@ -862,29 +1274,41 @@ function renderFriends(){
     !friends.find(f => f.name === u) &&
     !friendRequests.find(r => r.from === u && r.to === playerName) &&
     !friendRequests.find(r => r.from === playerName && r.to === u) &&
-    !blockedUsers.includes(u)
+    !isUserBlocked(u) &&
+    !isUserKicked(u)
   );
   
-  if(friendsList.length > 0 || pending.length > 0){
-    if(pending.length > 0) html += '<div style="padding:6px 16px;font-size:9px;color:#4e6270;letter-spacing:1px;font-weight:600;margin-top:4px;">👥 دوستان</div>';
+  if (friendsList.length > 0 || pending.length > 0) {
+    if (pending.length > 0) html += '<div style="padding:6px 16px;font-size:9px;color:#4e6270;letter-spacing:1px;font-weight:600;margin-top:4px;">👥 دوستان</div>';
     friendsList.forEach(f => {
       const isOnline = onlineUsers[f.name] === 'online';
-      const isBlocked = blockedUsers.includes(f.name);
+      const isBlocked = isUserBlocked(f.name);
+      const isKicked = isUserKicked(f.name);
+      const isMuted = isUserMuted(f.name);
+      
+      let statusText = isOnline ? 'آنلاین' : 'آفلاین';
+      let statusClass = isOnline ? '' : 'offline';
+      let extraBadges = '';
+      if (isBlocked) { statusText = '🚫 مسدود'; statusClass = 'offline'; }
+      else if (isKicked) { statusText = '👢 اخراج'; statusClass = 'offline'; }
+      else if (isMuted) { statusText = '🔇 میوت'; statusClass = 'offline'; }
+      
       html += `
         <div class="friend-item" onclick="openPrivateChat('${f.name}')">
           <div class="f-avatar">${f.name.charAt(0).toUpperCase()}</div>
           <div class="f-info">
-            <div class="f-name">${f.name} ${isBlocked ? '🚫' : ''}</div>
-            <div class="f-status ${isOnline?'':'offline'}">
-              <span class="dot ${isOnline?'':'offline'}"></span>
-              ${isOnline ? 'آنلاین' : 'آفلاین'}
+            <div class="f-name">${f.name}</div>
+            <div class="f-status ${statusClass}">
+              <span class="dot ${statusClass}"></span>
+              ${statusText}
             </div>
           </div>
           <div class="f-actions">
-            <button onclick="event.stopPropagation();openPrivateChat('${f.name}')"><i class="fas fa-comment"></i></button>
+            ${!isBlocked && !isKicked ? `<button onclick="event.stopPropagation();openPrivateChat('${f.name}')"><i class="fas fa-comment"></i></button>` : ''}
             ${isAdmin ? `
-              <button class="block" onclick="event.stopPropagation();adminBlockUser('${f.name}')"><i class="fas fa-ban"></i></button>
-              <button class="kick" onclick="event.stopPropagation();adminKickUser('${f.name}')"><i class="fas fa-boot"></i></button>
+              ${!isBlocked ? `<button class="block" onclick="event.stopPropagation();adminBlockUser('${f.name}')"><i class="fas fa-ban"></i></button>` : ''}
+              ${!isKicked ? `<button class="kick" onclick="event.stopPropagation();adminKickUser('${f.name}')"><i class="fas fa-boot"></i></button>` : ''}
+              ${isMuted ? `<button class="unmute" onclick="event.stopPropagation();adminUnmuteUser('${f.name}')"><i class="fas fa-volume-up"></i></button>` : `<button class="mute" onclick="event.stopPropagation();adminMuteUser('${f.name}')"><i class="fas fa-volume-off"></i></button>`}
             ` : ''}
             <button onclick="event.stopPropagation();removeFriend('${f.name}')" style="color:#ff5555;"><i class="fas fa-user-minus"></i></button>
           </div>
@@ -894,7 +1318,7 @@ function renderFriends(){
   }
   
   // کاربران آنلاین برای درخواست دوستی
-  if(searchUsers.length > 0 && search){
+  if (searchUsers.length > 0 && search) {
     html += '<div style="padding:6px 16px;font-size:9px;color:#4e6270;letter-spacing:1px;font-weight:600;margin-top:4px;">🔍 کاربران آنلاین</div>';
     searchUsers.forEach(u => {
       html += `
@@ -909,6 +1333,7 @@ function renderFriends(){
             ${isAdmin ? `
               <button class="block" onclick="adminBlockUser('${u}')"><i class="fas fa-ban"></i></button>
               <button class="kick" onclick="adminKickUser('${u}')"><i class="fas fa-boot"></i></button>
+              <button class="mute" onclick="adminMuteUser('${u}')"><i class="fas fa-volume-off"></i></button>
             ` : ''}
           </div>
         </div>
@@ -916,7 +1341,7 @@ function renderFriends(){
     });
   }
   
-  if(!html){
+  if (!html) {
     html = `
       <div style="padding:30px 20px;text-align:center;color:#4e6270;font-size:12px;">
         <i class="fas fa-user-plus" style="font-size:28px;display:block;margin-bottom:10px;color:#ffb300;opacity:0.5;"></i>
@@ -929,77 +1354,79 @@ function renderFriends(){
   list.innerHTML = html;
 }
 
-// ===== SEND FRIEND REQUEST =====
-function sendFriendRequest(username){
-  if(username === playerName){
+function sendFriendRequest(username) {
+  if (username === playerName) {
     showToast('❌ نمیتوانید به خودتان درخواست بدهید!');
     return;
   }
-  if(friends.find(f => f.name === username)){
+  if (friends.find(f => f.name === username)) {
     showToast('⚠️ این کاربر قبلاً دوست شماست!');
     return;
   }
-  if(friendRequests.find(r => r.from === username && r.to === playerName)){
+  if (friendRequests.find(r => r.from === username && r.to === playerName)) {
     showToast('📩 درخواست دوستی از این کاربر دارید!');
     return;
   }
-  if(friendRequests.find(r => r.from === playerName && r.to === username)){
+  if (friendRequests.find(r => r.from === playerName && r.to === username)) {
     showToast('⏳ شما قبلاً به این کاربر درخواست دادید!');
     return;
   }
-  if(blockedUsers.includes(username)){
-    showToast('🚫 این کاربر مسدود شده است!');
+  if (isUserBlocked(username) || isUserKicked(username)) {
+    showToast('🚫 این کاربر در وضعیت مدیریتی است!');
     return;
   }
   
   friendRequests.push({from: playerName, to: username});
   saveFriendsData();
-  addSys('📨 '+playerName+' درخواست دوستی برای '+username+' ارسال کرد');
+  addSys('📨 ' + playerName + ' درخواست دوستی برای ' + username + ' ارسال کرد');
   renderFriends();
-  showToast('✅ درخواست دوستی برای '+username+' ارسال شد');
+  showToast('✅ درخواست دوستی برای ' + username + ' ارسال شد');
 }
 
-function acceptFriend(username){
+function acceptFriend(username) {
   const idx = friendRequests.findIndex(r => r.from === username && r.to === playerName);
-  if(idx === -1) return;
+  if (idx === -1) return;
   friendRequests.splice(idx, 1);
-  if(!friends.find(f => f.name === username)){
+  if (!friends.find(f => f.name === username)) {
     friends.push({name: username, id: 'COD' + String(Math.floor(10000 + Math.random() * 90000)), added: Date.now()});
   }
   saveFriendsData();
-  addSys('✅ '+username+' درخواست دوستی شما را پذیرفت');
+  addSys('✅ ' + username + ' درخواست دوستی شما را پذیرفت');
   renderFriends();
   updateFriendBadge();
-  showToast('✅ '+username+' به دوستان اضافه شد');
+  showToast('✅ ' + username + ' به دوستان اضافه شد');
 }
 
-function rejectFriend(username){
+function rejectFriend(username) {
   const idx = friendRequests.findIndex(r => r.from === username && r.to === playerName);
-  if(idx === -1) return;
+  if (idx === -1) return;
   friendRequests.splice(idx, 1);
   saveFriendsData();
   renderFriends();
   updateFriendBadge();
-  showToast('❌ درخواست '+username+' رد شد');
+  showToast('❌ درخواست ' + username + ' رد شد');
 }
 
-function removeFriend(username){
-  if(!confirm('آیا از حذف '+username+' از دوستان خود مطمئن هستید؟')) return;
+function removeFriend(username) {
+  if (!confirm('آیا از حذف ' + username + ' از دوستان خود مطمئن هستید؟')) return;
   const idx = friends.findIndex(f => f.name === username);
-  if(idx === -1) return;
+  if (idx === -1) return;
   friends.splice(idx, 1);
   saveFriendsData();
   renderFriends();
-  addSys('❌ '+username+' از دوستان حذف شد');
-  showToast('❌ '+username+' حذف شد');
+  addSys('❌ ' + username + ' از دوستان حذف شد');
+  showToast('❌ ' + username + ' حذف شد');
 }
 
-// ===== PRIVATE CHAT =====
-function openPrivateChat(username){
-  if(blockedUsers.includes(username)){
-    showToast('🚫 این کاربر مسدود شده است!');
+// ============================================================
+// ======================== PRIVATE CHAT =====================
+// ============================================================
+function openPrivateChat(username) {
+  if (isUserBlocked(username) || isUserKicked(username)) {
+    showToast('🚫 این کاربر در وضعیت مدیریتی است!');
     return;
   }
+  
   privateChatTarget = username;
   document.getElementById('pcName').textContent = username;
   document.getElementById('pcStatus').textContent = onlineUsers[username] === 'online' ? '● آنلاین' : '● آفلاین';
@@ -1008,11 +1435,11 @@ function openPrivateChat(username){
   const pcMsgs = document.getElementById('pcMsgs');
   pcMsgs.innerHTML = '';
   const key = [playerName, username].sort().join('_');
-  if(privateMessages[key]){
+  if (privateMessages[key]) {
     privateMessages[key].forEach(msg => {
       const div = document.createElement('div');
       div.className = 'pc-msg ' + (msg.from === playerName ? 'pc-own' : 'pc-other');
-      div.innerHTML = '<span class="pu">'+msg.from+'</span>'+msg.text;
+      div.innerHTML = '<span class="pu">' + msg.from + '</span>' + msg.text;
       pcMsgs.appendChild(div);
     });
   }
@@ -1022,229 +1449,226 @@ function openPrivateChat(username){
   document.getElementById('pcInput').focus();
 }
 
-function closePrivateChat(){
+function closePrivateChat() {
   document.getElementById('privateChat').classList.remove('active');
   privateChatTarget = null;
 }
 
-function sendPrivateMsg(){
+function sendPrivateMsg() {
   const input = document.getElementById('pcInput');
   const text = input.value.trim();
-  if(!text || !privateChatTarget) return;
-  if(blockedUsers.includes(privateChatTarget)){
-    showToast('🚫 این کاربر مسدود شده است!');
+  if (!text || !privateChatTarget) return;
+  
+  if (isUserBlocked(privateChatTarget) || isUserKicked(privateChatTarget)) {
+    showToast('🚫 این کاربر در وضعیت مدیریتی است!');
     return;
   }
   
   const key = [playerName, privateChatTarget].sort().join('_');
-  if(!privateMessages[key]) privateMessages[key] = [];
+  if (!privateMessages[key]) privateMessages[key] = [];
   privateMessages[key].push({from: playerName, text: text, time: Date.now()});
   
   const pcMsgs = document.getElementById('pcMsgs');
   const div = document.createElement('div');
   div.className = 'pc-msg pc-own';
-  div.innerHTML = '<span class="pu">'+playerName+'</span>'+text;
+  div.innerHTML = '<span class="pu">' + playerName + '</span>' + text;
   pcMsgs.appendChild(div);
   pcMsgs.scrollTop = pcMsgs.scrollHeight;
   input.value = '';
   
-  addSys('🔒 پیام خصوصی برای '+privateChatTarget+' ارسال شد');
+  addSys('🔒 پیام خصوصی برای ' + privateChatTarget + ' ارسال شد');
 }
 
-document.getElementById('pcInput').addEventListener('keydown', function(e){
-  if(e.key === 'Enter'){e.preventDefault();sendPrivateMsg();}
+document.getElementById('pcInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault();
+    sendPrivateMsg(); }
 });
 
-// ===== FLAG =====
-const countries=[
-  {name:"آمریکا",code:"us",emoji:"🇺🇸"},{name:"چین",code:"cn",emoji:"🇨🇳"},{name:"روسیه",code:"ru",emoji:"🇷🇺"},
-  {name:"آلمان",code:"de",emoji:"🇩🇪"},{name:"انگلستان",code:"gb",emoji:"🇬🇧"},{name:"فرانسه",code:"fr",emoji:"🇫🇷"},
-  {name:"ژاپن",code:"jp",emoji:"🇯🇵"},{name:"هند",code:"in",emoji:"🇮🇳"},{name:"برزیل",code:"br",emoji:"🇧🇷"},
-  {name:"کانادا",code:"ca",emoji:"🇨🇦"},{name:"ایران",code:"ir",emoji:"🇮🇷"},{name:"ایتالیا",code:"it",emoji:"🇮🇹"},
-  {name:"استرالیا",code:"au",emoji:"🇦🇺"},{name:"کره جنوبی",code:"kr",emoji:"🇰🇷"},{name:"اسپانیا",code:"es",emoji:"🇪🇸"},
-  {name:"مکزیک",code:"mx",emoji:"🇲🇽"},{name:"اندونزی",code:"id",emoji:"🇮🇩"},{name:"ترکیه",code:"tr",emoji:"🇹🇷"},
-  {name:"هلند",code:"nl",emoji:"🇳🇱"},{name:"عربستان",code:"sa",emoji:"🇸🇦"}
+// ============================================================
+// ======================== FLAG =============================
+// ============================================================
+const countries = [
+  {name: "آمریکا", code: "us", emoji: "🇺🇸"}, {name: "چین", code: "cn", emoji: "🇨🇳"},
+  {name: "روسیه", code: "ru", emoji: "🇷🇺"}, {name: "آلمان", code: "de", emoji: "🇩🇪"},
+  {name: "انگلستان", code: "gb", emoji: "🇬🇧"}, {name: "فرانسه", code: "fr", emoji: "🇫🇷"},
+  {name: "ژاپن", code: "jp", emoji: "🇯🇵"}, {name: "هند", code: "in", emoji: "🇮🇳"},
+  {name: "برزیل", code: "br", emoji: "🇧🇷"}, {name: "کانادا", code: "ca", emoji: "🇨🇦"},
+  {name: "ایران", code: "ir", emoji: "🇮🇷"}, {name: "ایتالیا", code: "it", emoji: "🇮🇹"},
+  {name: "استرالیا", code: "au", emoji: "🇦🇺"}, {name: "کره جنوبی", code: "kr", emoji: "🇰🇷"},
+  {name: "اسپانیا", code: "es", emoji: "🇪🇸"}, {name: "مکزیک", code: "mx", emoji: "🇲🇽"},
+  {name: "اندونزی", code: "id", emoji: "🇮🇩"}, {name: "ترکیه", code: "tr", emoji: "🇹🇷"},
+  {name: "هلند", code: "nl", emoji: "🇳🇱"}, {name: "عربستان", code: "sa", emoji: "🇸🇦"}
 ];
-let selectedCountry=countries.find(c=>c.code==='ir');
-function updateFlagUI(){
-  document.getElementById('flagImg').src=`https://flagcdn.com/w80/${selectedCountry.code}.png`;
-  document.getElementById('flagEmojiDisplay').textContent=selectedCountry.emoji;
-  document.getElementById('topFlagEmoji').textContent=selectedCountry.emoji;
-  localStorage.setItem('player_flag',selectedCountry.code);
+let selectedCountry = countries.find(c => c.code === 'ir');
+
+function updateFlagUI() {
+  document.getElementById('flagImg').src = `https://flagcdn.com/w80/${selectedCountry.code}.png`;
+  document.getElementById('flagEmojiDisplay').textContent = selectedCountry.emoji;
+  document.getElementById('topFlagEmoji').textContent = selectedCountry.emoji;
+  localStorage.setItem('player_flag', selectedCountry.code);
 }
-function openFlagSelector(){
-  const grid=document.getElementById('flagGrid');
-  grid.innerHTML='';
-  countries.forEach(c=>{
-    const d=document.createElement('div');
-    d.className='flag-option'+(c.code===selectedCountry.code?' selected':'');
-    d.innerHTML=`<span class="emoji">${c.emoji}</span><span class="name">${c.name}</span>`;
-    d.onclick=()=>{selectedCountry=c;updateFlagUI();closeFlagSelector();};
+
+function openFlagSelector() {
+  const grid = document.getElementById('flagGrid');
+  grid.innerHTML = '';
+  countries.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'flag-option' + (c.code === selectedCountry.code ? ' selected' : '');
+    d.innerHTML = `<span class="emoji">${c.emoji}</span><span class="name">${c.name}</span>`;
+    d.onclick = () => { selectedCountry = c;
+      updateFlagUI();
+      closeFlagSelector(); };
     grid.appendChild(d);
   });
   document.getElementById('flagModal').classList.add('active');
 }
-function closeFlagSelector(){document.getElementById('flagModal').classList.remove('active');}
 
-// ===== PROFILE =====
-function showUserInfo(){updateProfileUI();document.getElementById('profilePopup').classList.add('active');}
-function closeProfile(){document.getElementById('profilePopup').classList.remove('active');}
-function updateProfileUI(){
-  document.getElementById('profileNameDisplay').innerHTML=playerName||'PLAYER<em>NAME</em>';
-  document.getElementById('profileLvBadge').textContent='LV · '+playerLevel;
-  document.getElementById('profilePhoneDisplay').textContent=playerPhone||'0937...';
-  document.getElementById('profileIdDisplay').textContent=playerId||'123456';
-  const av='https://ui-avatars.com/api/?name='+encodeURIComponent(playerName||'P')+'&background=1a2535&color=f7d48b&size=128&font-size=0.5&bold=true';
-  document.getElementById('profileAvatarImg').src=av;
-  document.getElementById('topAvatarImg').src=av;
-  const saved=localStorage.getItem('player_flag');
-  if(saved){const f=countries.find(c=>c.code===saved);if(f)selectedCountry=f;}
+function closeFlagSelector() { document.getElementById('flagModal').classList.remove('active'); }
+
+// ============================================================
+// ======================== PROFILE ==========================
+// ============================================================
+function showUserInfo() { updateProfileUI();
+  document.getElementById('profilePopup').classList.add('active'); }
+
+function closeProfile() { document.getElementById('profilePopup').classList.remove('active'); }
+
+function updateProfileUI() {
+  document.getElementById('profileNameDisplay').innerHTML = playerName || 'PLAYER<em>NAME</em>';
+  document.getElementById('profileLvBadge').textContent = 'LV · ' + playerLevel;
+  document.getElementById('profilePhoneDisplay').textContent = playerPhone || '0937...';
+  document.getElementById('profileIdDisplay').textContent = playerId || '123456';
+  const av = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(playerName || 'P') + '&background=1a2535&color=f7d48b&size=128&font-size=0.5&bold=true';
+  document.getElementById('profileAvatarImg').src = av;
+  document.getElementById('topAvatarImg').src = av;
+  const saved = localStorage.getItem('player_flag');
+  if (saved) { const f = countries.find(c => c.code === saved); if (f) selectedCountry = f; }
   updateFlagUI();
-  const xp=Math.floor(20000+Math.random()*80000),pct=Math.min(100,Math.round(xp/100000*100));
-  document.getElementById('profileXpText').textContent=xp.toLocaleString()+' / 100,000';
-  document.getElementById('profileXpFill').style.width=pct+'%';
-  const kills=Math.floor(5000+Math.random()*10000),deaths=Math.floor(1000+Math.random()*3000);
-  document.getElementById('pKills').textContent=kills.toLocaleString();
-  document.getElementById('pKd').textContent=(kills/deaths).toFixed(2);
-  document.getElementById('pDeaths').textContent=deaths.toLocaleString();
-  document.getElementById('pHeadshots').textContent=Math.floor(1000+Math.random()*5000).toLocaleString();
-  document.getElementById('pAccuracy').textContent=Math.floor(20+Math.random()*40)+'%';
-  const m=Math.floor(200+Math.random()*600),w=Math.floor(100+Math.random()*400);
-  document.getElementById('pMatches').textContent=m;
-  document.getElementById('pWins').textContent=w;
-  document.getElementById('pLosses').textContent=m-w;
-  document.getElementById('pWinRate').textContent=(w/m*100).toFixed(1)+'%';
-  document.getElementById('pMvp').textContent=Math.floor(50+Math.random()*200);
+  const xp = Math.floor(20000 + Math.random() * 80000),
+    pct = Math.min(100, Math.round(xp / 100000 * 100));
+  document.getElementById('profileXpText').textContent = xp.toLocaleString() + ' / 100,000';
+  document.getElementById('profileXpFill').style.width = pct + '%';
+  const kills = Math.floor(5000 + Math.random() * 10000),
+    deaths = Math.floor(1000 + Math.random() * 3000);
+  document.getElementById('pKills').textContent = kills.toLocaleString();
+  document.getElementById('pKd').textContent = (kills / deaths).toFixed(2);
+  document.getElementById('pDeaths').textContent = deaths.toLocaleString();
+  document.getElementById('pHeadshots').textContent = Math.floor(1000 + Math.random() * 5000).toLocaleString();
+  document.getElementById('pAccuracy').textContent = Math.floor(20 + Math.random() * 40) + '%';
+  const m = Math.floor(200 + Math.random() * 600),
+    w = Math.floor(100 + Math.random() * 400);
+  document.getElementById('pMatches').textContent = m;
+  document.getElementById('pWins').textContent = w;
+  document.getElementById('pLosses').textContent = m - w;
+  document.getElementById('pWinRate').textContent = (w / m * 100).toFixed(1) + '%';
+  document.getElementById('pMvp').textContent = Math.floor(50 + Math.random() * 200);
 }
 
-// ===== LOGOUT =====
-function logoutUser(){
-  if(confirm('آیا مطمئن هستید میخواهید از حساب خود خارج شوید؟')){
+// ============================================================
+// ======================== LOGOUT ===========================
+// ============================================================
+function logoutUser() {
+  if (confirm('آیا مطمئن هستید میخواهید از حساب خود خارج شوید؟')) {
     closePrivateChat();
     closeFriends();
-    
+
     localStorage.removeItem('cod_player_name');
     localStorage.removeItem('cod_player_phone');
     localStorage.removeItem('cod_player_id');
     localStorage.removeItem('cod_is_admin');
     localStorage.removeItem('player_flag');
-    
+
     closeProfile();
-    
-    if(ably){try{ably.close();}catch(e){}}
-    
-    document.getElementById('displayNameText').textContent='کاربر';
-    document.getElementById('displayLevel').textContent='LV 1';
-    document.getElementById('adminBadgeTop').style.display='none';
-    document.getElementById('adminToolBtn').style.display='none';
-    isAdmin=false;
-    window.chatMuted=false;
-    isUserBlocked=false;
-    isUserKicked=false;
-    
-    document.getElementById('modalOverlay').style.display='flex';
-    document.getElementById('phoneInput').value='';
-    document.getElementById('usernameInput').value='';
-    setTimeout(()=>document.getElementById('phoneInput').focus(),100);
-    
+
+    if (ably) { try { ably.close(); } catch (e) {} }
+
+    document.getElementById('displayNameText').textContent = 'کاربر';
+    document.getElementById('displayLevel').textContent = 'LV 1';
+    document.getElementById('adminBadgeTop').style.display = 'none';
+    document.getElementById('adminToolBtn').style.display = 'none';
+    isAdmin = false;
+    window.chatMuted = false;
+
+    document.getElementById('modalOverlay').style.display = 'flex';
+    document.getElementById('phoneInput').value = '';
+    document.getElementById('usernameInput').value = '';
+    setTimeout(() => document.getElementById('phoneInput').focus(), 100);
+
     document.getElementById('fullscreenChat').classList.remove('active');
-    document.getElementById('fsMsgs').innerHTML='';
+    document.getElementById('fsMsgs').innerHTML = '';
     document.getElementById('blockedOverlay').classList.remove('active');
     document.getElementById('kickedOverlay').classList.remove('active');
-    document.getElementById('kickedOverlay').style.display='none';
-    friends=[];
-    friendRequests=[];
-    privateMessages={};
+    document.getElementById('kickedOverlay').style.display = 'none';
+    friends = [];
+    friendRequests = [];
+    privateMessages = {};
+    moderationData = { blocked: [], kicked: [], muted: [], banned: [] };
     updateFriendBadge();
+
+    gsap.to('.topbar', {duration: 0.3, y: -30, opacity: 0, ease: 'power2.in'});
+    setTimeout(() => {
+      gsap.to('.topbar', {duration: 0.3, y: 0, opacity: 1, ease: 'power2.out'});
+    }, 400);
     
-    gsap.to('.topbar', {duration:0.3, y:-30, opacity:0, ease:'power2.in'});
-    setTimeout(()=>{
-      gsap.to('.topbar', {duration:0.3, y:0, opacity:1, ease:'power2.out'});
-    },400);
+    LOG.info('🚪 کاربر از حساب خارج شد');
   }
 }
 
-// ===== FULLSCREEN CHAT =====
-function openFullscreenChat(){
-  if(isUserBlocked){
+// ============================================================
+// ======================== FULLSCREEN CHAT =================
+// ============================================================
+function openFullscreenChat() {
+  // بررسی وضعیت کاربر قبل از باز کردن چت
+  if (isUserBlocked(playerName)) {
     showToast('🚫 شما مسدود شده‌اید!');
+    showBlockedOverlay();
     return;
   }
-  if(isUserKicked){
-    showToast('⛔ شما اخراج شده‌اید!');
+  if (isUserKicked(playerName)) {
+    showToast('👢 شما اخراج شده‌اید!');
+    showKickedOverlay();
     return;
   }
+  
   document.getElementById('fullscreenChat').classList.add('active');
-  updateMuteUI();
+  updateChatStatus();
   syncFsMessages();
-  gsap.from('.fullscreen-chat .fs-header', {duration:0.4, y:-30, opacity:0, ease:'power3.out'});
-  gsap.from('.fullscreen-chat .fs-msgs', {duration:0.5, opacity:0, delay:0.1, ease:'power2.out'});
+  gsap.from('.fullscreen-chat .fs-header', {duration: 0.4, y: -30, opacity: 0, ease: 'power3.out'});
+  gsap.from('.fullscreen-chat .fs-msgs', {duration: 0.5, opacity: 0, delay: 0.1, ease: 'power2.out'});
 }
 
-function closeFullscreenChat(){
+function closeFullscreenChat() {
   document.getElementById('fullscreenChat').classList.remove('active');
 }
 
-function updateMuteUI(){
-  const banner = document.getElementById('fsMuteBanner');
-  const kickBanner = document.getElementById('fsKickBanner');
-  const sendBtn = document.getElementById('fsSendBtn');
-  const input = document.getElementById('fsChatInput');
-  
-  if(isUserBlocked){
-    banner.style.display='none';
-    kickBanner.style.display='block';
-    kickBanner.textContent='🚫 شما توسط مدیر مسدود شده‌اید!';
-    sendBtn.disabled=true;
-    input.disabled=true;
-    input.placeholder='🚫 شما مسدود شده‌اید ...';
-    return;
-  }
-  
-  if(isUserKicked){
-    banner.style.display='none';
-    kickBanner.style.display='block';
-    kickBanner.textContent='⛔ شما از چت اخراج شده‌اید!';
-    sendBtn.disabled=true;
-    input.disabled=true;
-    input.placeholder='⛔ شما اخراج شده‌اید ...';
-    return;
-  }
-  
-  kickBanner.style.display='none';
-  
-  if(window.chatMuted && !isAdmin){
-    banner.style.display='block';
-    sendBtn.disabled=true;
-    input.disabled=true;
-    input.placeholder='🔇 چت قطع شده ...';
-  }else{
-    banner.style.display='none';
-    sendBtn.disabled=false;
-    input.disabled=false;
-    input.placeholder='پیام بنویس ...';
-  }
-}
-
-function syncFsMessages(){
-  const container=document.getElementById('fsMsgs');
-  container.innerHTML='';
-  if(window._chatHistory){
+function syncFsMessages() {
+  const container = document.getElementById('fsMsgs');
+  container.innerHTML = '';
+  if (window._chatHistory) {
     window._chatHistory.forEach(msg => {
       const div = document.createElement('div');
-      if(msg.isSys){
+      if (msg.isSys) {
         div.className = 'fs-msg sys';
         div.textContent = msg.text;
-      }else{
-        const isBlocked = blockedUsers.includes(msg.user);
-        div.className = 'fs-msg' + (msg.isOwn ? ' own' : '') + (isBlocked ? ' blocked' : '');
-        div.innerHTML = '<span class="fu">'+msg.user+'</span>'+msg.text;
-        if(!msg.isOwn && !isBlocked){
-          div.querySelector('.fu')?.addEventListener('click', function(e){
+      } else {
+        const isBlocked = isUserBlocked(msg.user);
+        const isKicked = isUserKicked(msg.user);
+        const isMuted = isUserMuted(msg.user);
+        
+        let extraClass = '';
+        if (isBlocked) extraClass = ' blocked';
+        else if (isKicked) extraClass = ' kicked';
+        else if (isMuted) extraClass = ' muted';
+        
+        div.className = 'fs-msg' + (msg.isOwn ? ' own' : '') + extraClass;
+        div.innerHTML = '<span class="fu">' + msg.user + '</span>' + msg.text;
+        
+        if (!msg.isOwn && !isBlocked && !isKicked && !isMuted) {
+          div.querySelector('.fu')?.addEventListener('click', function(e) {
             e.stopPropagation();
             const name = this.textContent.trim();
-            if(name && name !== playerName && !blockedUsers.includes(name)){
-              if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
+            if (name && name !== playerName && !isUserBlocked(name) && !isUserKicked(name)) {
+              if (confirm('آیا میخواهید به ' + name + ' درخواست دوستی بدهید؟')) {
                 sendFriendRequest(name);
               }
             }
@@ -1257,454 +1681,516 @@ function syncFsMessages(){
   container.scrollTop = container.scrollHeight;
 }
 
-function sendFsMsg(){
-  if(isUserBlocked){
+function sendFsMsg() {
+  // ===== اعتبارسنجی کامل قبل از ارسال پیام =====
+  LOG.info(`📝 تلاش برای ارسال پیام توسط ${playerName}`);
+  
+  // 1. بررسی مسدود بودن
+  if (isUserBlocked(playerName)) {
+    LOG.warn(`🚫 ${playerName} مسدود است و نمیتواند پیام بفرستد`);
     showToast('🚫 شما مسدود شده‌اید و نمیتوانید پیام بفرستید!');
-    return;
-  }
-  if(isUserKicked){
-    showToast('⛔ شما اخراج شده‌اید و نمیتوانید پیام بفرستید!');
+    showBlockedOverlay();
     return;
   }
   
-  const input=document.getElementById('fsChatInput');
-  const text=input.value.trim();
-  if(!text)return;
+  // 2. بررسی اخراج شدن
+  if (isUserKicked(playerName)) {
+    LOG.warn(`👢 ${playerName} اخراج شده و نمیتواند پیام بفرستد`);
+    showToast('👢 شما اخراج شده‌اید و نمیتوانید پیام بفرستید!');
+    showKickedOverlay();
+    return;
+  }
   
-  if(window.chatMuted && !isAdmin){
+  // 3. بررسی میوت بودن
+  if (isUserMuted(playerName)) {
+    LOG.warn(`🔇 ${playerName} میوت است و نمیتواند پیام بفرستد`);
+    showToast('🔇 شما میوت شده‌اید و نمیتوانید پیام بفرستید!');
+    updateChatStatus();
+    return;
+  }
+  
+  // 4. بررسی قطع چت عمومی
+  if (window.chatMuted && !isAdmin) {
+    LOG.warn(`🔇 چت عمومی قطع شده و ${playerName} نمیتواند پیام بفرستد`);
     showToast('🔇 چت توسط مدیر قطع شده');
-    input.value='';
     return;
   }
   
-  if(!isChatReady||!channel){
+  const input = document.getElementById('fsChatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  if (!isChatReady || !channel) {
+    LOG.error('❌ اتصال به سرور برقرار نیست');
     showToast('⚠️ در حال اتصال به سرور...');
     return;
   }
   
-  channel.publish('message',{username,text},function(err){
-    if(!err){
-      input.value='';
-      addMsg(username,text,true);
-    }else{
+  LOG.info(`✅ ${playerName} در حال ارسال پیام: ${text.substring(0, 30)}...`);
+  
+  channel.publish('message', {username, text}, function(err) {
+    if (!err) {
+      input.value = '';
+      addMsg(username, text, true);
+      LOG.info(`✅ پیام ${playerName} ارسال شد`);
+    } else {
+      LOG.error(`❌ خطا در ارسال پیام ${playerName}`, err);
       showToast('❌ ارسال پیام ناموفق');
-      isChatReady=false;
+      isChatReady = false;
       ably.close();
-      tryConnect(currentKeyIndex+1);
+      tryConnect(currentKeyIndex + 1);
     }
   });
 }
 
-document.getElementById('fsChatInput').addEventListener('keydown',function(e){
-  if(e.key==='Enter'){e.preventDefault();sendFsMsg();}
+document.getElementById('fsChatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault();
+    sendFsMsg(); }
 });
 
-// ===== ADMIN PANEL =====
-function openAdminPanel(){
-  if(!isAdmin) return;
+// ============================================================
+// ======================== ADMIN PANEL ======================
+// ============================================================
+function openAdminPanel() {
+  if (!isAdmin) return;
   document.getElementById('adminPanel').classList.add('active');
+  updateAdminUserList();
 }
 
-function closeAdminPanel(){
+function closeAdminPanel() {
   document.getElementById('adminPanel').classList.remove('active');
 }
 
-function adminClearChat(){
-  if(!isAdmin)return;
-  document.getElementById('fsMsgs').innerHTML='';
-  if(window._chatHistory) window._chatHistory = [];
-  showToast('🗑 چت پاک شد');
-  addSys('🗑 چت توسط مدیر پاک شد');
-}
-
-function adminMuteAll(){
-  if(!isAdmin)return;
-  window.chatMuted = true;
-  document.getElementById('adminStatus').className = 'admin-status-badge muted';
-  document.getElementById('adminStatus').textContent = '● قطع شده';
-  showToast('🔇 چت برای همه کاربران قطع شد');
-  addSys('🔇 چت توسط مدیر قطع شد');
-  updateMuteUI();
-}
-
-function adminUnmuteAll(){
-  if(!isAdmin)return;
-  window.chatMuted = false;
-  document.getElementById('adminStatus').className = 'admin-status-badge active';
-  document.getElementById('adminStatus').textContent = '● فعال';
-  showToast('🔊 چت برای همه کاربران فعال شد');
-  addSys('🔊 چت توسط مدیر فعال شد');
-  updateMuteUI();
-}
-
-// ===== ADMIN BLOCK USER =====
-function adminBlockUser(username){
-  if(!isAdmin) return;
-  if(username === playerName){
-    showToast('❌ نمیتوانید خودتان را مسدود کنید!');
-    return;
-  }
-  if(!confirm('آیا میخواهید کاربر '+username+' را مسدود کنید؟')){
-    return;
-  }
-  
-  // اضافه به لیست مسدودها
-  if(!blockedUsers.includes(username)){
-    blockedUsers.push(username);
-    saveFriendsData();
-  }
-  
-  // ارسال پیام سیستم
-  addSys('🚫 کاربر '+username+' توسط مدیر مسدود شد');
-  showToast('🚫 '+username+' مسدود شد');
-  
-  // بروزرسانی لیست
-  renderFriends();
-  updateAdminUserList();
-  
-  // اگر کاربر مسدود شده خودش باشد
-  if(username === playerName){
-    isUserBlocked = true;
-    document.getElementById('blockedOverlay').classList.add('active');
-    document.getElementById('fullscreenChat').classList.remove('active');
-    updateMuteUI();
-  }
-}
-
-// ===== ADMIN KICK USER =====
-function adminKickUser(username){
-  if(!isAdmin) return;
-  if(username === playerName){
-    showToast('❌ نمیتوانید خودتان را اخراج کنید!');
-    return;
-  }
-  if(!confirm('آیا میخواهید کاربر '+username+' را از چت اخراج کنید؟')){
-    return;
-  }
-  
-  // اضافه به لیست اخراج‌ها
-  if(!kickedUsers.includes(username)){
-    kickedUsers.push(username);
-  }
-  
-  // ارسال پیام سیستم
-  addSys('⛔ کاربر '+username+' توسط مدیر اخراج شد');
-  showToast('⛔ '+username+' اخراج شد');
-  
-  // بروزرسانی لیست
-  renderFriends();
-  updateAdminUserList();
-  
-  // اگر کاربر اخراج شده خودش باشد
-  if(username === playerName){
-    isUserKicked = true;
-    document.getElementById('kickedOverlay').style.display='flex';
-    document.getElementById('kickedOverlay').classList.add('active');
-    document.getElementById('fullscreenChat').classList.remove('active');
-    updateMuteUI();
-  }
-}
-
-// ===== ADMIN USER LIST =====
-function updateAdminUserList(){
-  if(!isAdmin || !channel) return;
-  channel.presence.get(function(err,m){
-    if(!err && m){
-      const list=document.getElementById('adminUserList');
-      let html='<div style="font-size:9px;color:#4e6270;margin-bottom:6px;">👥 کاربران آنلاین ('+m.length+'):</div>';
-      m.forEach(p=>{
-        const name=p.data?.username||'ناشناس';
-        const isBlocked = blockedUsers.includes(name);
-        const isKicked = kickedUsers.includes(name);
-        let statusClass = 'active';
-        let statusText = 'آنلاین';
-        if(isBlocked){ statusClass = 'blocked'; statusText = '🚫 مسدود'; }
-        else if(isKicked){ statusClass = 'kicked'; statusText = '⛔ اخراج'; }
+function updateAdminUserList() {
+  if (!isAdmin || !channel) return;
+  channel.presence.get(function(err, m) {
+    if (!err && m) {
+      const list = document.getElementById('adminUserList');
+      let html = '<div style="font-size:9px;color:#4e6270;margin-bottom:6px;">👥 کاربران آنلاین (' + m.length + '):</div>';
+      m.forEach(p => {
+        const name = p.data?.username || 'ناشناس';
+        const isBlocked = isUserBlocked(name);
+        const isKicked = isUserKicked(name);
+        const isMuted = isUserMuted(name);
+        
+        let statusBadge = '<span class="status-badge active">آنلاین</span>';
+        if (isBlocked) statusBadge = '<span class="status-badge blocked">🚫 مسدود</span>';
+        else if (isKicked) statusBadge = '<span class="status-badge kicked">👢 اخراج</span>';
+        else if (isMuted) statusBadge = '<span class="status-badge muted">🔇 میوت</span>';
+        
         html += `
           <div class="admin-user">
-            <span class="name">${name} <span class="status-badge ${statusClass}">${statusText}</span></span>
-            <div>
-              ${!isBlocked ? `<button class="block-btn" onclick="adminBlockUser('${name}')">🚫 مسدود</button>` : ''}
-              ${!isKicked ? `<button class="kick-btn" onclick="adminKickUser('${name}')">👢 اخراج</button>` : ''}
-              <button class="del-btn" onclick="adminRemoveUser('${name}')">🗑 حذف</button>
+            <span class="name">${name} ${statusBadge}</span>
+            <div class="actions">
+              ${!isBlocked ? `<button class="block" onclick="adminBlockUser('${name}')">🚫 مسدود</button>` : `<button onclick="adminUnblockUser('${name}')">✅ رفع مسدود</button>`}
+              ${!isKicked ? `<button class="kick" onclick="adminKickUser('${name}')">👢 اخراج</button>` : ''}
+              ${isMuted ? `<button class="unmute" onclick="adminUnmuteUser('${name}')">🔊 آنمیت</button>` : `<button class="mute" onclick="adminMuteUser('${name}')">🔇 میوت</button>`}
+              <button class="delete" onclick="adminRemoveUser('${name}')">🗑 حذف</button>
             </div>
           </div>
         `;
       });
-      list.innerHTML=html;
+      list.innerHTML = html;
     }
   });
 }
 
-function adminRemoveUser(name){
-  if(!isAdmin)return;
-  if(confirm('آیا میخواهید کاربر '+name+' را از لیست حذف کنید؟')){
-    // فقط از لیست حذف میشود (در پنل ادمین)
-    showToast('🗑 '+name+' از لیست حذف شد');
+function adminUnblockUser(username) {
+  if (!isAdmin) return;
+  const idx = moderationData.blocked.indexOf(username);
+  if (idx > -1) {
+    moderationData.blocked.splice(idx, 1);
+    LOG.info(`✅ ${username} از لیست مسدودها حذف شد`);
+  }
+  saveModerationData();
+  addSys(`✅ کاربر ${username} توسط مدیر رفع مسدود شد`);
+  showToast(`✅ ${username} رفع مسدود شد`);
+  renderFriends();
+  updateAdminUserList();
+  updateChatStatus();
+}
+
+function adminRemoveUser(username) {
+  if (!isAdmin) return;
+  if (confirm('آیا میخواهید کاربر ' + username + ' را از لیست حذف کنید؟')) {
+    LOG.admin(`🗑️ کاربر ${username} از لیست حذف شد`);
+    showToast('🗑 ' + username + ' از لیست حذف شد');
     updateAdminUserList();
   }
 }
 
-// ===== MUSIC =====
-let bgMusic=null,isMusicPlaying=false;
-function initMusic(){
-  try{
-    bgMusic=new Audio('https://uploadkon.ir/uploads/750a18_26Alexander-Nakarada-Chase.mp3');
-    bgMusic.loop=true;bgMusic.volume=0.38;
-    document.addEventListener('click',startMusic,{once:true});
-    document.addEventListener('touchstart',startMusic,{once:true});
-  }catch(e){}
+// ============================================================
+// ======================== MUSIC ============================
+// ============================================================
+let bgMusic = null,
+  isMusicPlaying = false;
+
+function initMusic() {
+  try {
+    bgMusic = new Audio('https://uploadkon.ir/uploads/750a18_26Alexander-Nakarada-Chase.mp3');
+    bgMusic.loop = true;
+    bgMusic.volume = 0.38;
+    document.addEventListener('click', startMusic, {once: true});
+    document.addEventListener('touchstart', startMusic, {once: true});
+  } catch (e) {}
 }
-function startMusic(){if(bgMusic&&!isMusicPlaying)bgMusic.play().then(()=>isMusicPlaying=true).catch(()=>{});}
+
+function startMusic() { if (bgMusic && !isMusicPlaying) bgMusic.play().then(() => isMusicPlaying = true).catch(() => {}); }
 initMusic();
 
-// ===== CHAT (Ably) =====
-const ABLY_KEYS=['NNYzzQ.RzmqSQ:6e0uUwK2UhjT274c8uJhxTH3DMfTZaQ9z3M346986mM','NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'];
-const CHANNEL_NAME='cod-lobby-chat';
-let ably=null,channel=null,username='کاربر_'+Math.floor(Math.random()*1000);
-let isChatReady=false,currentKeyIndex=0,reconnectAttempts=0;
-const MAX_RECONNECT=30;
-const onlineEl=document.getElementById('onlineCount');
-const fsOnlineEl=document.getElementById('fsOnlineCount');
-const onlineStatusBottom=document.getElementById('onlineStatusBottom');
+// ============================================================
+// ======================== CHAT (Ably) ======================
+// ============================================================
+const ABLY_KEYS = ['NNYzzQ.RzmqSQ:6e0uUwK2UhjT274c8uJhxTH3DMfTZaQ9z3M346986mM', 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'];
+const CHANNEL_NAME = 'cod-lobby-chat';
+let ably = null,
+  channel = null,
+  username = 'کاربر_' + Math.floor(Math.random() * 1000);
+let isChatReady = false,
+  currentKeyIndex = 0,
+  reconnectAttempts = 0;
+const MAX_RECONNECT = 30;
+const onlineEl = document.getElementById('onlineCount');
+const fsOnlineEl = document.getElementById('fsOnlineCount');
+const onlineStatusBottom = document.getElementById('onlineStatusBottom');
 
 window._chatHistory = [];
 
-function setDot(s){
-  document.querySelectorAll('.online-dot').forEach(d=>{
-    d.style.background=s==='connected'?'#5dc44a':s==='connecting'?'#ffaa00':'#ff4444';
+function setDot(s) {
+  document.querySelectorAll('.online-dot').forEach(d => {
+    d.style.background = s === 'connected' ? '#5dc44a' : s === 'connecting' ? '#ffaa00' : '#ff4444';
   });
-  if(s==='connected'){
-    onlineStatusBottom.textContent='🟢 آنلاین';
-    onlineStatusBottom.style.color='#5dc44a';
-  }else if(s==='connecting'){
-    onlineStatusBottom.textContent='🟡 در حال اتصال';
-    onlineStatusBottom.style.color='#ffaa00';
-  }else{
-    onlineStatusBottom.textContent='🔴 آفلاین';
-    onlineStatusBottom.style.color='#ff4444';
+  if (s === 'connected') {
+    onlineStatusBottom.textContent = '🟢 آنلاین';
+    onlineStatusBottom.style.color = '#5dc44a';
+  } else if (s === 'connecting') {
+    onlineStatusBottom.textContent = '🟡 در حال اتصال';
+    onlineStatusBottom.style.color = '#ffaa00';
+  } else {
+    onlineStatusBottom.textContent = '🔴 آفلاین';
+    onlineStatusBottom.style.color = '#ff4444';
   }
 }
 
-function addMsg(user,text,isOwn){
-  // بررسی مسدود یا اخراج بودن کاربر
-  if(blockedUsers.includes(user) || kickedUsers.includes(user)){
-    if(!isAdmin && user !== username) return;
-  }
-  
-  // بررسی قطع چت
-  if(window.chatMuted && !isAdmin && user!==username && user!=='سیستم') {
+function addMsg(user, text, isOwn) {
+  // ===== اعتبارسنجی پیام دریافتی =====
+  // اگر کاربر مسدود یا اخراج شده، پیامش نمایش داده نشه
+  if (isUserBlocked(user) || isUserKicked(user)) {
+    LOG.warn(`🚫 پیام از ${user} نمایش داده نشد (مسدود/اخراج)`);
     return;
   }
   
-  if(!window._chatHistory) window._chatHistory = [];
+  // اگر کاربر میوت شده، پیامش نمایش داده نشه (به جز مدیر)
+  if (isUserMuted(user) && !isAdmin) {
+    LOG.warn(`🔇 پیام از ${user} نمایش داده نشد (میوت)`);
+    return;
+  }
+  
+  // اگر چت عمومی قطع شده، فقط پیام‌های مدیر و سیستمی نمایش داده بشه
+  if (window.chatMuted && !isAdmin && user !== 'سیستم' && user !== username) {
+    LOG.warn(`🔇 پیام از ${user} در زمان قطع چت نمایش داده نشد`);
+    return;
+  }
+  
+  if (!window._chatHistory) window._chatHistory = [];
   window._chatHistory.push({user, text, isOwn, isSys: false});
-  if(window._chatHistory.length > 100) window._chatHistory.shift();
+  if (window._chatHistory.length > 100) window._chatHistory.shift();
   
   // بررسی درخواست دوستی
-  if(text.includes('درخواست دوستی') && !isOwn){
+  if (text.includes('درخواست دوستی') && !isOwn) {
     const match = text.match(/درخواست دوستی برای (\S+)/);
-    if(match && match[1] === playerName){
-      if(!friendRequests.find(r => r.from === user && r.to === playerName) && !blockedUsers.includes(user)){
+    if (match && match[1] === playerName) {
+      if (!friendRequests.find(r => r.from === user && r.to === playerName) && 
+          !isUserBlocked(user) && !isUserKicked(user)) {
         friendRequests.push({from: user, to: playerName});
         saveFriendsData();
         renderFriends();
-        showToast('📩 درخواست دوستی از '+user);
-        const fs=document.getElementById('fsMsgs');
-        const fd=document.createElement('div');
-        fd.className='fs-msg sys';
-        fd.textContent='📩 درخواست دوستی از '+user+' دریافت شد!';
+        showToast('📩 درخواست دوستی از ' + user);
+        const fs = document.getElementById('fsMsgs');
+        const fd = document.createElement('div');
+        fd.className = 'fs-msg sys';
+        fd.textContent = '📩 درخواست دوستی از ' + user + ' دریافت شد!';
         fs.appendChild(fd);
-        fs.scrollTop=fs.scrollHeight;
+        fs.scrollTop = fs.scrollHeight;
+        LOG.info(`📩 درخواست دوستی از ${user} برای ${playerName}`);
       }
     }
   }
   
   // نمایش در چت
-  const fs=document.getElementById('fsMsgs');
-  const fd=document.createElement('div');
-  const isBlocked = blockedUsers.includes(user);
-  fd.className='fs-msg'+(isOwn?' own':'')+(isBlocked?' blocked':'');
-  fd.innerHTML='<span class="fu">'+user+'</span>'+text;
-  if(!isOwn && !isBlocked && !text.includes('درخواست دوستی')){
-    fd.querySelector('.fu')?.addEventListener('click', function(e){
+  const fs = document.getElementById('fsMsgs');
+  const fd = document.createElement('div');
+  fd.className = 'fs-msg' + (isOwn ? ' own' : '');
+  fd.innerHTML = '<span class="fu">' + user + '</span>' + text;
+  
+  if (!isOwn && !text.includes('درخواست دوستی')) {
+    fd.querySelector('.fu')?.addEventListener('click', function(e) {
       e.stopPropagation();
       const name = this.textContent.trim();
-      if(name && name !== playerName && !blockedUsers.includes(name)){
-        if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
+      if (name && name !== playerName && !isUserBlocked(name) && !isUserKicked(name)) {
+        if (confirm('آیا میخواهید به ' + name + ' درخواست دوستی بدهید؟')) {
           sendFriendRequest(name);
         }
       }
     });
   }
   fs.appendChild(fd);
-  while(fs.children.length>50)fs.removeChild(fs.firstChild);
-  fs.scrollTop=fs.scrollHeight;
-}
-
-function addSys(text){
-  if(!window._chatHistory) window._chatHistory = [];
-  window._chatHistory.push({user: 'سیستم', text, isOwn: false, isSys: true});
-  if(window._chatHistory.length > 100) window._chatHistory.shift();
+  while (fs.children.length > 50) fs.removeChild(fs.firstChild);
+  fs.scrollTop = fs.scrollHeight;
   
-  const fs=document.getElementById('fsMsgs');
-  const fd=document.createElement('div');
-  fd.className='fs-msg sys';fd.textContent=text;
+  LOG.info(`💬 پیام از ${user}: ${text.substring(0, 30)}...`);
+}
+
+function addSys(text) {
+  if (!window._chatHistory) window._chatHistory = [];
+  window._chatHistory.push({user: 'سیستم', text, isOwn: false, isSys: true});
+  if (window._chatHistory.length > 100) window._chatHistory.shift();
+  
+  const fs = document.getElementById('fsMsgs');
+  const fd = document.createElement('div');
+  fd.className = 'fs-msg sys';
+  fd.textContent = text;
   fs.appendChild(fd);
-  while(fs.children.length>50)fs.removeChild(fs.firstChild);
-  fs.scrollTop=fs.scrollHeight;
+  while (fs.children.length > 50) fs.removeChild(fs.firstChild);
+  fs.scrollTop = fs.scrollHeight;
+  
+  LOG.info(`📢 پیام سیستمی: ${text}`);
 }
 
-function initChat(){
-  if(playerName)username=playerName;
-  reconnectAttempts=0;tryConnect(0);
+function initChat() {
+  if (playerName) username = playerName;
+  reconnectAttempts = 0;
+  tryConnect(0);
+  LOG.info('🔌 اتصال به چت آغاز شد');
 }
 
-function tryConnect(idx){
-  if(idx>=ABLY_KEYS.length){
-    addSys('⚠ سرور ناموفق');setDot('disconnected');
-    if(reconnectAttempts<MAX_RECONNECT){reconnectAttempts++;setTimeout(()=>tryConnect(0),2000);}
+function tryConnect(idx) {
+  if (idx >= ABLY_KEYS.length) {
+    addSys('⚠ سرور ناموفق');
+    setDot('disconnected');
+    LOG.error('❌ تمام کلیدهای Ably ناموفق بودند');
+    if (reconnectAttempts < MAX_RECONNECT) {
+      reconnectAttempts++;
+      setTimeout(() => tryConnect(0), 2000);
+    }
     return;
   }
-  try{
-    if(ably){try{ably.close();}catch(e){}}
+  try {
+    if (ably) { try { ably.close(); } catch (e) {} }
     setDot('connecting');
-    ably=new Ably.Realtime({key:ABLY_KEYS[idx],clientId:username,autoConnect:true,recover:true,transports:['web_socket','xhr_streaming','xhr_polling','jsonp']});
-    currentKeyIndex=idx;
-    ably.connection.on('connected',function(){
-      isChatReady=true;setDot('connected');reconnectAttempts=0;
-      if(channel){try{channel.detach();}catch(e){}}
-      channel=ably.channels.get(CHANNEL_NAME);
-      channel.attach(function(err){
-        if(err){ably.close();tryConnect(currentKeyIndex+1);return;}
-        channel.presence.enter({username},()=>updateOnline());
-        channel.history({limit:5},function(err,r){
-          if(!err&&r&&r.items)r.items.reverse().forEach(i=>{
-            if(i.data&&i.data.text){
-              if(!window._chatHistory) window._chatHistory = [];
-              const isBlocked = blockedUsers.includes(i.data.username||'?');
-              window._chatHistory.push({user: i.data.username||'?', text: i.data.text, isOwn: (i.data.username===username), isSys: false});
-              if(window._chatHistory.length > 100) window._chatHistory.shift();
-              const fs=document.getElementById('fsMsgs');
-              const fd=document.createElement('div');
-              fd.className='fs-msg'+(i.data.username===username?' own':'')+(isBlocked?' blocked':'');
-              fd.innerHTML='<span class="fu">'+(i.data.username||'?')+'</span>'+i.data.text;
-              if(i.data.username!==username && !isBlocked){
-                fd.querySelector('.fu')?.addEventListener('click', function(e){
-                  e.stopPropagation();
-                  const name = this.textContent.trim();
-                  if(name && name !== playerName && !blockedUsers.includes(name)){
-                    if(confirm('آیا میخواهید به '+name+' درخواست دوستی بدهید؟')){
-                      sendFriendRequest(name);
-                    }
-                  }
-                });
+    LOG.info(`🔄 اتصال با کلید ${idx + 1}...`);
+    
+    ably = new Ably.Realtime({
+      key: ABLY_KEYS[idx],
+      clientId: username,
+      autoConnect: true,
+      recover: true,
+      transports: ['web_socket', 'xhr_streaming', 'xhr_polling', 'jsonp']
+    });
+    currentKeyIndex = idx;
+    
+    ably.connection.on('connected', function() {
+      isChatReady = true;
+      setDot('connected');
+      reconnectAttempts = 0;
+      LOG.info(`✅ متصل شد به سرور با کلید ${idx + 1}`);
+      
+      if (channel) { try { channel.detach(); } catch (e) {} }
+      channel = ably.channels.get(CHANNEL_NAME);
+      
+      channel.attach(function(err) {
+        if (err) {
+          LOG.error('❌ خطا در اتصال به کانال', err);
+          ably.close();
+          tryConnect(currentKeyIndex + 1);
+          return;
+        }
+        LOG.info(`📡 کانال ${CHANNEL_NAME} متصل شد`);
+        
+        channel.presence.enter({username}, () => updateOnline());
+        
+        channel.history({limit: 5}, function(err, r) {
+          if (!err && r && r.items) {
+            r.items.reverse().forEach(i => {
+              if (i.data && i.data.text) {
+                addMsg(i.data.username || '?', i.data.text, i.data.username === username);
               }
-              fs.appendChild(fd);
-            }
-          });
-          fs.scrollTop=fs.scrollHeight;
-        });
-        channel.subscribe(function(msg){
-          if(msg.data&&msg.data.text){
-            addMsg(msg.data.username||'?',msg.data.text,msg.data.username===username);
+            });
+            LOG.info(`📜 ${r.items.length} پیام تاریخی بارگذاری شد`);
           }
         });
-        channel.presence.subscribe('enter',function(msg){
+        
+        channel.subscribe(function(msg) {
+          if (msg.data && msg.data.text) {
+            addMsg(msg.data.username || '?', msg.data.text, msg.data.username === username);
+          }
+        });
+        
+        channel.presence.subscribe('enter', function(msg) {
           updateOnline();
-          if(msg.data && msg.data.username){
+          if (msg.data && msg.data.username) {
             onlineUsers[msg.data.username] = 'online';
             renderFriends();
-            if(friends.find(f => f.name === msg.data.username) && !blockedUsers.includes(msg.data.username)){
-              addSys('🟢 '+msg.data.username+' آنلاین شد');
+            LOG.info(`🟢 ${msg.data.username} آنلاین شد`);
+            if (friends.find(f => f.name === msg.data.username) && 
+                !isUserBlocked(msg.data.username) && !isUserKicked(msg.data.username)) {
+              addSys('🟢 ' + msg.data.username + ' آنلاین شد');
             }
           }
         });
-        channel.presence.subscribe('leave',function(msg){
+        
+        channel.presence.subscribe('leave', function(msg) {
           updateOnline();
-          if(msg.data && msg.data.username){
+          if (msg.data && msg.data.username) {
             onlineUsers[msg.data.username] = 'offline';
             renderFriends();
-            if(friends.find(f => f.name === msg.data.username) && !blockedUsers.includes(msg.data.username)){
-              addSys('🔴 '+msg.data.username+' آفلاین شد');
+            LOG.info(`🔴 ${msg.data.username} آفلاین شد`);
+            if (friends.find(f => f.name === msg.data.username) && 
+                !isUserBlocked(msg.data.username) && !isUserKicked(msg.data.username)) {
+              addSys('🔴 ' + msg.data.username + ' آفلاین شد');
             }
           }
         });
-        setTimeout(updateOnline,1000);
-        updateMuteUI();
-        updateAdminUserList();
+        
+        setTimeout(updateOnline, 1000);
+        updateChatStatus();
+        if (isAdmin) updateAdminUserList();
       });
     });
-    ably.connection.on('disconnected',function(){
-      isChatReady=false;setDot('disconnected');
-      if(reconnectAttempts<MAX_RECONNECT){reconnectAttempts++;setTimeout(()=>ably.connect(),1500);}
-      else{ably.close();tryConnect(currentKeyIndex+1);}
+    
+    ably.connection.on('disconnected', function() {
+      isChatReady = false;
+      setDot('disconnected');
+      LOG.warn('⚠️ اتصال قطع شد، تلاش برای reconnect...');
+      if (reconnectAttempts < MAX_RECONNECT) {
+        reconnectAttempts++;
+        setTimeout(() => ably.connect(), 1500);
+      } else {
+        ably.close();
+        tryConnect(currentKeyIndex + 1);
+      }
     });
-    ably.connection.on('failed',function(){isChatReady=false;setDot('disconnected');ably.close();tryConnect(currentKeyIndex+1);});
-  }catch(e){tryConnect(idx+1);}
+    
+    ably.connection.on('failed', function() {
+      isChatReady = false;
+      setDot('disconnected');
+      LOG.error('❌ اتصال با شکست مواجه شد');
+      ably.close();
+      tryConnect(currentKeyIndex + 1);
+    });
+  } catch (e) {
+    LOG.error('❌ خطا در اتصال به Ably', e);
+    tryConnect(idx + 1);
+  }
 }
 
-function updateOnline(){
-  if(channel&&channel.presence)channel.presence.get(function(err,m){
-    if(!err&&m){
-      onlineEl.textContent=m.length;
-      fsOnlineEl.textContent=m.length;
-      m.forEach(p => {
-        if(p.data && p.data.username){
-          onlineUsers[p.data.username] = 'online';
-        }
-      });
-      renderFriends();
-      if(isAdmin) updateAdminUserList();
-    }
-  });
+function updateOnline() {
+  if (channel && channel.presence) {
+    channel.presence.get(function(err, m) {
+      if (!err && m) {
+        onlineEl.textContent = m.length;
+        fsOnlineEl.textContent = m.length;
+        m.forEach(p => {
+          if (p.data && p.data.username) {
+            onlineUsers[p.data.username] = 'online';
+          }
+        });
+        renderFriends();
+        if (isAdmin) updateAdminUserList();
+        LOG.info(`👥 ${m.length} کاربر آنلاین`);
+      }
+    });
+  }
 }
 
-// ===== ACTIONS =====
-function playGame(){showToast('🎮 شروع بازی!');}
-function openShop(){showToast('🛒 فروشگاه');}
+// ============================================================
+// ======================== ACTIONS ==========================
+// ============================================================
+function playGame() { showToast('🎮 شروع بازی!'); }
+function openShop() { showToast('🛒 فروشگاه'); }
 
-// ===== INIT =====
-document.addEventListener('visibilitychange',function(){
-  if(document.hidden&&bgMusic)bgMusic.pause();
-  else if(!document.hidden&&bgMusic&&isMusicPlaying)bgMusic.play().catch(()=>{});
+// ============================================================
+// ======================== TOAST ============================
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// ======================== INIT =============================
+// ============================================================
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden && bgMusic) bgMusic.pause();
+  else if (!document.hidden && bgMusic && isMusicPlaying) bgMusic.play().catch(() => {});
 });
-document.getElementById('flagModal').addEventListener('click',function(e){if(e.target===this)closeFlagSelector();});
-document.getElementById('adminPanel').addEventListener('click',function(e){if(e.target===this)closeAdminPanel();});
-document.getElementById('fullscreenChat').addEventListener('click',function(e){if(e.target===this)closeFullscreenChat();});
 
-if('Notification' in window && Notification.permission === 'default'){
+document.getElementById('flagModal').addEventListener('click', function(e) { if (e.target === this) closeFlagSelector(); });
+document.getElementById('adminPanel').addEventListener('click', function(e) { if (e.target === this) closeAdminPanel(); });
+document.getElementById('fullscreenChat').addEventListener('click', function(e) { if (e.target === this) closeFullscreenChat(); });
+
+if ('Notification' in window && Notification.permission === 'default') {
   Notification.requestPermission();
 }
 
-window.addEventListener('load',function(){
-  if(!checkSavedUsername()){
-    document.getElementById('modalOverlay').style.display='flex';
-    setTimeout(()=>document.getElementById('phoneInput').focus(),100);
-  }
-  document.getElementById('profilePopup').addEventListener('click',function(e){if(e.target===this)closeProfile();});
+window.addEventListener('load', function() {
+  LOG.info('🚀 برنامه بارگذاری شد');
   
-  if(document.getElementById('modalOverlay').style.display==='none'){
-    gsap.from('.topbar', {duration:0.5, y:-30, opacity:0, ease:'power3.out'});
-    gsap.from('.play-btn', {duration:0.5, scale:0.5, opacity:0, delay:0.2, ease:'back.out(2)'});
-    gsap.from('.bottom-area', {duration:0.4, y:20, opacity:0, delay:0.3, ease:'power3.out'});
+  if (!checkSavedUsername()) {
+    document.getElementById('modalOverlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('phoneInput').focus(), 100);
   }
+  document.getElementById('profilePopup').addEventListener('click', function(e) { if (e.target === this) closeProfile(); });
+  
+  if (document.getElementById('modalOverlay').style.display === 'none') {
+    gsap.from('.topbar', {duration: 0.5, y: -30, opacity: 0, ease: 'power3.out'});
+    gsap.from('.play-btn', {duration: 0.5, scale: 0.5, opacity: 0, delay: 0.2, ease: 'back.out(2)'});
+    gsap.from('.bottom-area', {duration: 0.4, y: 20, opacity: 0, delay: 0.3, ease: 'power3.out'});
+  }
+  
+  // نمایش لاگ در کنسول
+  console.log('🔍 سیستم مدیریت کاربران فعال شد');
+  console.log('📋 وضعیت مدیریت:', moderationData);
+  console.log('📌 دستورات مدیریت:');
+  console.log('  - adminBlockUser("نام") → مسدود کردن');
+  console.log('  - adminKickUser("نام") → اخراج');
+  console.log('  - adminMuteUser("نام") → میوت');
+  console.log('  - adminUnmuteUser("نام") → آنمیت');
+  console.log('  - adminUnblockUser("نام") → رفع مسدود');
+  console.log('  - adminMuteAll() → قطع چت همه');
+  console.log('  - adminUnmuteAll() → فعال‌سازی چت');
+  console.log('  - adminClearChat() → پاک کردن چت');
 });
 
-// ===== UPDATE ADMIN LIST PERIODICALLY =====
-setInterval(function(){
-  if(isAdmin){
+// بروزرسانی دوره‌ای لیست ادمین
+setInterval(function() {
+  if (isAdmin) {
     updateAdminUserList();
   }
-},5000);
+}, 5000);
 
-console.log('🔍 سیستم مدیریت کاربران فعال شد');
-console.log('📋 دستورات مدیریت:');
-console.log('  - adminBlockUser("نام کاربر") → مسدود کردن کاربر');
-console.log('  - adminKickUser("نام کاربر") → اخراج کاربر از چت');
-console.log('  - adminMuteAll() → قطع چت همه');
-console.log('  - adminUnmuteAll() → فعال‌سازی چت');
-console.log('  - adminClearChat() → پاک کردن چت');
+// بروزرسانی دوره‌ای وضعیت چت
+setInterval(function() {
+  updateChatStatus();
+}, 3000);
+
+// ============================================================
+// ======================== DEBUG ============================
+// ============================================================
+// نمایش وضعیت مدیریت در کنسول برای دیباگ
+setInterval(function() {
+  if (isAdmin) {
+    console.log('📊 وضعیت مدیریت:', {
+      blocked: moderationData.blocked,
+      kicked: moderationData.kicked,
+      muted: moderationData.muted,
+      chatMuted: window.chatMuted
+    });
+  }
+}, 10000);
 </script>
 </body>
 </html>
