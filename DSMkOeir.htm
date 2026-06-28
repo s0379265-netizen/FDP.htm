@@ -1,1585 +1,461 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>World War - بازی استراتژی</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Procedural Terrain · FPS Environment</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-    }
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background: #000;
-      font-family: 'Oswald', sans-serif;
-    }
-
-    body {
-      color: #fff;
-      background: #000 url('https://uploadkon.ir/uploads/2ae119_26IMG-20260619-231125-192.jpg') no-repeat center center;
-      background-size: cover;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.72) 100%),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.0) 30%, rgba(0, 0, 0, 0.0) 62%, rgba(0, 0, 0, 0.88) 100%);
-      z-index: 0;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.028) 3px, rgba(0, 0, 0, 0.028) 4px);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* ===== TOP BAR ===== */
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 54px;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px;
-      gap: 8px;
-      background: rgba(4, 8, 16, 0.82);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 180, 0, 0.18);
-    }
-    .topbar::before {
-      content: '';
+    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    #info {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255, 180, 0, 0.45) 25%, rgba(255, 220, 100, 0.9) 50%, rgba(255, 180, 0, 0.45) 75%, transparent);
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .topbar-left .logo-small {
-      font-size: 14px;
-      font-weight: 900;
-      color: #ffb300;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 2px;
-    }
-    .topbar-left .day-indicator {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.4);
-      background: rgba(255, 180, 0, 0.06);
-      border: 1px solid rgba(255, 180, 0, 0.08);
-      padding: 2px 12px;
-      border-radius: 12px;
-      font-family: 'Rajdhani', sans-serif;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .topbar-right .badge-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255, 50, 50, 0.12);
-      border: 1px solid rgba(255, 50, 50, 0.2);
-      color: #ff5555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      bottom: 20px;
+      left: 20px;
+      color: rgba(255,255,255,0.3);
       font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.3s;
-      position: relative;
-    }
-    .topbar-right .badge-circle:hover {
-      background: rgba(255, 50, 50, 0.2);
-      transform: scale(1.05);
-    }
-    .topbar-right .badge-circle .notification-dot {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 8px;
-      height: 8px;
-      background: #ff4444;
-      border-radius: 50%;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink {
-      0%,
-      100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.3;
-      }
-    }
-
-    .topbar-right .online-pill {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 9px;
-      color: #5dc44a;
-      font-weight: 700;
-      background: rgba(10, 30, 10, 0.55);
-      border: 1px solid rgba(93, 196, 74, 0.22);
-      padding: 3px 8px;
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
-    }
-    .topbar-right .online-dot {
-      width: 6px;
-      height: 6px;
-      background: #5dc44a;
-      border-radius: 50%;
-      animation: blink 1.8s infinite;
-      box-shadow: 0 0 6px rgba(93, 196, 74, 0.5);
-    }
-
-    /* ===== MAIN CONTAINER ===== */
-    .main-container {
-      position: fixed;
-      top: 54px;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      pointer-events: none;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+      letter-spacing: 1px;
       z-index: 10;
-      display: flex;
-      flex-direction: column;
-      padding: 10px 12px 100px;
-      overflow-y: auto;
-    }
-    .main-container::-webkit-scrollbar {
-      width: 3px;
-    }
-    .main-container::-webkit-scrollbar-thumb {
-      background: rgba(255, 180, 0, 0.2);
-      border-radius: 3px;
-    }
-
-    /* ===== GAME TITLE ===== */
-    .game-title {
-      text-align: center;
-      padding: 10px 0 14px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 22px;
-      font-weight: 900;
-      color: #ffb300;
-      text-shadow: 0 0 30px rgba(255, 180, 0, 0.15);
-      letter-spacing: 4px;
-      position: relative;
-    }
-    .game-title span {
-      color: #fff;
-      opacity: 0.3;
-      font-size: 12px;
-      display: block;
-      letter-spacing: 2px;
-      font-weight: 400;
-    }
-
-    /* ===== COUNTRY SELECTION ===== */
-    .country-section {
-      background: rgba(4, 8, 16, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 180, 0, 0.06);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-    }
-    .country-section-title {
-      font-size: 9px;
-      color: rgba(255, 180, 0, 0.5);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(255, 180, 0, 0.04);
-      margin-bottom: 6px;
-      font-family: 'Rajdhani', sans-serif;
-    }
-    .country-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 4px;
-    }
-    .country-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .country-item:hover {
-      background: rgba(255, 180, 0, 0.04);
-      border-color: rgba(255, 180, 0, 0.06);
-    }
-    .country-item.selected {
-      background: rgba(255, 180, 0, 0.06);
-      border-color: rgba(255, 180, 0, 0.15);
-    }
-    .country-item .flag {
-      font-size: 16px;
-      width: 24px;
-      text-align: center;
-    }
-    .country-item .name {
-      font-size: 9px;
-      color: rgba(255, 255, 255, 0.6);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .country-item .check-circle {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: transparent;
-      transition: 0.3s;
-      flex-shrink: 0;
-    }
-    .country-item.selected .check-circle {
-      border-color: #5dc44a;
-      background: rgba(93, 196, 74, 0.1);
-      color: #5dc44a;
-    }
-
-    /* ===== ACTION BUTTONS ===== */
-    .actions-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      padding: 4px 0;
-    }
-    .action-btn {
-      padding: 8px 4px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 180, 0, 0.08);
-      background: rgba(255, 255, 255, 0.02);
-      color: rgba(255, 255, 255, 0.5);
-      font-family: 'Oswald', sans-serif;
-      font-size: 9px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: center;
-      letter-spacing: 0.5px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .action-btn i {
-      font-size: 16px;
-      color: rgba(255, 180, 0, 0.3);
-      transition: 0.3s;
-    }
-    .action-btn:hover {
-      background: rgba(255, 180, 0, 0.04);
-      border-color: rgba(255, 180, 0, 0.12);
-      color: #fff;
-    }
-    .action-btn:hover i {
-      color: #ffb300;
-    }
-    .action-btn.active {
-      background: rgba(255, 180, 0, 0.06);
-      border-color: rgba(255, 180, 0, 0.15);
-      color: #ffb300;
-    }
-    .action-btn.active i {
-      color: #ffb300;
-    }
-    .action-btn.disabled {
-      opacity: 0.25;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    /* ===== CONFIRM BUTTON ===== */
-    .confirm-btn {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #1a7a2a, #2ecc40);
-      color: #fff;
-      font-family: 'Oswald', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 6px;
-      display: none;
-      text-transform: uppercase;
-      box-shadow: 0 4px 20px rgba(46, 204, 64, 0.2);
-    }
-    .confirm-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 30px rgba(46, 204, 64, 0.3);
-    }
-    .confirm-btn.show {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    /* ===== BOTTOM AREA ===== */
-    .bottom-area {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 14;
-      background: rgba(4, 8, 16, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-top: 1px solid rgba(255, 180, 0, 0.08);
-      padding: 6px 10px 10px;
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .bottom-area .bottom-btn {
-      padding: 6px 14px;
-      border: 1px solid rgba(255, 180, 0, 0.06);
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 6px;
-      color: rgba(255, 255, 255, 0.4);
-      font-family: 'Oswald', sans-serif;
-      font-size: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .bottom-area .bottom-btn:hover {
-      background: rgba(255, 180, 0, 0.04);
-      color: #fff;
-    }
-    .bottom-area .bottom-btn i {
-      font-size: 10px;
-    }
-    .bottom-area .bottom-btn.active {
-      background: rgba(255, 180, 0, 0.06);
-      border-color: rgba(255, 180, 0, 0.12);
-      color: #ffb300;
-    }
-
-    /* ===== MODALS ===== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(20px);
-      z-index: 999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      animation: fadeIn 0.3s ease;
-    }
-    .modal-overlay.active {
-      display: flex;
-    }
-    .modal-box {
-      width: 100%;
-      max-width: 500px;
-      max-height: 85vh;
-      background: rgba(8, 14, 24, 0.96);
-      border: 1px solid rgba(255, 180, 0, 0.12);
-      border-top: 3px solid #ffb300;
-      border-radius: 12px;
-      padding: 24px;
-      overflow-y: auto;
-      animation: slideUp 0.3s ease;
-    }
-    .modal-box::-webkit-scrollbar {
-      width: 3px;
-    }
-    .modal-box::-webkit-scrollbar-thumb {
-      background: rgba(255, 180, 0, 0.2);
-      border-radius: 3px;
-    }
-    .modal-box .modal-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffb300;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
-      text-align: center;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .modal-box .modal-close {
-      position: sticky;
-      top: 0;
-      float: left;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: #8899aa;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 5;
-    }
-    .modal-box .modal-close:hover {
-      background: rgba(255, 50, 50, 0.15);
-      border-color: rgba(255, 50, 50, 0.2);
-      color: #ff5555;
-      transform: rotate(90deg);
-    }
-    .modal-box textarea {
-      width: 100%;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 180, 0, 0.08);
-      border-radius: 8px;
-      color: #cfd8e0;
-      font-size: 12px;
-      font-family: 'Rajdhani', sans-serif;
-      outline: none;
-      transition: 0.3s;
-      resize: vertical;
-      min-height: 100px;
-      direction: rtl;
-      line-height: 1.8;
-    }
-    .modal-box textarea:focus {
-      border-color: #ffb300;
-    }
-    .modal-box textarea::placeholder {
-      color: rgba(255, 255, 255, 0.1);
-    }
-    .modal-box .input-group {
-      margin: 8px 0;
-    }
-    .modal-box .input-group label {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.3);
-      display: block;
-      margin-bottom: 4px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .modal-box .input-group input,
-    .modal-box .input-group select {
-      width: 100%;
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 180, 0, 0.08);
-      border-radius: 6px;
-      color: #cfd8e0;
-      font-size: 11px;
-      outline: none;
-      transition: 0.3s;
-      font-family: 'Rajdhani', sans-serif;
-    }
-    .modal-box .input-group input:focus,
-    .modal-box .input-group select:focus {
-      border-color: #ffb300;
-    }
-    .modal-box .input-group input::placeholder {
-      color: rgba(255, 255, 255, 0.1);
-    }
-    .modal-box .modal-btn {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #a06000, #ffb300);
-      color: #000;
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 12px;
-      text-transform: uppercase;
-    }
-    .modal-box .modal-btn:hover {
-      filter: brightness(1.12);
-      transform: scale(1.02);
-    }
-    .modal-box .modal-btn.secondary {
-      background: rgba(255, 255, 255, 0.04);
-      color: #8899aa;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .modal-box .modal-btn.secondary:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .modal-box .equipment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin: 6px 0;
-    }
-    .modal-box .equipment-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 8px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 4px;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.6);
-    }
-    .modal-box .equipment-item .count {
-      color: #ffb300;
-      font-weight: 700;
-    }
-    .modal-box .equipment-item .controls {
-      display: flex;
-      gap: 4px;
-    }
-    .modal-box .equipment-item .controls button {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 180, 0, 0.08);
-      background: rgba(255, 255, 255, 0.02);
-      color: #8899aa;
-      cursor: pointer;
-      transition: 0.3s;
-      font-size: 10px;
-    }
-    .modal-box .equipment-item .controls button:hover {
-      background: rgba(255, 180, 0, 0.06);
-      color: #ffb300;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    @keyframes slideUp {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media(max-width:500px) {
-      .topbar {
-        height: 48px;
-        padding: 0 8px;
-      }
-      .main-container {
-        top: 48px;
-        padding: 6px 8px 80px;
-      }
-      .game-title {
-        font-size: 16px;
-        padding: 6px 0 10px;
-      }
-      .country-grid {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      }
-      .country-item .name {
-        font-size: 8px;
-      }
-      .actions-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-      }
-      .action-btn {
-        font-size: 8px;
-        padding: 6px 2px;
-      }
-      .action-btn i {
-        font-size: 14px;
-      }
-      .bottom-area .bottom-btn {
-        font-size: 7px;
-        padding: 4px 8px;
-      }
-      .modal-box {
-        padding: 16px;
-      }
     }
   </style>
 </head>
 <body>
+  <div id="info">PROCEDURAL TERRAIN · WASD + MOUSE</div>
 
-<!-- ===== TOP BAR ===== -->
-<div class="topbar">
-  <div class="topbar-left">
-    <span class="logo-small">🌍 WW</span>
-    <span class="day-indicator" id="dayIndicator">روز ۱</span>
-  </div>
-  <div class="topbar-right">
-    <div class="badge-circle" id="notificationBadge" onclick="openNotifications()">
-      ۵
-      <span class="notification-dot"></span>
-    </div>
-    <div class="online-pill">
-      <span class="online-dot"></span>
-      <span id="onlineCount">۰</span>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MAIN CONTAINER ===== -->
-<div class="main-container" id="mainContainer">
-
-  <!-- GAME TITLE -->
-  <div class="game-title">
-    🌍 WORLD WAR
-    <span>بازی استراتژی جهانی</span>
-  </div>
-
-  <!-- COUNTRY SELECTION -->
-  <div class="country-section">
-    <div class="country-section-title">🇪🇺 ناتو / NATO</div>
-    <div class="country-grid" id="natoCountries">
-      <!-- توسط JS پر میشه -->
-    </div>
-  </div>
-
-  <div class="country-section">
-    <div class="country-section-title">🇨🇾 بریکس / BRICS</div>
-    <div class="country-grid" id="bricsCountries">
-      <!-- توسط JS پر میشه -->
-    </div>
-  </div>
-
-  <div class="country-section">
-    <div class="country-section-title">🏳 بی‌طرف / NEUTRAL</div>
-    <div class="country-grid" id="neutralCountries">
-      <!-- توسط JS پر میشه -->
-    </div>
-  </div>
-
-  <!-- ACTION BUTTONS -->
-  <div class="actions-grid">
-    <button class="action-btn" onclick="openModal('statement')" id="btnStatement">
-      <i class="fas fa-file-alt"></i>
-      بیانیه
-    </button>
-    <button class="action-btn" onclick="openModal('attack')" id="btnAttack">
-      <i class="fas fa-crosshairs"></i>
-      سناریو حمله
-    </button>
-    <button class="action-btn" onclick="openModal('defense')" id="btnDefense">
-      <i class="fas fa-shield-alt"></i>
-      سناریو دفاع
-    </button>
-    <button class="action-btn" onclick="openModal('roles')" id="btnRoles">
-      <i class="fas fa-users"></i>
-      رول‌ها
-    </button>
-    <button class="action-btn" onclick="openModal('transfer')" id="btnTransfer">
-      <i class="fas fa-exchange-alt"></i>
-      انتقال تجهیزات و منابع
-    </button>
-    <button class="action-btn" onclick="openModal('sabotage')" id="btnSabotage">
-      <i class="fas fa-skull"></i>
-      خرابکاری
-    </button>
-  </div>
-
-  <!-- CONFIRM BUTTON -->
-  <button class="confirm-btn" id="confirmBtn" onclick="confirmSelection()">
-    ✅ تایید انتخاب کشور
-  </button>
-
-</div>
-
-<!-- ===== BOTTOM AREA ===== -->
-<div class="bottom-area">
-  <button class="bottom-btn" onclick="openModal('statement')">
-    <i class="fas fa-file-alt"></i> بیانیه
-  </button>
-  <button class="bottom-btn" onclick="openModal('attack')">
-    <i class="fas fa-crosshairs"></i> حمله
-  </button>
-  <button class="bottom-btn" onclick="openModal('defense')">
-    <i class="fas fa-shield-alt"></i> دفاع
-  </button>
-  <button class="bottom-btn" onclick="openModal('roles')">
-    <i class="fas fa-users"></i> رول‌ها
-  </button>
-  <button class="bottom-btn" onclick="openModal('transfer')">
-    <i class="fas fa-exchange-alt"></i> انتقال
-  </button>
-  <button class="bottom-btn" onclick="openModal('sabotage')">
-    <i class="fas fa-skull"></i> خرابکاری
-  </button>
-  <button class="bottom-btn active" onclick="openChat()">
-    <i class="fas fa-comment"></i> چت
-  </button>
-</div>
-
-<!-- ===== MODAL: بیانیه ===== -->
-<div class="modal-overlay" id="modalStatement">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('statement')">✕</button>
-    <div class="modal-title"><i class="fas fa-file-alt"></i> بیانیه</div>
-    <div class="input-group">
-      <label>صادر کننده</label>
-      <input id="statementIssuer" placeholder="نام کشور یا سازمان..." value="ایران">
-    </div>
-    <div class="input-group">
-      <label>متن بیانیه</label>
-      <textarea id="statementText" placeholder="متن بیانیه خود را وارد کنید..."></textarea>
-    </div>
-    <button class="modal-btn" onclick="submitStatement()">📨 ارسال بیانیه</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: سناریو حمله ===== -->
-<div class="modal-overlay" id="modalAttack">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('attack')">✕</button>
-    <div class="modal-title"><i class="fas fa-crosshairs"></i> سناریو حمله</div>
-    <div class="equipment-list" id="attackEquipment">
-      <!-- توسط JS پر میشه -->
-    </div>
-    <div class="input-group">
-      <label>توضیحات سناریو</label>
-      <textarea id="attackDesc" placeholder="سناریو حمله خود را شرح دهید..."></textarea>
-    </div>
-    <button class="modal-btn" onclick="submitAttack()">🚀 ثبت سناریو</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: سناریو دفاع ===== -->
-<div class="modal-overlay" id="modalDefense">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('defense')">✕</button>
-    <div class="modal-title"><i class="fas fa-shield-alt"></i> سناریو دفاع</div>
-    <div class="equipment-list" id="defenseEquipment">
-      <!-- توسط JS پر میشه -->
-    </div>
-    <div class="input-group">
-      <label>توضیحات سناریو</label>
-      <textarea id="defenseDesc" placeholder="سناریو دفاع خود را شرح دهید..."></textarea>
-    </div>
-    <button class="modal-btn" onclick="submitDefense()">🛡 ثبت سناریو</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: رول‌ها ===== -->
-<div class="modal-overlay" id="modalRoles">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('roles')">✕</button>
-    <div class="modal-title"><i class="fas fa-users"></i> رول‌ها</div>
-    <div class="input-group">
-      <label>عنوان رول</label>
-      <input id="roleTitle" placeholder="مثلاً: مذاکره با فلان کشور...">
-    </div>
-    <div class="input-group">
-      <label>شرح رول</label>
-      <textarea id="roleDesc" placeholder="شرح کامل رول..."></textarea>
-    </div>
-    <button class="modal-btn" onclick="submitRole()">📋 ثبت رول</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: انتقال تجهیزات و منابع ===== -->
-<div class="modal-overlay" id="modalTransfer">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('transfer')">✕</button>
-    <div class="modal-title"><i class="fas fa-exchange-alt"></i> انتقال تجهیزات و منابع</div>
-    <div class="equipment-list" id="transferEquipment">
-      <!-- توسط JS پر میشه -->
-    </div>
-    <div class="input-group">
-      <label>انتخاب کشور مقصد</label>
-      <select id="transferCountry">
-        <option value="">انتخاب کنید...</option>
-      </select>
-    </div>
-    <button class="modal-btn" onclick="submitTransfer()">📤 ارسال</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: خرابکاری ===== -->
-<div class="modal-overlay" id="modalSabotage">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('sabotage')">✕</button>
-    <div class="modal-title"><i class="fas fa-skull"></i> خرابکاری</div>
-    <div class="input-group">
-      <label>کشور هدف</label>
-      <select id="sabotageTarget">
-        <option value="">انتخاب کنید...</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <label>شرح خرابکاری</label>
-      <textarea id="sabotageDesc" placeholder="شرح عملیات خرابکاری..."></textarea>
-    </div>
-    <button class="modal-btn" onclick="submitSabotage()">💣 ثبت خرابکاری</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: چت ===== -->
-<div class="modal-overlay" id="modalChat">
-  <div class="modal-box" style="max-width:600px;">
-    <button class="modal-close" onclick="closeModal('chat')">✕</button>
-    <div class="modal-title"><i class="fas fa-comment-dots"></i> چت جهانی</div>
-    <div id="chatMessages" style="max-height:300px;overflow-y:auto;padding:6px 0;display:flex;flex-direction:column;gap:4px;margin-bottom:8px;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;">
-      <!-- پیام‌ها اینجا نمایش داده میشن -->
-    </div>
-    <div style="display:flex;gap:6px;">
-      <input id="chatInput" type="text" placeholder="پیام بنویس..." style="flex:1;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,180,0,0.08);border-radius:6px;color:#cfd8e0;font-size:11px;outline:none;direction:rtl;">
-      <button onclick="sendChatMessage()" style="padding:8px 16px;background:rgba(255,180,0,0.06);border:1px solid rgba(255,180,0,0.08);border-radius:6px;color:#ffb300;cursor:pointer;transition:0.3s;">➤</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: اعلانات ===== -->
-<div class="modal-overlay" id="modalNotifications">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('notifications')">✕</button>
-    <div class="modal-title"><i class="fas fa-bell"></i> اعلانات</div>
-    <div id="notificationsList" style="display:flex;flex-direction:column;gap:6px;">
-      <!-- توسط JS پر میشه -->
-    </div>
-  </div>
-</div>
-
-<script>
-  // ============================================================
-  // ======================== DATA ==============================
-  // ============================================================
-  const countries = {
-    nato: [
-      { name: 'آمریکا', flag: '🇺🇸' },
-      { name: 'بریتانیا', flag: '🇬🇧' },
-      { name: 'فرانسه', flag: '🇫🇷' },
-      { name: 'آلمان', flag: '🇩🇪' },
-      { name: 'اسپانیا', flag: '🇪🇸' },
-      { name: 'ایتالیا', flag: '🇮🇹' },
-      { name: 'بلژیک', flag: '🇧🇪' },
-      { name: 'لهستان', flag: '🇵🇱' },
-      { name: 'پرتغال', flag: '🇵🇹' },
-      { name: 'ترکیه', flag: '🇹🇷' },
-      { name: 'کانادا', flag: '🇨🇦' },
-      { name: 'ژاپن', flag: '🇯🇵' },
-      { name: 'کره جنوبی', flag: '🇰🇷' },
-      { name: 'اوکراین', flag: '🇺🇦' },
-      { name: 'سوئد', flag: '🇸🇪' },
-      { name: 'نروژ', flag: '🇳🇴' },
-      { name: 'دانمارک', flag: '🇩🇰' }
-    ],
-    brics: [
-      { name: 'روسیه', flag: '🇷🇺' },
-      { name: 'چین', flag: '🇨🇳' },
-      { name: 'ایران', flag: '🇮🇷' },
-      { name: 'هند', flag: '🇮🇳' },
-      { name: 'برزیل', flag: '🇧🇷' },
-      { name: 'کره شمالی', flag: '🇰🇵' },
-      { name: 'فلسطین', flag: '🇵🇸' },
-      { name: 'عراق', flag: '🇮🇶' },
-      { name: 'سوریه', flag: '🇸🇾' },
-      { name: 'عربستان', flag: '🇸🇦' },
-      { name: 'آفریقای جنوبی', flag: '🇿🇦' },
-      { name: 'قطر', flag: '🇶🇦' },
-      { name: 'امارات', flag: '🇦🇪' },
-      { name: 'پاکستان', flag: '🇵🇰' },
-      { name: 'آذربایجان', flag: '🇦🇿' }
-    ],
-    neutral: [
-      { name: 'آرژانتین', flag: '🇦🇷' },
-      { name: 'مکزیک', flag: '🇲🇽' },
-      { name: 'ونزوئلا', flag: '🇨🇴' },
-      { name: 'استرالیا', flag: '🇦🇺' },
-      { name: 'مصر', flag: '🇪🇬' },
-      { name: 'افغانستان', flag: '🇦🇫' },
-      { name: 'شیلی', flag: '🇨🇱' },
-      { name: 'اندونزی', flag: '🇮🇩' }
-    ]
-  };
-
-  // تجهیزات اولیه
-  let playerEquipment = {
-    موشک: 100,
-    سرباز: 200,
-    پدافند: 50,
-    تانک: 30,
-    جنگنده: 20,
-    طلا: 500
-  };
-
-  let selectedCountry = null;
-  let gameDay = 1;
-  let notifications = [];
-  let chatMessages = [];
-
-  // ============================================================
-  // ======================== INIT ==============================
-  // ============================================================
-  function init() {
-    renderCountries();
-    populateSelects();
-    updateEquipmentUI();
-    updateDayUI();
-    updateNotificationBadge();
-    loadGameState();
-    
-    // چک کردن روز برای فعال/غیرفعال کردن دکمه‌ها
-    updateButtonsByDay();
-    
-    // شروع تایمر روز (هر ۲۴ ساعت یک روز)
-    startDayTimer();
-    
-    console.log('🌍 WORLD WAR بازی راه‌اندازی شد');
-    console.log('📋 کشورها:', countries);
-    console.log('🎮 تجهیزات:', playerEquipment);
-  }
-
-  // ============================================================
-  // ======================== RENDER COUNTRIES =================
-  // ============================================================
-  function renderCountries() {
-    renderCountryGroup('natoCountries', countries.nato);
-    renderCountryGroup('bricsCountries', countries.brics);
-    renderCountryGroup('neutralCountries', countries.neutral);
-  }
-
-  function renderCountryGroup(containerId, countryList) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    countryList.forEach(c => {
-      const div = document.createElement('div');
-      div.className = 'country-item';
-      div.dataset.name = c.name;
-      div.innerHTML = `
-        <span class="flag">${c.flag}</span>
-        <span class="name">${c.name}</span>
-        <span class="check-circle"></span>
-      `;
-      div.onclick = () => selectCountry(c.name, div);
-      container.appendChild(div);
-    });
-  }
-
-  // ============================================================
-  // ======================== SELECT COUNTRY ====================
-  // ============================================================
-  function selectCountry(name, element) {
-    // حذف انتخاب قبلی
-    document.querySelectorAll('.country-item').forEach(el => {
-      el.classList.remove('selected');
-    });
-    
-    element.classList.add('selected');
-    selectedCountry = name;
-    
-    // نمایش دکمه تایید
-    document.getElementById('confirmBtn').classList.add('show');
-    document.getElementById('confirmBtn').textContent = `✅ تایید ${name}`;
-    
-    console.log(`🇺🇳 کشور انتخاب شد: ${name}`);
-  }
-
-  function confirmSelection() {
-    if (!selectedCountry) {
-      showToast('⚠️ لطفاً ابتدا یک کشور انتخاب کنید!');
-      return;
-    }
-    showToast(`✅ کشور ${selectedCountry} با موفقیت انتخاب شد`);
-    document.getElementById('confirmBtn').classList.remove('show');
-    
-    // ذخیره در localStorage
-    localStorage.setItem('ww_selected_country', selectedCountry);
-  }
-
-  // ============================================================
-  // ======================== DAY SYSTEM ========================
-  // ============================================================
-  function updateDayUI() {
-    document.getElementById('dayIndicator').textContent = `روز ${gameDay}`;
-  }
-
-  function updateButtonsByDay() {
-    const btns = {
-      statement: document.getElementById('btnStatement'),
-      attack: document.getElementById('btnAttack'),
-      defense: document.getElementById('btnDefense'),
-      roles: document.getElementById('btnRoles'),
-      transfer: document.getElementById('btnTransfer'),
-      sabotage: document.getElementById('btnSabotage')
-    };
-
-    // روز ۱: فقط بیانیه
-    if (gameDay === 1) {
-      btns.statement.classList.remove('disabled');
-      btns.attack.classList.add('disabled');
-      btns.defense.classList.add('disabled');
-      btns.roles.classList.add('disabled');
-      btns.transfer.classList.add('disabled');
-      btns.sabotage.classList.add('disabled');
-    }
-    // روز ۲: بیانیه + رول‌ها
-    else if (gameDay === 2) {
-      btns.statement.classList.remove('disabled');
-      btns.attack.classList.add('disabled');
-      btns.defense.classList.add('disabled');
-      btns.roles.classList.remove('disabled');
-      btns.transfer.classList.add('disabled');
-      btns.sabotage.classList.add('disabled');
-    }
-    // روز ۳: بیانیه + رول‌ها + انتقال
-    else if (gameDay === 3) {
-      btns.statement.classList.remove('disabled');
-      btns.attack.classList.add('disabled');
-      btns.defense.classList.add('disabled');
-      btns.roles.classList.remove('disabled');
-      btns.transfer.classList.remove('disabled');
-      btns.sabotage.classList.add('disabled');
-    }
-    // روز ۴ به بعد: همه چیز باز
-    else {
-      btns.statement.classList.remove('disabled');
-      btns.attack.classList.remove('disabled');
-      btns.defense.classList.remove('disabled');
-      btns.roles.classList.remove('disabled');
-      btns.transfer.classList.remove('disabled');
-      btns.sabotage.classList.remove('disabled');
-    }
-  }
-
-  function startDayTimer() {
-    // هر ۲۴ ساعت یک روز (برای تست ۳۰ ثانیه)
-    setInterval(() => {
-      gameDay++;
-      updateDayUI();
-      updateButtonsByDay();
-      addNotification(`📅 روز ${gameDay} شروع شد`, 'system');
-      showToast(`📅 روز ${gameDay} شروع شد`);
-      
-      // ذخیره در localStorage
-      localStorage.setItem('ww_game_day', gameDay);
-    }, 30000); // ۳۰ ثانیه برای تست
-  }
-
-  // ============================================================
-  // ======================== EQUIPMENT ========================
-  // ============================================================
-  function updateEquipmentUI() {
-    const containers = ['attackEquipment', 'defenseEquipment', 'transferEquipment'];
-    containers.forEach(id => {
-      const container = document.getElementById(id);
-      if (!container) return;
-      container.innerHTML = '';
-      Object.entries(playerEquipment).forEach(([name, count]) => {
-        const div = document.createElement('div');
-        div.className = 'equipment-item';
-        div.innerHTML = `
-          <span>${name}</span>
-          <span class="count">${count}</span>
-          <span class="controls">
-            <button onclick="adjustEquipment('${name}', -1)">−</button>
-            <button onclick="adjustEquipment('${name}', 1)">+</button>
-          </span>
-        `;
-        container.appendChild(div);
-      });
-    });
-  }
-
-  function adjustEquipment(name, change) {
-    if (!playerEquipment[name]) return;
-    const newVal = playerEquipment[name] + change;
-    if (newVal < 0) return;
-    playerEquipment[name] = newVal;
-    updateEquipmentUI();
-    saveGameState();
-  }
-
-  function populateSelects() {
-    const allCountries = [...countries.nato, ...countries.brics, ...countries.neutral];
-    const selects = ['transferCountry', 'sabotageTarget'];
-    selects.forEach(id => {
-      const select = document.getElementById(id);
-      if (!select) return;
-      select.innerHTML = '<option value="">انتخاب کنید...</option>';
-      allCountries.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.name;
-        opt.textContent = `${c.flag} ${c.name}`;
-        select.appendChild(opt);
-      });
-    });
-  }
-
-  // ============================================================
-  // ======================== MODALS ============================
-  // ============================================================
-  function openModal(type) {
-    // چک کردن روز برای دسترسی
-    if (type === 'attack' && gameDay < 4) {
-      showToast('⛔ سناریو حمله از روز ۴ به بعد فعال میشود');
-      return;
-    }
-    if (type === 'defense' && gameDay < 4) {
-      showToast('⛔ سناریو دفاع از روز ۴ به بعد فعال میشود');
-      return;
-    }
-    if (type === 'transfer' && gameDay < 3) {
-      showToast('⛔ انتقال تجهیزات از روز ۳ به بعد فعال میشود');
-      return;
-    }
-    if (type === 'sabotage' && gameDay < 4) {
-      showToast('⛔ خرابکاری از روز ۴ به بعد فعال میشود');
-      return;
-    }
-    if (type === 'roles' && gameDay < 2) {
-      showToast('⛔ رول‌ها از روز ۲ به بعد فعال میشوند');
-      return;
-    }
-    
-    const modalMap = {
-      statement: 'modalStatement',
-      attack: 'modalAttack',
-      defense: 'modalDefense',
-      roles: 'modalRoles',
-      transfer: 'modalTransfer',
-      sabotage: 'modalSabotage',
-      chat: 'modalChat',
-      notifications: 'modalNotifications'
-    };
-    
-    const modalId = modalMap[type];
-    if (!modalId) return;
-    
-    document.getElementById(modalId).classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    // آپدیت تجهیزات در مودال‌ها
-    if (type === 'attack' || type === 'defense' || type === 'transfer') {
-      updateEquipmentUI();
-    }
-  }
-
-  function closeModal(type) {
-    const modalMap = {
-      statement: 'modalStatement',
-      attack: 'modalAttack',
-      defense: 'modalDefense',
-      roles: 'modalRoles',
-      transfer: 'modalTransfer',
-      sabotage: 'modalSabotage',
-      chat: 'modalChat',
-      notifications: 'modalNotifications'
-    };
-    
-    const modalId = modalMap[type];
-    if (!modalId) return;
-    
-    document.getElementById(modalId).classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  // ============================================================
-  // ======================== SUBMIT FUNCTIONS ==================
-  // ============================================================
-  function submitStatement() {
-    const issuer = document.getElementById('statementIssuer').value.trim();
-    const text = document.getElementById('statementText').value.trim();
-    
-    if (!issuer) { showToast('⚠️ لطفاً صادر کننده را وارد کنید'); return; }
-    if (!text) { showToast('⚠️ لطفاً متن بیانیه را وارد کنید'); return; }
-    
-    const statement = {
-      id: Date.now(),
-      issuer: issuer,
-      text: text,
-      time: new Date().toLocaleString(),
-      status: 'pending'
-    };
-    
-    // ذخیره در لیست بیانیه‌ها
-    const statements = JSON.parse(localStorage.getItem('ww_statements') || '[]');
-    statements.push(statement);
-    localStorage.setItem('ww_statements', JSON.stringify(statements));
-    
-    // ارسال به ادمین (سازمان ملل)
-    addNotification(`📨 بیانیه جدید از ${issuer}`, 'statement');
-    
-    showToast(`✅ بیانیه شما با موفقیت ارسال شد و در انتظار تایید است`);
-    closeModal('statement');
-    
-    // پاک کردن فرم
-    document.getElementById('statementText').value = '';
-  }
-
-  function submitAttack() {
-    const desc = document.getElementById('attackDesc').value.trim();
-    if (!desc) { showToast('⚠️ لطفاً سناریو حمله را شرح دهید'); return; }
-    
-    // بررسی تجهیزات
-    const used = Object.entries(playerEquipment).filter(([k, v]) => v < 10);
-    if (used.length > 0) {
-      showToast(`⚠️ تجهیزات شما کم است: ${used.map(([k, v]) => `${k}: ${v}`).join(', ')}`);
-      return;
-    }
-    
-    addNotification(`⚔️ سناریو حمله ثبت شد`, 'attack');
-    showToast(`✅ سناریو حمله با موفقیت ثبت شد`);
-    closeModal('attack');
-    document.getElementById('attackDesc').value = '';
-  }
-
-  function submitDefense() {
-    const desc = document.getElementById('defenseDesc').value.trim();
-    if (!desc) { showToast('⚠️ لطفاً سناریو دفاع را شرح دهید'); return; }
-    
-    addNotification(`🛡 سناریو دفاع ثبت شد`, 'defense');
-    showToast(`✅ سناریو دفاع با موفقیت ثبت شد`);
-    closeModal('defense');
-    document.getElementById('defenseDesc').value = '';
-  }
-
-  function submitRole() {
-    const title = document.getElementById('roleTitle').value.trim();
-    const desc = document.getElementById('roleDesc').value.trim();
-    
-    if (!title) { showToast('⚠️ لطفاً عنوان رول را وارد کنید'); return; }
-    if (!desc) { showToast('⚠️ لطفاً شرح رول را وارد کنید'); return; }
-    
-    addNotification(`📋 رول جدید: ${title}`, 'role');
-    showToast(`✅ رول "${title}" با موفقیت ثبت شد`);
-    closeModal('roles');
-    document.getElementById('roleTitle').value = '';
-    document.getElementById('roleDesc').value = '';
-  }
-
-  function submitTransfer() {
-    const country = document.getElementById('transferCountry').value;
-    if (!country) { showToast('⚠️ لطفاً کشور مقصد را انتخاب کنید'); return; }
-    
-    // بررسی اینکه چیزی برای انتقال انتخاب شده
-    const hasTransfer = Object.values(playerEquipment).some(v => v > 0);
-    if (!hasTransfer) { showToast('⚠️ هیچ تجهیزاتی برای انتقال ندارید'); return; }
-    
-    addNotification(`📤 انتقال تجهیزات به ${country}`, 'transfer');
-    showToast(`✅ تجهیزات به ${country} ارسال شد`);
-    closeModal('transfer');
-  }
-
-  function submitSabotage() {
-    const target = document.getElementById('sabotageTarget').value;
-    const desc = document.getElementById('sabotageDesc').value.trim();
-    
-    if (!target) { showToast('⚠️ لطفاً کشور هدف را انتخاب کنید'); return; }
-    if (!desc) { showToast('⚠️ لطفاً شرح خرابکاری را وارد کنید'); return; }
-    
-    addNotification(`💣 عملیات خرابکاری علیه ${target}`, 'sabotage');
-    showToast(`✅ عملیات خرابکاری علیه ${target} ثبت شد (مخفی)`);
-    closeModal('sabotage');
-    document.getElementById('sabotageDesc').value = '';
-  }
-
-  // ============================================================
-  // ======================== CHAT ==============================
-  // ============================================================
-  function openChat() {
-    openModal('chat');
-    renderChatMessages();
-  }
-
-  function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    
-    const msg = {
-      user: 'شما',
-      text: text,
-      time: new Date().toLocaleTimeString(),
-      isOwn: true
-    };
-    
-    chatMessages.push(msg);
-    renderChatMessages();
-    input.value = '';
-    
-    // ذخیره در localStorage
-    localStorage.setItem('ww_chat_messages', JSON.stringify(chatMessages));
-  }
-
-  function renderChatMessages() {
-    const container = document.getElementById('chatMessages');
-    container.innerHTML = '';
-    chatMessages.forEach(msg => {
-      const div = document.createElement('div');
-      div.style.cssText = `
-        padding: 6px 10px;
-        background: ${msg.isOwn ? 'rgba(255,180,0,0.04)' : 'rgba(255,255,255,0.02)'};
-        border-radius: 6px;
-        font-size: 11px;
-        color: ${msg.isOwn ? '#ffb300' : 'rgba(255,255,255,0.6)'};
-        border-right: 2px solid ${msg.isOwn ? '#ffb300' : 'rgba(255,255,255,0.04)'};
-        text-align: right;
-      `;
-      div.innerHTML = `
-        <strong>${msg.user}</strong>
-        <span style="font-size:9px;color:rgba(255,255,255,0.2);margin:0 6px;">${msg.time}</span>
-        <span>${msg.text}</span>
-      `;
-      container.appendChild(div);
-    });
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // ============================================================
-  // ======================== NOTIFICATIONS =====================
-  // ============================================================
-  function addNotification(text, type = 'system') {
-    notifications.unshift({
-      id: Date.now(),
-      text: text,
-      type: type,
-      time: new Date().toLocaleString(),
-      read: false
-    });
-    
-    if (notifications.length > 50) notifications.pop();
-    localStorage.setItem('ww_notifications', JSON.stringify(notifications));
-    updateNotificationBadge();
-  }
-
-  function updateNotificationBadge() {
-    const unread = notifications.filter(n => !n.read).length;
-    const badge = document.getElementById('notificationBadge');
-    badge.textContent = unread > 9 ? '9+' : unread;
-    if (unread > 0) {
-      badge.querySelector('.notification-dot').style.display = 'block';
-    } else {
-      badge.querySelector('.notification-dot').style.display = 'none';
-    }
-  }
-
-  function openNotifications() {
-    openModal('notifications');
-    const container = document.getElementById('notificationsList');
-    container.innerHTML = '';
-    
-    if (notifications.length === 0) {
-      container.innerHTML = '<div style="text-align:center;color:#4e6270;font-size:12px;padding:20px;">📭 هیچ اعلانی وجود ندارد</div>';
-      return;
-    }
-    
-    notifications.forEach(n => {
-      const div = document.createElement('div');
-      div.style.cssText = `
-        padding: 8px 12px;
-        background: ${n.read ? 'rgba(255,255,255,0.02)' : 'rgba(255,180,0,0.04)'};
-        border-radius: 6px;
-        font-size: 11px;
-        color: rgba(255,255,255,0.6);
-        border-right: 2px solid ${n.read ? 'rgba(255,255,255,0.04)' : '#ffb300'};
-      `;
-      div.innerHTML = `
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,0.2);margin-bottom:2px;">
-          <span>${n.time}</span>
-          <span>${n.type}</span>
-        </div>
-        <div>${n.text}</div>
-      `;
-      container.appendChild(div);
-      
-      // نشانه‌گذاری به عنوان خوانده شده
-      n.read = true;
-    });
-    
-    localStorage.setItem('ww_notifications', JSON.stringify(notifications));
-    updateNotificationBadge();
-  }
-
-  // ============================================================
-  // ======================== SAVE/LOAD ========================
-  // ============================================================
-  function saveGameState() {
-    localStorage.setItem('ww_equipment', JSON.stringify(playerEquipment));
-    localStorage.setItem('ww_game_day', gameDay);
-  }
-
-  function loadGameState() {
-    // بارگذاری تجهیزات
-    const eq = localStorage.getItem('ww_equipment');
-    if (eq) {
-      try {
-        const parsed = JSON.parse(eq);
-        Object.keys(parsed).forEach(k => {
-          if (playerEquipment[k] !== undefined) {
-            playerEquipment[k] = parsed[k];
-          }
-        });
-      } catch(e) {}
-    }
-    
-    // بارگذاری روز
-    const day = localStorage.getItem('ww_game_day');
-    if (day) {
-      gameDay = parseInt(day) || 1;
-    }
-    
-    // بارگذاری اعلانات
-    const nots = localStorage.getItem('ww_notifications');
-    if (nots) {
-      try {
-        notifications = JSON.parse(nots);
-      } catch(e) {}
-    }
-    
-    // بارگذاری چت
-    const chats = localStorage.getItem('ww_chat_messages');
-    if (chats) {
-      try {
-        chatMessages = JSON.parse(chats);
-      } catch(e) {}
-    }
-    
-    // بارگذاری کشور انتخاب شده
-    const country = localStorage.getItem('ww_selected_country');
-    if (country) {
-      document.querySelectorAll('.country-item').forEach(el => {
-        if (el.dataset.name === country) {
-          el.classList.add('selected');
-          selectedCountry = country;
-          document.getElementById('confirmBtn').classList.add('show');
-          document.getElementById('confirmBtn').textContent = `✅ تایید ${country}`;
-        }
-      });
-    }
-  }
-
-  // ============================================================
-  // ======================== TOAST ============================
-  // ============================================================
-  function showToast(msg) {
-    const existing = document.querySelector('.toast-ww');
-    if (existing) existing.remove();
-    
-    const div = document.createElement('div');
-    div.className = 'toast-ww';
-    div.style.cssText = `
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(10px);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,180,0,0.15);
-      font-size: 12px;
-      z-index: 1000;
-      animation: fadeIn 0.3s ease;
-      font-family: 'Oswald', sans-serif;
-      max-width: 90%;
-      text-align: center;
-    `;
-    div.textContent = msg;
-    document.body.appendChild(div);
-    
-    setTimeout(() => {
-      div.style.opacity = '0';
-      div.style.transition = 'opacity 0.3s';
-      setTimeout(() => div.remove(), 300);
-    }, 3000);
-  }
-
-  // ============================================================
-  // ======================== START =============================
-  // ============================================================
-  document.addEventListener('DOMContentLoaded', init);
-  
-  // بستن مودال با کلیک بیرون
-  document.querySelectorAll('.modal-overlay').forEach(modal => {
-    modal.addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.remove('active');
-        document.body.style.overflow = '';
+  <!-- Import Three.js core and addons from CDN (no external models/textures) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
       }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
+
+    // ----------------------------------------------
+    // 1. Setup Scene, Camera, Renderer
+    // ----------------------------------------------
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87CEEB); // sky blue
+    scene.fog = new THREE.FogExp2(0x87CEEB, 0.0025); // atmospheric fog
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 600);
+    camera.position.set(30, 25, 50);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // softer shadows
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.body.appendChild(renderer.domElement);
+
+    // ----------------------------------------------
+    // 2. Controls (First-person with collision)
+    // ----------------------------------------------
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = true;
+    controls.maxPolarAngle = Math.PI / 2.2;
+    controls.minDistance = 2;
+    controls.maxDistance = 80;
+    controls.target.set(0, 5, 0);
+    controls.update();
+
+    // ----------------------------------------------
+    // 3. Lighting (Physically inspired)
+    // ----------------------------------------------
+    // Ambient fill
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.45);
+    scene.add(ambientLight);
+
+    // Main directional light (simulating sun)
+    const sunLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+    sunLight.position.set(50, 80, 30);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 200;
+    sunLight.shadow.camera.left = -80;
+    sunLight.shadow.camera.right = 80;
+    sunLight.shadow.camera.top = 80;
+    sunLight.shadow.camera.bottom = -80;
+    scene.add(sunLight);
+
+    // Fill light from sky
+    const fillLight = new THREE.DirectionalLight(0x88aaff, 0.5);
+    fillLight.position.set(-40, 20, -30);
+    scene.add(fillLight);
+
+    // Hemisphere light for ground bounce
+    const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x362d1e, 0.6);
+    scene.add(hemiLight);
+
+    // Volumetric-style light feeling via subtle spotlight
+    const volLight = new THREE.SpotLight(0xffaa66, 0.3);
+    volLight.position.set(30, 40, 20);
+    volLight.angle = 0.8;
+    volLight.penumbra = 0.5;
+    volLight.decay = 1;
+    volLight.distance = 150;
+    scene.add(volLight);
+
+    // ----------------------------------------------
+    // 4. Procedural Terrain Generation
+    // ----------------------------------------------
+    const terrainWidth = 200;
+    const terrainDepth = 200;
+    const segments = 160; // high detail
+
+    // Generate heightmap using ImprovedNoise (Perlin)
+    const perlin = new ImprovedNoise();
+    const heightMap = [];
+    const scale = 0.035;
+    const amplitude = 12;
+    const detailScale = 0.12;
+    const detailAmp = 3;
+
+    for (let i = 0; i <= segments; i++) {
+      heightMap[i] = [];
+      for (let j = 0; j <= segments; j++) {
+        const x = i / segments * terrainWidth - terrainWidth/2;
+        const z = j / segments * terrainDepth - terrainDepth/2;
+        // Multi-octave noise
+        let y = perlin.noise(x * scale, z * scale, 0.5) * amplitude;
+        y += perlin.noise(x * scale * 2.3, z * scale * 2.3, 1.2) * detailAmp;
+        y += perlin.noise(x * scale * 5.0, z * scale * 5.0, 2.7) * 1.2;
+        y += perlin.noise(x * scale * 12.0, z * scale * 12.0, 3.9) * 0.6;
+        // Flatten edges slightly for natural blending
+        const edgeFactor = 1 - Math.pow(Math.abs(x) / (terrainWidth/2), 6) * 0.3;
+        y = y * edgeFactor;
+        heightMap[i][j] = y;
+      }
+    }
+
+    // Build geometry with vertex colors for dirt/grass blending
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const colors = [];
+    const indices = [];
+    const normals = [];
+
+    // Color palette
+    const grassColor = new THREE.Color(0x5c8c4a);
+    const darkGrass = new THREE.Color(0x3d6b2e);
+    const dirtColor = new THREE.Color(0x7a5a3a);
+    const rockColor = new THREE.Color(0x6a6a6a);
+
+    // Helper to get height at grid coords
+    function getHeight(i, j) {
+      if (i < 0 || i > segments || j < 0 || j > segments) return 0;
+      return heightMap[i][j];
+    }
+
+    // Generate vertices, colors, normals
+    for (let i = 0; i <= segments; i++) {
+      for (let j = 0; j <= segments; j++) {
+        const x = i / segments * terrainWidth - terrainWidth/2;
+        const z = j / segments * terrainDepth - terrainDepth/2;
+        const y = heightMap[i][j];
+
+        vertices.push(x, y, z);
+
+        // Color based on height and slope
+        const slope = calculateSlope(i, j);
+        let color;
+        if (y < -2) {
+          // Low areas: dirt/rock mix
+          color = dirtColor.clone().lerp(rockColor, 0.3);
+        } else if (y < 1) {
+          // Grass with variation
+          const t = (y + 2) / 3;
+          color = grassColor.clone().lerp(darkGrass, t * 0.5);
+          // Add some noise variation
+          const noiseVal = perlin.noise(x * 0.5, z * 0.5, 0.0) * 0.15 + 0.5;
+          color.lerp(dirtColor, (1 - noiseVal) * 0.3);
+        } else if (y < 4) {
+          // Transition to rocky
+          const t = (y - 1) / 3;
+          color = grassColor.clone().lerp(rockColor, t * 0.7);
+        } else {
+          // Rocky peaks
+          color = rockColor.clone();
+          const highlight = perlin.noise(x * 0.2, z * 0.2, 0.0) * 0.2 + 0.8;
+          color.multiplyScalar(highlight);
+        }
+
+        // Slope influence: more rock on steep slopes
+        if (slope > 0.8) {
+          color.lerp(rockColor, 0.6);
+        } else if (slope > 0.4) {
+          color.lerp(dirtColor, 0.3);
+        }
+
+        colors.push(color.r, color.g, color.b);
+      }
+    }
+
+    // Indices for triangles
+    for (let i = 0; i < segments; i++) {
+      for (let j = 0; j < segments; j++) {
+        const a = i * (segments + 1) + j;
+        const b = i * (segments + 1) + j + 1;
+        const c = (i + 1) * (segments + 1) + j;
+        const d = (i + 1) * (segments + 1) + j + 1;
+
+        indices.push(a, b, c);
+        indices.push(b, d, c);
+      }
+    }
+
+    // Compute normals
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    // Terrain mesh
+    const terrainMaterial = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: 0.85,
+      metalness: 0.05,
+      flatShading: false,
+      side: THREE.DoubleSide,
+      envMapIntensity: 0.2
     });
-  });
-  
-  console.log('🌍 WORLD WAR - بازی استراتژی جهانی');
-  console.log('📋 دستورات:');
-  console.log('  - انتخاب کشور و تایید');
-  console.log('  - ارسال بیانیه به سازمان ملل');
-  console.log('  - ثبت سناریو حمله/دفاع');
-  console.log('  - ثبت رول‌ها');
-  console.log('  - انتقال تجهیزات و منابع');
-  console.log('  - عملیات خرابکاری مخفی');
-</script>
+
+    const terrain = new THREE.Mesh(geometry, terrainMaterial);
+    terrain.receiveShadow = true;
+    terrain.castShadow = false;
+    scene.add(terrain);
+
+    // Helper slope calculation
+    function calculateSlope(i, j) {
+      const hL = getHeight(i-1, j);
+      const hR = getHeight(i+1, j);
+      const hD = getHeight(i, j-1);
+      const hU = getHeight(i, j+1);
+      const dx = (hR - hL) / 2;
+      const dz = (hU - hD) / 2;
+      return Math.sqrt(dx*dx + dz*dz);
+    }
+
+    // ----------------------------------------------
+    // 5. Procedural Rocks (geometry based)
+    // ----------------------------------------------
+    function createRock(posX, posZ, size) {
+      const i = Math.round((posX + terrainWidth/2) / terrainWidth * segments);
+      const j = Math.round((posZ + terrainDepth/2) / terrainDepth * segments);
+      if (i < 0 || i > segments || j < 0 || j > segments) return null;
+      const yBase = heightMap[i][j] || 0;
+      
+      // Randomize rock shape using Dodecahedron with vertex displacement
+      const geo = new THREE.DodecahedronGeometry(size * 0.6, 0);
+      const pos = geo.attributes.position;
+      for (let k = 0; k < pos.count; k++) {
+        const x = pos.getX(k);
+        const y = pos.getY(k);
+        const z = pos.getZ(k);
+        const len = Math.sqrt(x*x + y*y + z*z);
+        const noiseVal = perlin.noise(x * 1.5 + 10, y * 1.5 + 20, z * 1.5 + 30) * 0.3 + 1;
+        const scaleFactor = 1 + (noiseVal - 0.5) * 0.6;
+        pos.setXYZ(k, x * scaleFactor, y * scaleFactor, z * scaleFactor);
+      }
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(0x6a6a6a).lerp(new THREE.Color(0x8a7a6a), Math.random() * 0.4),
+        roughness: 0.9,
+        metalness: 0.1,
+        flatShading: true
+      });
+      const rock = new THREE.Mesh(geo, mat);
+      rock.position.set(posX, yBase + size * 0.2, posZ);
+      rock.scale.set(1, 0.7 + Math.random() * 0.5, 0.8 + Math.random() * 0.4);
+      rock.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
+      rock.castShadow = true;
+      rock.receiveShadow = true;
+      return rock;
+    }
+
+    // Place rocks with natural distribution
+    for (let r = 0; r < 240; r++) {
+      const x = (Math.random() - 0.5) * terrainWidth * 0.85;
+      const z = (Math.random() - 0.5) * terrainDepth * 0.85;
+      const i = Math.round((x + terrainWidth/2) / terrainWidth * segments);
+      const j = Math.round((z + terrainDepth/2) / terrainDepth * segments);
+      if (i < 2 || i > segments-2 || j < 2 || j > segments-2) continue;
+      const h = heightMap[i][j] || 0;
+      // Only place rocks on slopes or elevated areas
+      const slope = calculateSlope(i, j);
+      if (slope < 0.2 && h < 1) continue;
+      if (Math.random() > 0.35) continue;
+      const size = 0.4 + Math.random() * 1.2;
+      const rock = createRock(x, z, size);
+      if (rock) scene.add(rock);
+    }
+
+    // ----------------------------------------------
+    // 6. Procedural Grass (instanced geometry)
+    // ----------------------------------------------
+    const grassGroup = new THREE.InstancedMesh(
+      new THREE.CylinderGeometry(0.04, 0.08, 0.35, 3),
+      new THREE.MeshStandardMaterial({ color: 0x4f8a3a, roughness: 0.9 }),
+      3000
+    );
+    grassGroup.castShadow = true;
+    grassGroup.receiveShadow = false;
+    const dummy = new THREE.Object3D();
+    let grassCount = 0;
+    for (let g = 0; g < 6000; g++) {
+      const x = (Math.random() - 0.5) * terrainWidth * 0.9;
+      const z = (Math.random() - 0.5) * terrainDepth * 0.9;
+      const i = Math.round((x + terrainWidth/2) / terrainWidth * segments);
+      const j = Math.round((z + terrainDepth/2) / terrainDepth * segments);
+      if (i < 1 || i > segments-1 || j < 1 || j > segments-1) continue;
+      const h = heightMap[i][j] || 0;
+      if (h < -0.5 || h > 4) continue;
+      const slope = calculateSlope(i, j);
+      if (slope > 0.7) continue;
+      
+      dummy.position.set(x, h + 0.1, z);
+      dummy.rotation.y = Math.random() * 6.28;
+      dummy.scale.set(0.7 + Math.random() * 0.8, 0.7 + Math.random() * 0.6, 0.7 + Math.random() * 0.8);
+      dummy.updateMatrix();
+      grassGroup.setMatrixAt(grassCount++, dummy.matrix);
+      if (grassCount >= 3000) break;
+    }
+    grassGroup.count = grassCount;
+    grassGroup.instanceMatrix.needsUpdate = true;
+    scene.add(grassGroup);
+
+    // ----------------------------------------------
+    // 7. Sky / Atmosphere (procedural)
+    // ----------------------------------------------
+    // Sun sphere (glow)
+    const sunSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(2, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffeedd })
+    );
+    sunSphere.position.copy(sunLight.position).multiplyScalar(2.5);
+    scene.add(sunSphere);
+
+    // Volumetric-like haze using a large translucent sphere
+    const haze = new THREE.Mesh(
+      new THREE.SphereGeometry(180, 32, 16),
+      new THREE.MeshBasicMaterial({
+        color: 0xaaccff,
+        transparent: true,
+        opacity: 0.06,
+        side: THREE.BackSide
+      })
+    );
+    scene.add(haze);
+
+    // Distant mountains (silhouette)
+    const mountMat = new THREE.MeshStandardMaterial({
+      color: 0x4a5a6a,
+      roughness: 1,
+      metalness: 0,
+      emissive: new THREE.Color(0x1a2a3a),
+      emissiveIntensity: 0.2
+    });
+    for (let m = 0; m < 12; m++) {
+      const angle = (m / 12) * Math.PI * 2;
+      const radius = 95 + Math.random() * 20;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      const height = 15 + Math.random() * 25;
+      const mount = new THREE.Mesh(
+        new THREE.ConeGeometry(8 + Math.random() * 12, height, 5 + Math.floor(Math.random() * 4)),
+        mountMat
+      );
+      mount.position.set(x, -2, z);
+      mount.rotation.y = Math.random() * 6;
+      mount.rotation.x = 0.1;
+      mount.castShadow = false;
+      mount.receiveShadow = false;
+      scene.add(mount);
+    }
+
+    // ----------------------------------------------
+    // 8. Animation loop & LOD / culling
+    // ----------------------------------------------
+    // Simple LOD: adjust renderer pixel ratio based on performance
+    let frameCount = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Dynamic resolution scaling (simple)
+      frameCount++;
+      if (frameCount % 30 === 0) {
+        const fps = 1 / (performance.now() - lastTime) * 1000;
+        lastTime = performance.now();
+        // If FPS drops, reduce pixel ratio
+        if (fps < 45 && renderer.getPixelRatio() > 1.2) {
+          renderer.setPixelRatio(Math.max(1, renderer.getPixelRatio() - 0.1));
+        } else if (fps > 55 && renderer.getPixelRatio() < 2.0) {
+          renderer.setPixelRatio(Math.min(2.0, renderer.getPixelRatio() + 0.05));
+        }
+      }
+
+      controls.update();
+
+      // Move sun light for subtle change (optional)
+      // sunLight.position.x = 50 * Math.sin(Date.now() * 0.00005);
+
+      renderer.render(scene, camera);
+    }
+    let lastTime = performance.now();
+    animate();
+
+    // ----------------------------------------------
+    // 9. Resize handler
+    // ----------------------------------------------
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ----------------------------------------------
+    // 10. Simple collision detection (ground following)
+    // ----------------------------------------------
+    // We modify the controls target to follow terrain height
+    // Using a raycast from camera position downward
+    const raycaster = new THREE.Raycaster();
+    const down = new THREE.Vector3(0, -1, 0);
+    function updateCameraHeight() {
+      const pos = camera.position;
+      const origin = new THREE.Vector3(pos.x, 50, pos.z);
+      raycaster.set(origin, down);
+      const intersects = raycaster.intersectObject(terrain);
+      if (intersects.length > 0) {
+        const terrainY = intersects[0].point.y;
+        if (pos.y < terrainY + 1.0) {
+          pos.y = terrainY + 1.2;
+          controls.target.y = terrainY + 1.0;
+        }
+      }
+    }
+
+    // Override controls update to include height check
+    const originalUpdate = controls.update.bind(controls);
+    controls.update = function() {
+      updateCameraHeight();
+      originalUpdate();
+    };
+
+    // Also clamp camera to terrain bounds
+    console.log('Procedural terrain environment ready.');
+  </script>
 </body>
 </html>
