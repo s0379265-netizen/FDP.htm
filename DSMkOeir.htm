@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>فضانورد آنلاین - نسخه نهایی</title>
+  <title>مسابقه ماشین آنلاین</title>
 
   <style>
     * {
@@ -34,7 +34,6 @@
       height: 100%;
     }
 
-    /* ========== LOGIN SCREEN ========== */
     #login-screen {
       position: fixed;
       top: 0;
@@ -64,7 +63,7 @@
     }
 
     #login-title span {
-      color: #64ffda;
+      color: #ff6b35;
       font-weight: 600;
     }
 
@@ -100,7 +99,7 @@
     }
 
     #login-box input:focus {
-      border-color: #64ffda;
+      border-color: #ff6b35;
     }
 
     #login-box input::placeholder {
@@ -112,8 +111,8 @@
       padding: 14px;
       border-radius: 12px;
       border: none;
-      background: linear-gradient(135deg, #64ffda, #00bcd4);
-      color: #0a0a1a;
+      background: linear-gradient(135deg, #ff6b35, #ff4500);
+      color: white;
       font-size: 18px;
       font-weight: 700;
       cursor: pointer;
@@ -122,7 +121,7 @@
 
     #login-btn:hover {
       transform: scale(1.02);
-      box-shadow: 0 8px 30px rgba(100, 255, 218, 0.3);
+      box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
     }
 
     #login-btn:active {
@@ -142,7 +141,6 @@
       margin-top: 16px;
     }
 
-    /* ========== LOADING SCREEN ========== */
     #loading-screen {
       position: fixed;
       top: 0;
@@ -172,7 +170,7 @@
     }
 
     #loading-title span {
-      color: #64ffda;
+      color: #ff6b35;
       font-weight: 600;
     }
 
@@ -195,7 +193,7 @@
     .loader-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #64ffda, #00bcd4);
+      background: linear-gradient(90deg, #ff6b35, #ff4500);
       border-radius: 4px;
       transition: width 0.3s ease;
     }
@@ -214,7 +212,6 @@
       font-family: monospace;
     }
 
-    /* ========== UI OVERLAY ========== */
     #ui-overlay {
       position: fixed;
       top: 0;
@@ -245,8 +242,32 @@
     }
 
     #info span {
-      color: #64ffda;
+      color: #ff6b35;
       font-weight: 600;
+    }
+
+    #speed-display {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 24px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      text-align: center;
+    }
+
+    #speed-display span {
+      font-size: 16px;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.4);
     }
 
     #player-name-display {
@@ -264,48 +285,10 @@
       pointer-events: none;
     }
 
-    /* ===== PING DISPLAY ===== */
-    #ping-display {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 14px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      pointer-events: none;
-      z-index: 15;
-    }
-
-    #ping-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      transition: background-color 0.3s;
-    }
-
-    #ping-text {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 13px;
-      font-weight: 600;
-      font-family: monospace;
-    }
-
-    #ping-label {
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 1px;
-    }
-
     #online-count-display {
       position: absolute;
       top: 20px;
-      right: 100px;
+      right: 20px;
       color: rgba(255, 255, 255, 0.4);
       font-size: 12px;
       background: rgba(0, 0, 0, 0.3);
@@ -345,7 +328,7 @@
 
     #joystick-base.active {
       transform: scale(0.92);
-      border-color: rgba(100, 255, 218, 0.4);
+      border-color: rgba(255, 107, 53, 0.4);
     }
 
     #joystick-knob {
@@ -404,19 +387,20 @@
 
     .action-btn:active {
       transform: scale(0.85);
-      background: radial-gradient(circle at 30% 30%, rgba(100, 255, 218, 0.25), rgba(100, 255, 218, 0.05));
-      border-color: rgba(100, 255, 218, 0.3);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.05));
+      border-color: rgba(255, 107, 53, 0.3);
     }
 
     .action-btn.active {
-      border-color: rgba(100, 255, 218, 0.4);
-      background: radial-gradient(circle at 30% 30%, rgba(100, 255, 218, 0.15), rgba(100, 255, 218, 0.03));
+      border-color: rgba(255, 107, 53, 0.4);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.03));
     }
 
-    #run-btn {
+    #boost-btn {
       font-size: 16px;
       font-weight: 700;
       letter-spacing: 0.5px;
+      color: #ff6b35;
     }
 
     #controls-hint {
@@ -447,25 +431,24 @@
       color: rgba(255, 255, 255, 0.4);
     }
 
-    /* ========== NAME LABELS ========== */
     .player-label {
       color: white;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 600;
       text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
       background: rgba(0, 0, 0, 0.6);
-      padding: 4px 14px;
-      border-radius: 20px;
+      padding: 2px 12px;
+      border-radius: 12px;
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       pointer-events: none;
       white-space: nowrap;
-      transform: translateY(-70px);
+      transform: translateY(-30px);
     }
 
     .player-label.own {
-      border-color: rgba(100, 255, 218, 0.4);
-      color: #64ffda;
+      border-color: rgba(255, 107, 53, 0.4);
+      color: #ff6b35;
       background: rgba(0, 0, 0, 0.7);
     }
 
@@ -522,22 +505,15 @@
         font-size: 10px;
         padding: 3px 10px;
       }
-      #ping-display {
-        top: 55px;
-        right: 12px;
-        padding: 4px 10px;
-      }
-      #ping-text {
-        font-size: 11px;
-      }
-      #ping-dot {
-        width: 8px;
-        height: 8px;
+      #speed-display {
+        font-size: 22px;
+        padding: 6px 16px;
+        bottom: 80px;
       }
       .player-label {
-        font-size: 11px;
-        padding: 3px 10px;
-        transform: translateY(-55px);
+        font-size: 10px;
+        padding: 2px 8px;
+        transform: translateY(-25px);
       }
     }
 
@@ -568,28 +544,31 @@
         height: 42px;
         font-size: 16px;
       }
+      #speed-display {
+        font-size: 18px;
+        padding: 4px 12px;
+        bottom: 60px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ====== LOGIN SCREEN ====== -->
   <div id="login-screen">
-    <div id="login-title">🚀 <span>فضانورد</span> آنلاین</div>
-    <div id="login-sub">به دنیای چندنفره خوش آمدید</div>
+    <div id="login-title">🏎️ <span>مسابقه</span> ماشین</div>
+    <div id="login-sub">به جاده سرعت خوش آمدید</div>
     <div id="login-box">
       <input type="text" id="name-input" placeholder="نام خود را وارد کنید..." maxlength="20" autofocus>
-      <button id="login-btn">✨ ورود به بازی</button>
+      <button id="login-btn">🔥 وارد جاده شو</button>
       <div id="login-error"></div>
       <div id="online-count">🔗 در حال اتصال به سرور...</div>
     </div>
   </div>
 
-  <!-- ====== LOADING SCREEN ====== -->
   <div id="loading-screen">
-    <div id="loading-title">🚀 <span>فضانورد</span></div>
-    <div id="loading-sub">در حال آماده‌سازی محیط</div>
+    <div id="loading-title">🏎️ <span>مسابقه</span></div>
+    <div id="loading-sub">در حال آماده‌سازی جاده</div>
     <div class="loader-container">
       <div class="loader-bar" id="loader-bar"></div>
     </div>
@@ -597,19 +576,11 @@
     <div id="loading-status">در حال بارگذاری...</div>
   </div>
 
-  <!-- ====== UI OVERLAY ====== -->
   <div id="ui-overlay">
-    <div id="info">🚀 <span>فضانورد</span> · کاوش در زمین</div>
+    <div id="info">🏎️ <span>مسابقه</span> · جاده سرعت</div>
     <div id="player-name-display">👤 شما</div>
-
-    <!-- PING DISPLAY -->
-    <div id="ping-display">
-      <div id="ping-dot" style="background-color: #4caf50;"></div>
-      <span id="ping-label">PING</span>
-      <span id="ping-text">0ms</span>
-    </div>
-
     <div id="online-count-display">👥 ۰ آنلاین</div>
+    <div id="speed-display">0 <span>km/h</span></div>
 
     <div id="joystick-container">
       <div id="joystick-base">
@@ -619,16 +590,15 @@
     </div>
 
     <div id="action-buttons">
-      <div class="action-btn" id="run-btn">🏃</div>
-      <div class="action-btn" id="jump-btn">⬆</div>
+      <div class="action-btn" id="boost-btn">🔥</div>
+      <div class="action-btn" id="brake-btn">⛔</div>
     </div>
 
     <div id="controls-hint">
-      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> حرکت · <kbd>Shift</kbd> دویدن · 🖱️ ماوس چرخش
+      <kbd>W</kbd> گاز · <kbd>S</kbd> ترمز · <kbd>A</kbd><kbd>D</kbd> فرمان · 🖱️ ماوس چرخش
     </div>
   </div>
 
-  <!-- ====== ABLY LIBRARY ====== -->
   <script src="https://cdn.ably.com/lib/ably.min-1.js">
   </script>
 
@@ -643,7 +613,6 @@
 
   <script type="module">
     import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
     // ============================================
@@ -656,8 +625,7 @@
     const onlineCountEl = document.getElementById('online-count');
     const onlineCountDisplay = document.getElementById('online-count-display');
     const playerNameDisplay = document.getElementById('player-name-display');
-    const pingText = document.getElementById('ping-text');
-    const pingDot = document.getElementById('ping-dot');
+    const speedDisplay = document.getElementById('speed-display');
 
     const loadingScreen = document.getElementById('loading-screen');
     const loaderBar = document.getElementById('loader-bar');
@@ -674,108 +642,14 @@
     let isConnected = false;
     let reconnectAttempts = 0;
     const MAX_RECONNECT = 10;
-    let lastSendTime = 0;
     const SEND_INTERVAL = 30;
-    let pingHistory = [];
-    let lastPingTime = 0;
-    let isFirstPing = true;
 
-    // Players data
     const players = new Map();
-
-    function updatePing(pingMs) {
-      pingHistory.push(pingMs);
-      if (pingHistory.length > 10) pingHistory.shift();
-
-      const avgPing = pingHistory.reduce((a, b) => a + b, 0) / pingHistory.length;
-      const displayPing = Math.round(avgPing);
-
-      pingText.textContent = displayPing + 'ms';
-
-      // رنگ‌بندی مثل کالاف
-      if (displayPing < 40) {
-        pingDot.style.backgroundColor = '#4caf50'; // سبز - عالی
-      } else if (displayPing < 80) {
-        pingDot.style.backgroundColor = '#8bc34a'; // سبز روشن - خوب
-      } else if (displayPing < 120) {
-        pingDot.style.backgroundColor = '#ffeb3b'; // زرد - متوسط
-      } else if (displayPing < 180) {
-        pingDot.style.backgroundColor = '#ff9800'; // نارنجی - ضعیف
-      } else {
-        pingDot.style.backgroundColor = '#f44336'; // قرمز - بد
-      }
-    }
-
-    function measurePing() {
-      if (!isConnected || !channel) return;
-
-      const startTime = Date.now();
-      const pingId = 'ping_' + startTime;
-
-      try {
-        channel.publish('ping', {
-          id: pingId,
-          time: startTime,
-          clientId: currentUserId
-        }, (err) => {
-          if (err) {
-            // خطا در ارسال - نادیده گرفتن
-            return;
-          }
-        });
-
-        // گوش دادن به پاسخ
-        const handler = (message) => {
-          if (message.data && message.data.id === pingId && message.data.clientId !== currentUserId) {
-            const endTime = Date.now();
-            const pingMs = endTime - startTime;
-            updatePing(pingMs);
-            channel.unsubscribe('pong', handler);
-          }
-        };
-
-        channel.subscribe('pong', handler);
-
-        // Timeout برای پاسخ
-        setTimeout(() => {
-          channel.unsubscribe('pong', handler);
-          if (isFirstPing) {
-            isFirstPing = false;
-            updatePing(30); // مقدار پیش‌فرض
-          }
-        }, 2000);
-
-      } catch (e) {
-        // خطا در ارسال
-        if (isFirstPing) {
-          isFirstPing = false;
-          updatePing(30);
-        }
-      }
-    }
-
-    // پاسخ به درخواست‌های پینگ دیگران
-    function setupPingListener() {
-      if (!channel) return;
-
-      channel.subscribe('ping', (message) => {
-        if (message.data.clientId === currentUserId) return;
-        // ارسال پاسخ
-        channel.publish('pong', {
-          id: message.data.id,
-          clientId: currentUserId
-        });
-      });
-
-      // شروع پینگ‌گیری
-      setInterval(measurePing, 3000);
-      setTimeout(measurePing, 500);
-    }
 
     function connectToAbly(name) {
       return new Promise((resolve, reject) => {
         try {
-          const clientId = 'user_' + Math.random().toString(36).substr(2, 8);
+          const clientId = 'car_' + Math.random().toString(36).substr(2, 8);
           currentUserId = clientId;
 
           ablyClient = new Ably.Realtime({
@@ -847,7 +721,7 @@
       try {
         await connectToAbly(name);
         playerName = name;
-        channel = ablyClient.channels.get('astronaut-game');
+        channel = ablyClient.channels.get('car-race');
 
         playerNameDisplay.textContent = `👤 ${playerName}`;
 
@@ -857,7 +731,7 @@
 
       } catch (error) {
         loginError.textContent = '❌ ' + error.message;
-        loginBtn.textContent = '✨ ورود به بازی';
+        loginBtn.textContent = '🔥 وارد جاده شو';
         loginBtn.disabled = false;
       }
     }
@@ -885,11 +759,11 @@
     // THREE.JS SCENE SETUP
     // ============================================
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x87ceeb, 50, 200);
+    scene.fog = new THREE.Fog(0x87ceeb, 80, 250);
     scene.background = new THREE.Color(0x87ceeb);
 
-    const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
-    camera.position.set(0, 5, 8);
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 500);
+    camera.position.set(0, 8, 12);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -904,7 +778,6 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.prepend(renderer.domElement);
 
-    // CSS2 Renderer for labels
     const labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(innerWidth, innerHeight);
     labelRenderer.domElement.style.position = 'absolute';
@@ -915,7 +788,7 @@
     document.body.appendChild(labelRenderer.domElement);
 
     // ============================================
-    // LIGHTING (واقعی‌تر)
+    // LIGHTING
     // ============================================
     const sun = new THREE.DirectionalLight(0xffeedd, 2.5);
     sun.position.set(50, 80, 30);
@@ -937,450 +810,347 @@
     scene.add(hemi);
 
     // ============================================
-    // TERRAIN (صاف با کیفیت بالا)
+    // ROAD
     // ============================================
-    updateLoading(10, 'ساخت زمین...');
+    updateLoading(10, 'ساخت جاده...');
 
-    const geo = new THREE.PlaneGeometry(300, 300, 300, 300);
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0x4caf50,
-      roughness: 0.9,
-      metalness: 0.0,
+    // زمین زیر جاده
+    const groundGeo = new THREE.PlaneGeometry(600, 600, 1, 1);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x2d5a27,
+      roughness: 1,
+      metalness: 0,
     });
-
-    const ground = new THREE.Mesh(geo, mat);
+    const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.1;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // ============================================
-    // TERRAIN HEIGHT MAP (صاف با شیب‌های ملایم)
-    // ============================================
-    const heightMap = [];
-    const p = geo.attributes.position;
-    const width = 300;
-    const height = 300;
+    // جاده اصلی (دایره‌ای)
+    const roadGroup = new THREE.Group();
+    scene.add(roadGroup);
 
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i);
-      const y = p.getY(i);
-      // زمین تقریباً صاف با شیب‌های ملایم
-      const h =
-        Math.sin(x * 0.008) * 1.5 +
-        Math.cos(y * 0.007) * 1.2 +
-        Math.sin((x + y) * 0.005) * 2.0 +
-        Math.sin(x * 0.015 + y * 0.01) * 0.8;
-      p.setZ(i, h);
-    }
-    geo.computeVertexNormals();
+    const roadWidth = 8;
+    const roadRadius = 50;
+    const segments = 120;
 
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i);
-      const y = p.getY(i);
-      const z = p.getZ(i);
-      const ix = Math.floor((x + 150) / 300 * width);
-      const iy = Math.floor((y + 150) / 300 * height);
-      if (ix >= 0 && ix < width && iy >= 0 && iy < height) {
-        heightMap[iy * width + ix] = z;
+    function createRoadSegment(angle) {
+      const x = Math.cos(angle) * roadRadius;
+      const z = Math.sin(angle) * roadRadius;
+
+      // جاده
+      const roadGeo = new THREE.PlaneGeometry(roadWidth, 2, 1, 1);
+      const roadMat = new THREE.MeshStandardMaterial({
+        color: 0x333333,
+        roughness: 0.8,
+        metalness: 0.2,
+      });
+      const road = new THREE.Mesh(roadGeo, roadMat);
+      road.position.set(x, 0.01, z);
+      road.rotation.x = -Math.PI / 2;
+      road.rotation.z = -angle;
+      road.receiveShadow = true;
+      road.castShadow = true;
+      roadGroup.add(road);
+
+      // خط وسط جاده (خط‌چین)
+      if (angle % 0.3 < 0.15) {
+        const lineGeo = new THREE.PlaneGeometry(0.3, 1.2, 1, 1);
+        const lineMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0.5,
+          metalness: 0,
+        });
+        const line = new THREE.Mesh(lineGeo, lineMat);
+        line.position.set(x, 0.02, z);
+        line.rotation.x = -Math.PI / 2;
+        line.rotation.z = -angle;
+        roadGroup.add(line);
+      }
+
+      // خط کناری (سفید)
+      for (let side = -1; side <= 1; side += 2) {
+        const edgeGeo = new THREE.PlaneGeometry(0.2, 2, 1, 1);
+        const edgeMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0.5,
+          metalness: 0,
+        });
+        const edge = new THREE.Mesh(edgeGeo, edgeMat);
+        const offset = (roadWidth / 2) * side;
+        edge.position.set(x + Math.sin(angle) * offset, 0.02, z - Math.cos(angle) * offset);
+        edge.rotation.x = -Math.PI / 2;
+        edge.rotation.z = -angle;
+        roadGroup.add(edge);
       }
     }
 
-    function getGroundHeight(x, z) {
-      const ix = Math.floor((x + 150) / 300 * width);
-      const iz = Math.floor((z + 150) / 300 * height);
-      if (ix >= 0 && ix < width && iz >= 0 && iz < height) {
-        const h = heightMap[iz * width + ix];
-        if (h !== undefined) return h;
-      }
-      return 0;
+    for (let i = 0; i < segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      createRoadSegment(angle);
     }
 
-    // ============================================
-    // ENVIRONMENT (کوه‌ها و درخت‌های بزرگ)
-    // ============================================
-    updateLoading(20, 'ساخت کوه‌ها و درخت‌ها...');
+    // چمن اطراف جاده
+    for (let i = 0; i < 2000; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = roadRadius + roadWidth / 2 + Math.random() * 80;
+      const x = Math.cos(angle) * dist;
+      const z = Math.sin(angle) * dist;
 
-    // ===== کوه‌ها =====
-    function createMountain(x, z, size) {
-      const h = getGroundHeight(x, z);
-      const mountain = new THREE.Mesh(
-        new THREE.ConeGeometry(size * 8, size * 12, 8 + Math.floor(Math.random() * 4)),
+      const grassPatch = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.5 + Math.random() * 1.5, 0.5 + Math.random() * 1.5),
         new THREE.MeshStandardMaterial({
-          color: new THREE.Color().setHSL(0.1, 0.15, 0.3 + Math.random() * 0.2),
-          roughness: 0.9,
-          metalness: 0.05,
+          color: new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.5, 0.25 + Math.random() * 0.15),
+          roughness: 1,
+          metalness: 0,
         })
       );
-      mountain.position.set(x, h + size * 2, z);
-      mountain.rotation.set((Math.random() - 0.5) * 0.1, Math.random() * 6, (Math.random() - 0.5) * 0.1);
-      mountain.castShadow = true;
-      mountain.receiveShadow = true;
-      return mountain;
+      grassPatch.rotation.x = -Math.PI / 2;
+      grassPatch.position.set(x, 0, z);
+      grassPatch.rotation.z = Math.random() * 6;
+      grassPatch.receiveShadow = true;
+      scene.add(grassPatch);
     }
 
-    // کوه‌های دور
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2 + Math.random() * 0.3;
-      const dist = 100 + Math.random() * 60;
-      const x = Math.cos(angle) * dist;
-      const z = Math.sin(angle) * dist;
-      const size = 1.5 + Math.random() * 3;
-      scene.add(createMountain(x, z, size));
-    }
+    // ============================================
+    // درخت‌ها
+    // ============================================
+    updateLoading(20, 'ساخت درخت‌ها...');
 
-    // کوه‌های نزدیک‌تر
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
-      const dist = 60 + Math.random() * 40;
-      const x = Math.cos(angle) * dist;
-      const z = Math.sin(angle) * dist;
-      const size = 1 + Math.random() * 2;
-      scene.add(createMountain(x, z, size));
-    }
-
-    // ===== درخت‌های بزرگ =====
-    function createBigTree(x, z) {
-      const h = getGroundHeight(x, z);
+    function createTree(x, z) {
       const tree = new THREE.Group();
-
-      const trunkHeight = 4 + Math.random() * 4;
+      const trunkHeight = 2 + Math.random() * 3;
       const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.4, 0.7, trunkHeight, 8),
+        new THREE.CylinderGeometry(0.2, 0.4, trunkHeight, 6),
         new THREE.MeshStandardMaterial({ color: 0x5b3718, roughness: 0.9 })
       );
-      trunk.position.y = trunkHeight / 2 + h;
+      trunk.position.y = trunkHeight / 2;
       trunk.castShadow = true;
       tree.add(trunk);
 
-      // تاج درخت بزرگ
       const leafColor = new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.6, 0.25 + Math.random() * 0.15);
-      const leafSize = 3 + Math.random() * 2;
-      const leafHeight = 4 + Math.random() * 3;
+      const leafSize = 1.5 + Math.random() * 1.5;
+      const leafHeight = 2 + Math.random() * 2;
       const leaf = new THREE.Mesh(
-        new THREE.ConeGeometry(leafSize, leafHeight, 7 + Math.floor(Math.random() * 4)),
+        new THREE.ConeGeometry(leafSize, leafHeight, 6 + Math.floor(Math.random() * 4)),
         new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
       );
-      leaf.position.y = trunkHeight + leafHeight / 2 + h;
+      leaf.position.y = trunkHeight + leafHeight / 2;
       leaf.castShadow = true;
       tree.add(leaf);
-
-      // شاخه‌های اضافی
-      for (let i = 0; i < 4; i++) {
-        const branch = new THREE.Mesh(
-          new THREE.ConeGeometry(0.8 + Math.random() * 0.8, 1.5 + Math.random() * 1.5, 5),
-          new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
-        );
-        const angle = (i / 4) * Math.PI * 2 + Math.random() * 0.5;
-        const dist = 0.8 + Math.random() * 0.8;
-        branch.position.set(
-          Math.cos(angle) * dist,
-          trunkHeight * 0.6 + h + Math.random() * 0.5,
-          Math.sin(angle) * dist
-        );
-        branch.rotation.x = (Math.random() - 0.5) * 0.8;
-        branch.rotation.z = (Math.random() - 0.5) * 0.8;
-        branch.castShadow = true;
-        tree.add(branch);
-      }
 
       tree.position.set(x, 0, z);
       return tree;
     }
 
-    const treePositions = [];
-    for (let i = 0; i < 80; i++) {
-      const x = (Math.random() - 0.5) * 200;
-      const z = (Math.random() - 0.5) * 200;
-      if (Math.abs(x) < 8 && Math.abs(z) < 8) continue;
-      let tooClose = false;
-      for (const pos of treePositions) {
-        const dx = x - pos.x;
-        const dz = z - pos.z;
-        if (dx * dx + dz * dz < 20) { tooClose = true; break; }
-      }
-      if (tooClose) continue;
-      treePositions.push({ x, z });
-      scene.add(createBigTree(x, z));
+    for (let i = 0; i < 150; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = roadRadius + roadWidth / 2 + 5 + Math.random() * 70;
+      const x = Math.cos(angle) * dist;
+      const z = Math.sin(angle) * dist;
+      scene.add(createTree(x, z));
     }
 
-    // ===== سنگ‌ها =====
-    updateLoading(30, 'ساخت سنگ‌ها...');
+    // ============================================
+    // CAR
+    // ============================================
+    updateLoading(30, 'ساخت ماشین...');
 
-    for (let i = 0; i < 60; i++) {
-      const x = (Math.random() - 0.5) * 240;
-      const z = (Math.random() - 0.5) * 240;
-      if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
-      const h = getGroundHeight(x, z);
-      const rock = new THREE.Mesh(
-        new THREE.DodecahedronGeometry(0.5 + Math.random() * 1.2, 1),
-        new THREE.MeshStandardMaterial({
-          color: new THREE.Color().setHSL(0.08, 0.05, 0.4 + Math.random() * 0.3),
-          roughness: 0.9,
-          metalness: 0.05,
-        })
-      );
-      rock.position.set(x, h + 0.1, z);
-      rock.rotation.set(Math.random() * 6, Math.random() * 6, 0);
-      rock.castShadow = true;
-      rock.receiveShadow = true;
-      scene.add(rock);
-    }
+    const carGroup = new THREE.Group();
+    scene.add(carGroup);
 
-    // ===== چمن‌های واقعی =====
-    updateLoading(35, 'ساخت چمن‌ها...');
-
-    const grassGeo = new THREE.BufferGeometry();
-    const grassCount = 3000;
-    const grassPos = new Float32Array(grassCount * 3);
-    const grassColors = new Float32Array(grassCount * 3);
-    for (let i = 0; i < grassCount; i++) {
-      const x = (Math.random() - 0.5) * 260;
-      const z = (Math.random() - 0.5) * 260;
-      const h = getGroundHeight(x, z);
-      grassPos[i * 3] = x;
-      grassPos[i * 3 + 1] = h + 0.03;
-      grassPos[i * 3 + 2] = z;
-      const green = 0.3 + Math.random() * 0.2;
-      grassColors[i * 3] = 0.1 + Math.random() * 0.1;
-      grassColors[i * 3 + 1] = green;
-      grassColors[i * 3 + 2] = 0.05 + Math.random() * 0.05;
-    }
-    grassGeo.setAttribute('position', new THREE.BufferAttribute(grassPos, 3));
-    grassGeo.setAttribute('color', new THREE.BufferAttribute(grassColors, 3));
-
-    const grassMat = new THREE.PointsMaterial({
-      size: 0.25,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.8,
-      vertexColors: true,
+    // بدنه ماشین
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: 0xff2200,
+      roughness: 0.2,
+      metalness: 0.6,
     });
-    const grass = new THREE.Points(grassGeo, grassMat);
-    scene.add(grass);
 
-    // ============================================
-    // ASTRONAUT LOADING
-    // ============================================
-    let character = null;
-    let characterReady = false;
-    let characterRotation = 0;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2.2), bodyMat);
+    body.position.y = 0.3;
+    body.castShadow = true;
+    carGroup.add(body);
 
-    let leftArm = null;
-    let rightArm = null;
-    let leftLeg = null;
-    let rightLeg = null;
+    // کابین
+    const cabinMat = new THREE.MeshStandardMaterial({
+      color: 0x222244,
+      roughness: 0.1,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.7,
+    });
+    const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 1.2), cabinMat);
+    cabin.position.set(0, 0.55, -0.1);
+    cabin.castShadow = true;
+    carGroup.add(cabin);
 
-    const characterGroup = new THREE.Group();
-    scene.add(characterGroup);
+    // چرخ‌ها
+    const wheelMat = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+      roughness: 0.9,
+      metalness: 0.1,
+    });
 
-    // Label for local player
-    const localLabelDiv = document.createElement('div');
-    localLabelDiv.className = 'player-label own';
-    localLabelDiv.textContent = playerName || 'شما';
-    const localLabel = new CSS2DObject(localLabelDiv);
-    localLabel.position.set(0, 2.2, 0);
-    characterGroup.add(localLabel);
+    const wheelPositions = [
+      [-0.6, 0.15, 0.8],
+      [0.6, 0.15, 0.8],
+      [-0.6, 0.15, -0.8],
+      [0.6, 0.15, -0.8]
+    ];
 
-    const loader = new GLTFLoader();
-
-    function loadAstronaut() {
-      updateLoading(40, 'بارگذاری فضانورد...');
-
-      loader.load(
-        'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-        (gltf) => {
-          character = gltf.scene;
-          character.scale.set(1.4, 1.4, 1.4);
-
-          character.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-              if (child.material) {
-                child.material.roughness = Math.min(child.material.roughness || 0.5, 0.8);
-                child.material.metalness = Math.min(child.material.metalness || 0.1, 0.3);
-              }
-              const name = child.name.toLowerCase();
-              if (name.includes('arm') || name.includes('shoulder')) {
-                if (name.includes('left') || name.includes('l')) leftArm = child;
-                else if (name.includes('right') || name.includes('r')) rightArm = child;
-              }
-              if (name.includes('leg') || name.includes('thigh')) {
-                if (name.includes('left') || name.includes('l')) leftLeg = child;
-                else if (name.includes('right') || name.includes('r')) rightLeg = child;
-              }
-            }
-          });
-
-          if (!leftArm || !rightArm) {
-            character.traverse((child) => {
-              if (child.isMesh && child.position.y > 0.5 && child.position.y < 1.2) {
-                if (child.position.x < -0.2 && !leftArm) leftArm = child;
-                else if (child.position.x > 0.2 && !rightArm) rightArm = child;
-              }
-              if (child.isMesh && child.position.y < 0.5 && child.position.y > -0.1) {
-                if (child.position.x < -0.1 && !leftLeg) leftLeg = child;
-                else if (child.position.x > 0.1 && !rightLeg) rightLeg = child;
-              }
-            });
-          }
-
-          if (leftArm) { leftArm.rotation.x = 0.15;
-            leftArm.rotation.z = 0.2; }
-          if (rightArm) { rightArm.rotation.x = -0.15;
-            rightArm.rotation.z = -0.2; }
-
-          characterGroup.add(character);
-          characterReady = true;
-
-          const startHeight = getGroundHeight(0, 0);
-          characterGroup.position.set(
-            (Math.random() - 0.5) * 8,
-            startHeight + 0.05,
-            (Math.random() - 0.5) * 8
-          );
-
-          localLabelDiv.textContent = playerName;
-
-          updateLoading(100, '✅ فضانورد آماده!');
-          setTimeout(hideLoading, 400);
-
-          console.log('✅ فضانورد بارگذاری شد!');
-          startSendingPosition();
-        },
-        (progress) => {
-          if (progress.total > 0) {
-            const percent = 40 + (progress.loaded / progress.total) * 55;
-            updateLoading(percent, 'بارگذاری فضانورد...');
-          }
-        },
-        (error) => {
-          console.error('❌ خطا:', error);
-          updateLoading(80, 'تلاش مجدد...');
-          setTimeout(loadAstronaut, 2000);
-        }
-      );
+    const wheels = [];
+    for (const pos of wheelPositions) {
+      const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.15, 8), wheelMat);
+      wheel.rotation.x = Math.PI / 2;
+      wheel.position.set(pos[0], pos[1], pos[2]);
+      wheel.castShadow = true;
+      carGroup.add(wheel);
+      wheels.push(wheel);
     }
 
+    // سپر جلو
+    const bumperMat = new THREE.MeshStandardMaterial({
+      color: 0x333333,
+      roughness: 0.8,
+      metalness: 0.1,
+    });
+    const bumper = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.15, 0.1), bumperMat);
+    bumper.position.set(0, 0.15, 1.15);
+    carGroup.add(bumper);
+
+    // چراغ‌ها
+    const lightMat = new THREE.MeshStandardMaterial({
+      color: 0xffff00,
+      roughness: 0.1,
+      metalness: 0.8,
+      emissive: 0xffff00,
+      emissiveIntensity: 0.3,
+    });
+    for (let side = -1; side <= 1; side += 2) {
+      const light = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), lightMat);
+      light.position.set(side * 0.4, 0.3, 1.15);
+      carGroup.add(light);
+    }
+
+    // چراغ عقب
+    const tailMat = new THREE.MeshStandardMaterial({
+      color: 0xff0000,
+      roughness: 0.1,
+      metalness: 0.8,
+      emissive: 0xff0000,
+      emissiveIntensity: 0.2,
+    });
+    for (let side = -1; side <= 1; side += 2) {
+      const tail = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), tailMat);
+      tail.position.set(side * 0.4, 0.3, -1.15);
+      carGroup.add(tail);
+    }
+
+    // برچسب نام
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'player-label own';
+    labelDiv.textContent = playerName || 'شما';
+    const label = new CSS2DObject(labelDiv);
+    label.position.set(0, 1.5, 0);
+    carGroup.add(label);
+
+    // موقعیت اولیه
+    carGroup.position.set(roadRadius, 0.1, 0);
+    carGroup.rotation.y = Math.PI / 2;
+
     // ============================================
-    // NETWORK - PLAYER SYNC
+    // CAR PHYSICS
     // ============================================
-    function createRemotePlayer(clientId, data) {
+    let carSpeed = 0;
+    let carAngle = Math.PI / 2;
+    let maxSpeed = 12;
+    let acceleration = 8;
+    let braking = 10;
+    let friction = 2;
+    let turnSpeed = 3;
+
+    // ============================================
+    // NETWORK
+    // ============================================
+    function createRemoteCar(clientId, data) {
       if (clientId === currentUserId) return;
       if (players.has(clientId)) return;
 
       const group = new THREE.Group();
 
-      loader.load(
-        'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-        (gltf) => {
-          const model = gltf.scene;
-          model.scale.set(1.4, 1.4, 1.4);
-
-          model.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-              if (child.material) {
-                child.material.roughness = Math.min(child.material.roughness || 0.5, 0.8);
-                child.material.metalness = Math.min(child.material.metalness || 0.1, 0.3);
-                if (child.material.color) {
-                  const hue = (parseInt(clientId.substr(-4), 36) % 360) / 360;
-                  child.material.color.setHSL(hue, 0.4, 0.5);
-                }
-              }
-            }
-          });
-
-          group.add(model);
-
-          const labelDiv = document.createElement('div');
-          labelDiv.className = 'player-label';
-          labelDiv.textContent = data.name || 'کاربر';
-          const label = new CSS2DObject(labelDiv);
-          label.position.set(0, 2.2, 0);
-          group.add(label);
-
-          const h = getGroundHeight(data.x || 0, data.z || 0);
-          group.position.set(data.x || 0, h + 0.05, data.z || 0);
-          group.rotation.y = data.rotation || 0;
-
-          scene.add(group);
-
-          players.set(clientId, {
-            mesh: group,
-            label: label,
-            data: data,
-            name: data.name || 'کاربر',
-            lastUpdate: Date.now(),
-            model: model
-          });
-
-          updateOnlineCount();
-        },
-        undefined,
-        (error) => {
-          createSimpleRemotePlayer(clientId, data);
-        }
-      );
-    }
-
-    function createSimpleRemotePlayer(clientId, data) {
-      const group = new THREE.Group();
-
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.4, 0.5),
-        roughness: 0.5,
-        metalness: 0.2
+      // ماشین ساده برای کاربران دیگر
+      const carColor = new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.7, 0.5);
+      const mat = new THREE.MeshStandardMaterial({
+        color: carColor,
+        roughness: 0.3,
+        metalness: 0.5,
       });
-      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1.0, 8, 12), bodyMat);
-      body.position.y = 0.5;
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.35, 1.8), mat);
+      body.position.y = 0.25;
       body.castShadow = true;
       group.add(body);
 
-      const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa, roughness: 0.4 });
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), headMat);
-      head.position.y = 1.3;
-      head.castShadow = true;
-      group.add(head);
+      const cabinMat2 = new THREE.MeshStandardMaterial({
+        color: 0x222244,
+        roughness: 0.1,
+        metalness: 0.8,
+        transparent: true,
+        opacity: 0.5,
+      });
+      const cabin2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.25, 1.0), cabinMat2);
+      cabin2.position.set(0, 0.45, -0.1);
+      group.add(cabin2);
 
-      const labelDiv = document.createElement('div');
-      labelDiv.className = 'player-label';
-      labelDiv.textContent = data.name || 'کاربر';
-      const label = new CSS2DObject(labelDiv);
-      label.position.set(0, 2.2, 0);
-      group.add(label);
+      const wheelMat2 = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+      const wPos = [
+        [-0.5, 0.12, 0.65],
+        [0.5, 0.12, 0.65],
+        [-0.5, 0.12, -0.65],
+        [0.5, 0.12, -0.65]
+      ];
+      for (const p of wPos) {
+        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 8), wheelMat2);
+        w.rotation.x = Math.PI / 2;
+        w.position.set(p[0], p[1], p[2]);
+        group.add(w);
+      }
 
-      const h = getGroundHeight(data.x || 0, data.z || 0);
-      group.position.set(data.x || 0, h + 0.05, data.z || 0);
+      const labelDiv2 = document.createElement('div');
+      labelDiv2.className = 'player-label';
+      labelDiv2.textContent = data.name || 'کاربر';
+      const label2 = new CSS2DObject(labelDiv2);
+      label2.position.set(0, 1.3, 0);
+      group.add(label2);
+
+      const h = 0.1;
+      group.position.set(data.x || 0, h, data.z || 0);
       group.rotation.y = data.rotation || 0;
 
       scene.add(group);
 
       players.set(clientId, {
         mesh: group,
-        label: label,
+        label: label2,
         data: data,
         name: data.name || 'کاربر',
-        lastUpdate: Date.now(),
-        model: null
+        lastUpdate: Date.now()
       });
 
       updateOnlineCount();
     }
 
-    function updateRemotePlayer(clientId, data) {
+    function updateRemoteCar(clientId, data) {
       if (clientId === currentUserId) return;
       const player = players.get(clientId);
       if (!player) {
-        createRemotePlayer(clientId, data);
+        createRemoteCar(clientId, data);
         return;
       }
 
-      const h = getGroundHeight(data.x || 0, data.z || 0);
       player.mesh.position.x = data.x || 0;
       player.mesh.position.z = data.z || 0;
-      player.mesh.position.y = h + 0.05;
       player.mesh.rotation.y = data.rotation || 0;
 
       if (player.label) {
@@ -1391,7 +1161,7 @@
       player.lastUpdate = Date.now();
     }
 
-    function removeRemotePlayer(clientId) {
+    function removeRemoteCar(clientId) {
       if (clientId === currentUserId) return;
       const player = players.get(clientId);
       if (player) {
@@ -1407,7 +1177,7 @@
     }
 
     // ============================================
-    // NETWORK - SEND POSITION
+    // NETWORK SEND/RECEIVE
     // ============================================
     let sendInterval = null;
 
@@ -1415,19 +1185,19 @@
       if (sendInterval) clearInterval(sendInterval);
 
       sendInterval = setInterval(() => {
-        if (!isConnected || !characterReady || !channel) return;
+        if (!isConnected || !channel) return;
 
-        const pos = characterGroup.position;
+        const pos = carGroup.position;
         const data = {
           x: pos.x,
           z: pos.z,
-          rotation: characterRotation,
+          rotation: carAngle,
           name: playerName,
           timestamp: Date.now()
         };
 
         try {
-          channel.publish('player-update', {
+          channel.publish('car-update', {
             clientId: currentUserId,
             ...data
           });
@@ -1435,27 +1205,24 @@
       }, SEND_INTERVAL);
     }
 
-    // ============================================
-    // NETWORK - RECEIVE POSITIONS
-    // ============================================
     function setupChannelListener() {
       if (!channel) return;
 
-      channel.subscribe('player-update', (message) => {
+      channel.subscribe('car-update', (message) => {
         const data = message.data;
         if (data.clientId === currentUserId) return;
-        updateRemotePlayer(data.clientId, data);
+        updateRemoteCar(data.clientId, data);
       });
 
       channel.presence.subscribe('enter', (presence) => {
         if (presence.clientId === currentUserId) return;
         if (presence.data) {
-          createRemotePlayer(presence.clientId, presence.data);
+          createRemoteCar(presence.clientId, presence.data);
         }
       });
 
       channel.presence.subscribe('leave', (presence) => {
-        removeRemotePlayer(presence.clientId);
+        removeRemoteCar(presence.clientId);
       });
 
       channel.presence.get((err, members) => {
@@ -1465,59 +1232,44 @@
         }
         members.forEach((member) => {
           if (member.clientId !== currentUserId && member.data) {
-            createRemotePlayer(member.clientId, member.data);
+            createRemoteCar(member.clientId, member.data);
           }
         });
         updateOnlineCount();
       });
 
       setTimeout(() => {
-        if (channel && characterReady) {
+        if (channel) {
           channel.presence.enter({
-            x: characterGroup.position.x,
-            z: characterGroup.position.z,
-            rotation: characterRotation,
+            x: carGroup.position.x,
+            z: carGroup.position.z,
+            rotation: carAngle,
             name: playerName
           });
         }
       }, 500);
-
-      // Setup ping
-      setupPingListener();
     }
 
     // ============================================
     // CONTROLS
     // ============================================
-    const keys = { w: false, a: false, s: false, d: false, shift: false };
+    const keys = { w: false, a: false, s: false, d: false };
     let joyX = 0;
     let joyY = 0;
-    let isRunning = false;
-    let isJumping = false;
-    let jumpVelocity = 0;
-
-    const MOVE_SPEED = 5.0;
-    const RUN_SPEED = 8.0;
-    const GRAVITY = -15;
-    const JUMP_POWER = 4.5;
-    const GROUND_OFFSET = 0.08;
+    let isBoosting = false;
+    let isBraking = false;
 
     // ---------- KEYBOARD ----------
     document.addEventListener('keydown', (e) => {
       const key = e.key.toLowerCase();
       if (key === 'w' || key === 'a' || key === 's' || key === 'd') keys[key] = true;
-      if (key === 'shift') keys.shift = true;
-      if (key === ' ' && !isJumping && characterReady) {
-        e.preventDefault();
-        isJumping = true;
-        jumpVelocity = JUMP_POWER;
-      }
+      if (key === 'shift') isBoosting = true;
     });
 
     document.addEventListener('keyup', (e) => {
       const key = e.key.toLowerCase();
       if (key === 'w' || key === 'a' || key === 's' || key === 'd') keys[key] = false;
-      if (key === 'shift') keys.shift = false;
+      if (key === 'shift') isBoosting = false;
     });
 
     // ---------- JOYSTICK ----------
@@ -1600,43 +1352,39 @@
     });
 
     // ---------- ACTION BUTTONS ----------
-    const runBtn = document.getElementById('run-btn');
-    const jumpBtn = document.getElementById('jump-btn');
+    const boostBtn = document.getElementById('boost-btn');
+    const brakeBtn = document.getElementById('brake-btn');
 
-    runBtn.addEventListener('touchstart', (e) => {
+    boostBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      isRunning = !isRunning;
-      runBtn.classList.toggle('active');
+      isBoosting = !isBoosting;
+      boostBtn.classList.toggle('active');
     }, { passive: false });
 
-    runBtn.addEventListener('click', () => {
-      isRunning = !isRunning;
-      runBtn.classList.toggle('active');
+    boostBtn.addEventListener('click', () => {
+      isBoosting = !isBoosting;
+      boostBtn.classList.toggle('active');
     });
 
-    jumpBtn.addEventListener('touchstart', (e) => {
+    brakeBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      if (!isJumping && characterReady) {
-        isJumping = true;
-        jumpVelocity = JUMP_POWER;
-      }
+      isBraking = !isBraking;
+      brakeBtn.classList.toggle('active');
     }, { passive: false });
 
-    jumpBtn.addEventListener('click', () => {
-      if (!isJumping && characterReady) {
-        isJumping = true;
-        jumpVelocity = JUMP_POWER;
-      }
+    brakeBtn.addEventListener('click', () => {
+      isBraking = !isBraking;
+      brakeBtn.classList.toggle('active');
     });
 
     // ============================================
-    // CAMERA
+    // CAMERA (دنبال‌کننده)
     // ============================================
     let cameraAngle = 0;
-    let cameraDistance = 6.0;
-    let cameraHeight = 4.0;
+    let cameraDistance = 10;
+    let cameraHeight = 6;
     let targetCameraAngle = 0;
-    let targetCameraHeight = 4.0;
+    let targetCameraHeight = 6;
 
     let isMouseDown = false;
     let lastMouseX = 0;
@@ -1658,7 +1406,7 @@
       const dy = e.clientY - lastMouseY;
       targetCameraAngle -= dx * 0.005;
       targetCameraHeight += dy * 0.03;
-      targetCameraHeight = Math.max(2.5, Math.min(8, targetCameraHeight));
+      targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
     });
@@ -1672,7 +1420,7 @@
       const rect = renderer.domElement.getBoundingClientRect();
       const touch = e.changedTouches[0];
       const x = touch.clientX - rect.left;
-      const isRightSide = x > rect.width * 0.4;
+      const isRightSide = x > rect.width * 0.3;
 
       if (e.touches.length === 1 && isRightSide) {
         touchCamId = touch.identifier;
@@ -1689,7 +1437,7 @@
             const dy = touch.clientY - touchCamStartY;
             targetCameraAngle -= dx * 0.005;
             targetCameraHeight += dy * 0.03;
-            targetCameraHeight = Math.max(2.5, Math.min(8, targetCameraHeight));
+            targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
             touchCamStartX = touch.clientX;
             touchCamStartY = touch.clientY;
           }
@@ -1705,175 +1453,109 @@
     // GAME LOOP
     // ============================================
     const clock = new THREE.Clock();
-    let walkTime = 0;
-    let isMoving = false;
 
-    // Cleanup timeout for players
+    // Cleanup old players
     setInterval(() => {
       const now = Date.now();
       for (const [id, player] of players) {
         if (now - player.lastUpdate > 5000) {
-          removeRemotePlayer(id);
+          removeRemoteCar(id);
         }
       }
     }, 3000);
 
-    function updateCharacter(delta) {
-      if (!characterReady || !character) return;
+    function updateCar(delta) {
+      // ===== INPUT =====
+      let gas = 0;
+      let steer = 0;
 
-      let inputX = 0;
-      let inputZ = 0;
+      // Keyboard
+      if (keys.w) gas = 1;
+      if (keys.s) gas = -1;
+      if (keys.a) steer = -1;
+      if (keys.d) steer = 1;
 
-      if (keys.w) inputZ -= 1;
-      if (keys.s) inputZ += 1;
-      if (keys.a) inputX -= 1;
-      if (keys.d) inputX += 1;
-
-      if (Math.abs(joyX) > 0.05 || Math.abs(joyY) > 0.05) {
-        inputX += joyX;
-        inputZ += joyY;
+      // Joystick
+      if (Math.abs(joyX) > 0.1 || Math.abs(joyY) > 0.1) {
+        gas = joyY;
+        steer = joyX;
       }
 
-      const inputLen = Math.sqrt(inputX * inputX + inputZ * inputZ);
-      isMoving = inputLen > 0.05;
+      // ===== SPEED =====
+      const currentMaxSpeed = isBoosting ? maxSpeed * 1.5 : maxSpeed;
+      const accelerationForce = isBoosting ? acceleration * 1.5 : acceleration;
 
-      const currentX = characterGroup.position.x;
-      const currentZ = characterGroup.position.z;
-      const groundY = getGroundHeight(currentX, currentZ);
-
-      let newX = currentX;
-      let newZ = currentZ;
-
-      if (isMoving) {
-        const normX = inputX / inputLen;
-        const normZ = inputZ / inputLen;
-
-        const speed = (isRunning || keys.shift) ? RUN_SPEED : MOVE_SPEED;
-
-        const forward = new THREE.Vector3(-Math.sin(cameraAngle), 0, -Math.cos(cameraAngle));
-        const right = new THREE.Vector3(Math.cos(cameraAngle), 0, -Math.sin(cameraAngle));
-
-        const moveDir = new THREE.Vector3()
-          .addScaledVector(forward, -normZ)
-          .addScaledVector(right, normX)
-          .normalize();
-
-        const moveX = moveDir.x * speed * delta;
-        const moveZ = moveDir.z * speed * delta;
-
-        newX = currentX + moveX;
-        newZ = currentZ + moveZ;
-
-        // Tree collision
-        for (const pos of treePositions) {
-          const dx = newX - pos.x;
-          const dz = newZ - pos.z;
-          const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist < 1.2) {
-            const push = (1.2 - dist) / 1.2;
-            if (dist > 0.01) {
-              newX += (dx / dist) * push * 0.3;
-              newZ += (dz / dist) * push * 0.3;
-            }
-          }
-        }
-
-        const targetRot = Math.atan2(-moveDir.x, -moveDir.z);
-        let diff = targetRot - characterRotation;
-        while (diff > Math.PI) diff -= Math.PI * 2;
-        while (diff < -Math.PI) diff += Math.PI * 2;
-        characterRotation += diff * Math.min(1, delta * 12);
-
-        walkTime += delta * (speed / MOVE_SPEED);
-        const legSwing = Math.sin(walkTime) * 0.5;
-        const legSwing2 = Math.sin(walkTime + Math.PI) * 0.5;
-
-        if (leftLeg) { leftLeg.rotation.x = legSwing;
-          leftLeg.position.z = Math.sin(walkTime) * 0.2; }
-        if (rightLeg) { rightLeg.rotation.x = legSwing2;
-          rightLeg.position.z = Math.sin(walkTime + Math.PI) * 0.2; }
-
-        const armSwing = Math.sin(walkTime + Math.PI) * 0.2;
-        const armSwing2 = Math.sin(walkTime) * 0.2;
-
-        if (leftArm) { leftArm.rotation.x = 0.15 + armSwing;
-          leftArm.rotation.z = 0.2; }
-        if (rightArm) { rightArm.rotation.x = -0.15 - armSwing2;
-          rightArm.rotation.z = -0.2; }
-
+      if (Math.abs(gas) > 0.1) {
+        carSpeed += gas * accelerationForce * delta;
+        if (carSpeed > currentMaxSpeed) carSpeed = currentMaxSpeed;
+        if (carSpeed < -currentMaxSpeed * 0.5) carSpeed = -currentMaxSpeed * 0.5;
+      } else if (isBraking) {
+        carSpeed -= Math.sign(carSpeed) * braking * delta;
+        if (Math.abs(carSpeed) < 0.1) carSpeed = 0;
       } else {
-        if (leftLeg) { leftLeg.rotation.x *= 0.9;
-          leftLeg.position.z *= 0.9; }
-        if (rightLeg) { rightLeg.rotation.x *= 0.9;
-          rightLeg.position.z *= 0.9; }
-        if (leftArm) {
-          leftArm.rotation.x += (0.15 - leftArm.rotation.x) * 0.05;
-          leftArm.rotation.z += (0.2 - leftArm.rotation.z) * 0.05;
-        }
-        if (rightArm) {
-          rightArm.rotation.x += (-0.15 - rightArm.rotation.x) * 0.05;
-          rightArm.rotation.z += (-0.2 - rightArm.rotation.z) * 0.05;
-        }
-      }
-
-      characterGroup.position.x = newX;
-      characterGroup.position.z = newZ;
-
-      const currentGroundY = getGroundHeight(characterGroup.position.x, characterGroup.position.z);
-
-      if (isJumping) {
-        jumpVelocity += GRAVITY * delta;
-        if (jumpVelocity < -12) jumpVelocity = -12;
-
-        const newY = characterGroup.position.y + jumpVelocity * delta;
-        if (newY <= currentGroundY + GROUND_OFFSET) {
-          characterGroup.position.y = currentGroundY + GROUND_OFFSET;
-          isJumping = false;
-          jumpVelocity = 0;
+        // اصطکاک
+        if (Math.abs(carSpeed) > 0.1) {
+          carSpeed -= Math.sign(carSpeed) * friction * delta;
         } else {
-          characterGroup.position.y = newY;
-        }
-      } else {
-        const targetY = currentGroundY + GROUND_OFFSET;
-        const diffY = targetY - characterGroup.position.y;
-
-        if (characterGroup.position.y < currentGroundY + GROUND_OFFSET - 0.01) {
-          characterGroup.position.y = currentGroundY + GROUND_OFFSET;
-        } else {
-          characterGroup.position.y += diffY * 0.5;
-        }
-
-        if (characterGroup.position.y < getGroundHeight(characterGroup.position.x, characterGroup.position.z) +
-          GROUND_OFFSET) {
-          characterGroup.position.y = getGroundHeight(characterGroup.position.x, characterGroup.position.z) +
-          GROUND_OFFSET;
+          carSpeed = 0;
         }
       }
 
-      characterGroup.rotation.y = characterRotation;
-
-      const boundary = 140;
-      if (Math.abs(characterGroup.position.x) > boundary) {
-        characterGroup.position.x = Math.sign(characterGroup.position.x) * boundary;
-      }
-      if (Math.abs(characterGroup.position.z) > boundary) {
-        characterGroup.position.z = Math.sign(characterGroup.position.z) * boundary;
+      // ===== STEERING =====
+      if (Math.abs(carSpeed) > 0.2) {
+        const turnFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
+        carAngle += steer * turnSpeed * turnFactor * delta;
       }
 
-      const finalGroundY = getGroundHeight(characterGroup.position.x, characterGroup.position.z);
-      if (characterGroup.position.y < finalGroundY + GROUND_OFFSET) {
-        characterGroup.position.y = finalGroundY + GROUND_OFFSET;
+      // ===== MOVEMENT =====
+      const moveX = Math.sin(carAngle) * carSpeed * delta;
+      const moveZ = Math.cos(carAngle) * carSpeed * delta;
+
+      let newX = carGroup.position.x + moveX;
+      let newZ = carGroup.position.z + moveZ;
+
+      // ===== ROAD BOUNDARY =====
+      const distFromCenter = Math.sqrt(newX * newX + newZ * newZ);
+      const roadBoundary = roadRadius + roadWidth / 2;
+
+      if (distFromCenter > roadBoundary) {
+        const angle = Math.atan2(newX, newZ);
+        newX = Math.sin(angle) * roadBoundary;
+        newZ = Math.cos(angle) * roadBoundary;
+        carSpeed *= 0.7;
       }
 
-      localLabel.position.set(0, 2.2, 0);
+      if (distFromCenter < roadRadius - roadWidth / 2) {
+        const angle = Math.atan2(newX, newZ);
+        newX = Math.sin(angle) * (roadRadius - roadWidth / 2);
+        newZ = Math.cos(angle) * (roadRadius - roadWidth / 2);
+        carSpeed *= 0.7;
+      }
+
+      carGroup.position.x = newX;
+      carGroup.position.z = newZ;
+      carGroup.rotation.y = carAngle;
+
+      // ===== SPEED DISPLAY =====
+      const speedKmh = Math.round(Math.abs(carSpeed) * 8);
+      speedDisplay.innerHTML = `${speedKmh} <span>km/h</span>`;
+
+      // ===== WHEEL ANIMATION =====
+      const wheelRot = carSpeed * delta * 10;
+      for (const wheel of wheels) {
+        wheel.rotation.z += wheelRot;
+      }
+
+      // ===== LABEL =====
+      label.position.set(0, 1.5, 0);
     }
 
     function updateCamera() {
       cameraAngle += (targetCameraAngle - cameraAngle) * 0.08;
       cameraHeight += (targetCameraHeight - cameraHeight) * 0.08;
 
-      const targetPos = characterGroup.position.clone();
-      targetPos.y += 0.8;
+      const targetPos = carGroup.position.clone();
+      targetPos.y += 0.5;
 
       const offsetX = Math.sin(cameraAngle) * cameraDistance;
       const offsetZ = Math.cos(cameraAngle) * cameraDistance;
@@ -1884,25 +1566,14 @@
         targetPos.z + offsetZ
       );
 
-      const camGroundY = getGroundHeight(camPos.x, camPos.z);
-      if (camPos.y < camGroundY + 0.8) {
-        camPos.y = camGroundY + 0.8;
-      }
-
-      const toChar = new THREE.Vector3().copy(targetPos).sub(camPos);
-      const distToChar = toChar.length();
-      if (distToChar < 1.5) {
-        camPos.add(toChar.normalize().multiplyScalar(1.5 - distToChar));
-      }
-
-      camera.position.lerp(camPos, 0.1);
+      camera.position.lerp(camPos, 0.08);
       camera.lookAt(targetPos);
     }
 
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
-      updateCharacter(delta);
+      updateCar(delta);
       updateCamera();
 
       renderer.render(scene, camera);
@@ -1913,15 +1584,19 @@
     // START GAME
     // ============================================
     function startGame() {
-      loadAstronaut();
+      updateLoading(40, 'بارگذاری ماشین...');
+      setTimeout(() => {
+        updateLoading(100, '✅ آماده!');
+        setTimeout(hideLoading, 400);
+      }, 500);
 
       setTimeout(() => {
         setupChannelListener();
       }, 1000);
 
+      startSendingPosition();
       animate();
 
-      // Connection recovery
       setInterval(() => {
         if (!isConnected && ablyClient) {
           try {
@@ -1947,11 +1622,11 @@
       }
     });
 
-    console.log('🚀 فضانورد آنلاین - نسخه نهایی!');
-    console.log('📡 پینگ به صورت زنده نمایش داده میشود');
-    console.log('🏔️ محیط با کوه‌ها و درخت‌های بزرگ');
-    console.log('🌿 چمن‌های واقعی و با کیفیت');
-    console.log('✅ کاراکتر فضانورد واقعی برای همه');
+    console.log('🏎️ مسابقه ماشین آنلاین!');
+    console.log('✅ جاده دایره‌ای حرفه‌ای');
+    console.log('✅ ماشین با فیزیک واقعی');
+    console.log('✅ گاز، ترمز، فرمان');
+    console.log('✅ چندنفره آنلاین');
   </script>
 </body>
 
