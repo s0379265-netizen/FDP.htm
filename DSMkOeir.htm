@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>فضانورد - نسخه نهایی با برخورد کامل</title>
+  <title>فضانورد آنلاین - بازی چندنفره</title>
 
   <style>
     * {
@@ -34,6 +34,115 @@
       height: 100%;
     }
 
+    /* ========== LOGIN SCREEN ========== */
+    #login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a3e, #0a0a1a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      transition: opacity 0.8s ease;
+    }
+
+    #login-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #login-title {
+      color: white;
+      font-size: 32px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    #login-title span {
+      color: #64ffda;
+      font-weight: 600;
+    }
+
+    #login-sub {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+    }
+
+    #login-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px 50px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #login-box input {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+      margin-bottom: 16px;
+    }
+
+    #login-box input:focus {
+      border-color: #64ffda;
+    }
+
+    #login-box input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    #login-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #64ffda, #00bcd4);
+      color: #0a0a1a;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #login-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(100, 255, 218, 0.3);
+    }
+
+    #login-btn:active {
+      transform: scale(0.95);
+    }
+
+    #login-error {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+
+    #online-count {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 12px;
+      margin-top: 16px;
+    }
+
+    /* ========== LOADING SCREEN ========== */
     #loading-screen {
       position: fixed;
       top: 0;
@@ -105,6 +214,7 @@
       font-family: monospace;
     }
 
+    /* ========== UI OVERLAY ========== */
     #ui-overlay {
       position: fixed;
       top: 0;
@@ -137,6 +247,35 @@
     #info span {
       color: #64ffda;
       font-weight: 600;
+    }
+
+    #player-name-display {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    #online-count-display {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
     }
 
     #joystick-container {
@@ -270,6 +409,27 @@
       color: rgba(255, 255, 255, 0.4);
     }
 
+    /* ========== NAME LABELS (CSS2DRenderer) ========== */
+    .player-label {
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px 14px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+      white-space: nowrap;
+      transform: translateY(-60px);
+    }
+
+    .player-label.own {
+      border-color: rgba(100, 255, 218, 0.3);
+      color: #64ffda;
+    }
+
     @media (max-width: 600px) {
       #joystick-container {
         width: 110px;
@@ -306,6 +466,23 @@
       .loader-container {
         width: 160px;
       }
+      #login-box {
+        padding: 30px 25px;
+      }
+      #login-title {
+        font-size: 24px;
+      }
+      #player-name-display {
+        top: 60px;
+        font-size: 10px;
+        padding: 3px 12px;
+      }
+      #online-count-display {
+        top: 12px;
+        right: 12px;
+        font-size: 10px;
+        padding: 3px 10px;
+      }
     }
 
     @media (pointer: coarse) {
@@ -341,6 +518,19 @@
 
 <body>
 
+  <!-- ====== LOGIN SCREEN ====== -->
+  <div id="login-screen">
+    <div id="login-title">🚀 <span>فضانورد</span> آنلاین</div>
+    <div id="login-sub">به دنیای چندنفره خوش آمدید</div>
+    <div id="login-box">
+      <input type="text" id="name-input" placeholder="نام خود را وارد کنید..." maxlength="20" autofocus>
+      <button id="login-btn">✨ ورود به بازی</button>
+      <div id="login-error"></div>
+      <div id="online-count">🔗 در حال اتصال به سرور...</div>
+    </div>
+  </div>
+
+  <!-- ====== LOADING SCREEN ====== -->
   <div id="loading-screen">
     <div id="loading-title">🚀 <span>فضانورد</span></div>
     <div id="loading-sub">در حال آماده‌سازی محیط</div>
@@ -351,8 +541,11 @@
     <div id="loading-status">در حال بارگذاری...</div>
   </div>
 
+  <!-- ====== UI OVERLAY ====== -->
   <div id="ui-overlay">
     <div id="info">🚀 <span>فضانورد</span> · کاوش در زمین</div>
+    <div id="player-name-display">👤 شما</div>
+    <div id="online-count-display">👥 ۰ آنلاین</div>
 
     <div id="joystick-container">
       <div id="joystick-base">
@@ -371,26 +564,147 @@
     </div>
   </div>
 
+  <!-- ====== ABLY LIBRARY ====== -->
+  <script src="https://cdn.ably.com/lib/ably.min-1.js">
+  </script>
+
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.161.0/build/three.module.js"
+        "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
       }
     }
   </script>
 
   <script type="module">
     import * as THREE from 'three';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
     // ============================================
-    // LOADING SYSTEM
+    // DOM ELEMENTS
     // ============================================
+    const loginScreen = document.getElementById('login-screen');
+    const loginBtn = document.getElementById('login-btn');
+    const nameInput = document.getElementById('name-input');
+    const loginError = document.getElementById('login-error');
+    const onlineCountEl = document.getElementById('online-count');
+    const onlineCountDisplay = document.getElementById('online-count-display');
+    const playerNameDisplay = document.getElementById('player-name-display');
+
     const loadingScreen = document.getElementById('loading-screen');
     const loaderBar = document.getElementById('loader-bar');
     const loadingPercent = document.getElementById('loading-percent');
     const loadingStatus = document.getElementById('loading-status');
 
+    // ============================================
+    // ABLY SETUP
+    // ============================================
+    let ablyClient = null;
+    let channel = null;
+    let currentUserId = '';
+    let playerName = '';
+    let isConnected = false;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT = 5;
+
+    // Players data
+    const players = new Map(); // clientId -> { position, rotation, name, mesh, label }
+
+    function connectToAbly(name) {
+      return new Promise((resolve, reject) => {
+        try {
+          const clientId = 'user_' + Math.random().toString(36).substr(2, 8);
+          currentUserId = clientId;
+
+          ablyClient = new Ably.Realtime({
+            key: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
+            clientId: clientId,
+            echoMessages: false
+          });
+
+          ablyClient.connection.on('connected', () => {
+            console.log('✅ متصل به Ably!');
+            isConnected = true;
+            reconnectAttempts = 0;
+            onlineCountEl.textContent = '🔗 متصل به سرور';
+            resolve();
+          });
+
+          ablyClient.connection.on('disconnected', () => {
+            console.log('⚠️ قطع موقت');
+            isConnected = false;
+            onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
+          });
+
+          ablyClient.connection.on('failed', () => {
+            console.log('❌ اتصال ناموفق');
+            isConnected = false;
+            if (reconnectAttempts < MAX_RECONNECT) {
+              reconnectAttempts++;
+              onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
+              setTimeout(() => {
+                ablyClient.connection.recover();
+              }, 2000);
+            } else {
+              reject(new Error('اتصال به سرور ناموفق'));
+            }
+          });
+
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    // ============================================
+    // LOGIN SYSTEM
+    // ============================================
+    async function handleLogin() {
+      const name = nameInput.value.trim();
+      if (!name) {
+        loginError.textContent = '⚠️ لطفاً نام خود را وارد کنید';
+        return;
+      }
+      if (name.length < 2) {
+        loginError.textContent = '⚠️ نام باید حداقل ۲ حرف باشد';
+        return;
+      }
+
+      loginBtn.textContent = '⏳ در حال اتصال...';
+      loginBtn.disabled = true;
+      loginError.textContent = '';
+
+      try {
+        await connectToAbly(name);
+        playerName = name;
+        channel = ablyClient.channels.get('astronaut-game');
+
+        // تنظیم نام کاربر
+        playerNameDisplay.textContent = `👤 ${playerName}`;
+
+        // پنهان کردن صفحه لاگین
+        loginScreen.classList.add('hidden');
+
+        // شروع بازی
+        startGame();
+
+      } catch (error) {
+        loginError.textContent = '❌ ' + error.message;
+        loginBtn.textContent = '✨ ورود به بازی';
+        loginBtn.disabled = false;
+      }
+    }
+
+    loginBtn.addEventListener('click', handleLogin);
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    // ============================================
+    // LOADING SYSTEM
+    // ============================================
     function updateLoading(percent, status) {
       loaderBar.style.width = Math.min(percent, 100) + '%';
       loadingPercent.textContent = Math.round(Math.min(percent, 100)) + '%';
@@ -403,7 +717,7 @@
     }
 
     // ============================================
-    // SCENE SETUP
+    // THREE.JS SCENE SETUP
     // ============================================
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0x1a1a2e, 35, 120);
@@ -424,6 +738,16 @@
     renderer.toneMappingExposure = 0.9;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.prepend(renderer.domElement);
+
+    // CSS2 Renderer for labels
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(innerWidth, innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0';
+    labelRenderer.domElement.style.left = '0';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    labelRenderer.domElement.style.zIndex = '5';
+    document.body.appendChild(labelRenderer.domElement);
 
     // ============================================
     // LIGHTING
@@ -496,30 +820,13 @@
       }
     }
 
-    // ============================================
-    // RAYCASTER FOR GROUND DETECTION
-    // ============================================
-    const raycaster = new THREE.Raycaster();
-    const rayOrigin = new THREE.Vector3();
-    const rayDirection = new THREE.Vector3(0, -1, 0);
-
     function getGroundHeight(x, z) {
-      // Method 1: Height map (fast)
       const ix = Math.floor((x + 150) / 300 * width);
       const iz = Math.floor((z + 150) / 300 * height);
       if (ix >= 0 && ix < width && iz >= 0 && iz < height) {
         const h = heightMap[iz * width + ix];
         if (h !== undefined) return h;
       }
-
-      // Method 2: Raycast (accurate)
-      rayOrigin.set(x, 50, z);
-      raycaster.set(rayOrigin, rayDirection);
-      const intersects = raycaster.intersectObject(ground, false);
-      if (intersects.length > 0) {
-        return intersects[0].point.y;
-      }
-
       return 0;
     }
 
@@ -618,21 +925,27 @@
     scene.add(grass);
 
     // ============================================
-    // ASTRONAUT LOADING
+    // ASTRONAUT LOADING (LOCAL PLAYER)
     // ============================================
     let character = null;
     let characterReady = false;
     let characterRotation = 0;
 
-    // Animation bones
     let leftArm = null;
     let rightArm = null;
     let leftLeg = null;
     let rightLeg = null;
-    let spine = null;
 
     const characterGroup = new THREE.Group();
     scene.add(characterGroup);
+
+    // Label for local player
+    const localLabelDiv = document.createElement('div');
+    localLabelDiv.className = 'player-label own';
+    localLabelDiv.textContent = playerName;
+    const localLabel = new CSS2DObject(localLabelDiv);
+    localLabel.position.set(0, 1.8, 0);
+    characterGroup.add(localLabel);
 
     const loader = new GLTFLoader();
 
@@ -654,41 +967,52 @@
                 child.material.metalness = Math.min(child.material.metalness || 0.1, 0.3);
               }
               const name = child.name.toLowerCase();
-              // Find bones for animation
-              if (name.includes('arm') || name.includes('shoulder') || name.includes('upperarm')) {
+              if (name.includes('arm') || name.includes('shoulder')) {
                 if (name.includes('left') || name.includes('l')) leftArm = child;
                 else if (name.includes('right') || name.includes('r')) rightArm = child;
               }
-              if (name.includes('leg') || name.includes('thigh') || name.includes('upperleg')) {
+              if (name.includes('leg') || name.includes('thigh')) {
                 if (name.includes('left') || name.includes('l')) leftLeg = child;
                 else if (name.includes('right') || name.includes('r')) rightLeg = child;
-              }
-              if (name.includes('spine') || name.includes('torso')) {
-                spine = child;
               }
             }
           });
 
-          // Set default relaxed pose
-          if (leftArm) {
-            leftArm.rotation.x = 0.1;
-            leftArm.rotation.z = 0.15;
+          if (!leftArm || !rightArm) {
+            character.traverse((child) => {
+              if (child.isMesh && child.position.y > 0.5 && child.position.y < 1.2) {
+                if (child.position.x < -0.2 && !leftArm) leftArm = child;
+                else if (child.position.x > 0.2 && !rightArm) rightArm = child;
+              }
+              if (child.isMesh && child.position.y < 0.5 && child.position.y > -0.1) {
+                if (child.position.x < -0.1 && !leftLeg) leftLeg = child;
+                else if (child.position.x > 0.1 && !rightLeg) rightLeg = child;
+              }
+            });
           }
-          if (rightArm) {
-            rightArm.rotation.x = -0.1;
-            rightArm.rotation.z = -0.15;
-          }
+
+          if (leftArm) { leftArm.rotation.x = 0.15;
+            leftArm.rotation.z = 0.2; }
+          if (rightArm) { rightArm.rotation.x = -0.15;
+            rightArm.rotation.z = -0.2; }
 
           characterGroup.add(character);
           characterReady = true;
 
           const startHeight = getGroundHeight(0, 0);
-          characterGroup.position.set(0, startHeight + 0.05, 0);
+          characterGroup.position.set(
+            (Math.random() - 0.5) * 10,
+            startHeight + 0.05,
+            (Math.random() - 0.5) * 10
+          );
 
           updateLoading(100, '✅ فضانورد آماده!');
           setTimeout(hideLoading, 400);
 
           console.log('✅ فضانورد بارگذاری شد!');
+
+          // شروع ارسال موقعیت به سرور
+          startSendingPosition();
         },
         (progress) => {
           if (progress.total > 0) {
@@ -704,7 +1028,190 @@
       );
     }
 
-    loadAstronaut();
+    // ============================================
+    // NETWORK - PLAYER SYNC
+    // ============================================
+    function createRemotePlayer(clientId, data) {
+      if (clientId === currentUserId) return;
+
+      // Create a group for remote player
+      const group = new THREE.Group();
+
+      // Create a simple astronaut model (capsule)
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color().setHSL(Math.random(), 0.5, 0.5),
+        roughness: 0.5,
+        metalness: 0.2
+      });
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1.0, 8, 12), bodyMat);
+      body.position.y = 0.5;
+      body.castShadow = true;
+      group.add(body);
+
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa, roughness: 0.4 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), headMat);
+      head.position.y = 1.3;
+      head.castShadow = true;
+      group.add(head);
+
+      // Helmet
+      const helmetMat = new THREE.MeshStandardMaterial({
+        color: 0x88ccff,
+        roughness: 0.1,
+        metalness: 0.8,
+        transparent: true,
+        opacity: 0.3
+      });
+      const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), helmetMat);
+      helmet.position.set(0, 1.3, 0.2);
+      helmet.scale.set(1, 0.8, 0.5);
+      group.add(helmet);
+
+      // Label
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'player-label';
+      labelDiv.textContent = data.name || 'کاربر';
+      const label = new CSS2DObject(labelDiv);
+      label.position.set(0, 1.6, 0);
+      group.add(label);
+
+      // Set initial position
+      const h = getGroundHeight(data.x || 0, data.z || 0);
+      group.position.set(data.x || 0, h + 0.05, data.z || 0);
+      group.rotation.y = data.rotation || 0;
+
+      scene.add(group);
+
+      players.set(clientId, {
+        mesh: group,
+        label: label,
+        data: data,
+        name: data.name || 'کاربر',
+        lastUpdate: Date.now()
+      });
+
+      updateOnlineCount();
+    }
+
+    function updateRemotePlayer(clientId, data) {
+      if (clientId === currentUserId) return;
+      const player = players.get(clientId);
+      if (!player) {
+        createRemotePlayer(clientId, data);
+        return;
+      }
+
+      // Update position smoothly
+      const h = getGroundHeight(data.x || 0, data.z || 0);
+      player.mesh.position.x = data.x || 0;
+      player.mesh.position.z = data.z || 0;
+      player.mesh.position.y = h + 0.05;
+      player.mesh.rotation.y = data.rotation || 0;
+
+      // Update label
+      if (player.label) {
+        player.label.element.textContent = data.name || 'کاربر';
+      }
+
+      player.data = data;
+      player.lastUpdate = Date.now();
+    }
+
+    function removeRemotePlayer(clientId) {
+      if (clientId === currentUserId) return;
+      const player = players.get(clientId);
+      if (player) {
+        scene.remove(player.mesh);
+        players.delete(clientId);
+        updateOnlineCount();
+      }
+    }
+
+    function updateOnlineCount() {
+      const count = players.size + 1; // +1 for local player
+      onlineCountDisplay.textContent = `👥 ${count} آنلاین`;
+    }
+
+    // ============================================
+    // NETWORK - SEND POSITION
+    // ============================================
+    let sendInterval = null;
+
+    function startSendingPosition() {
+      if (sendInterval) clearInterval(sendInterval);
+
+      sendInterval = setInterval(() => {
+        if (!isConnected || !characterReady || !channel) return;
+
+        const pos = characterGroup.position;
+        const data = {
+          x: pos.x,
+          z: pos.z,
+          rotation: characterRotation,
+          name: playerName,
+          timestamp: Date.now()
+        };
+
+        try {
+          channel.publish('player-update', {
+            clientId: currentUserId,
+            ...data
+          });
+        } catch (e) {
+          console.error('خطا در ارسال:', e);
+        }
+      }, 50); // 20 FPS
+    }
+
+    // ============================================
+    // NETWORK - RECEIVE POSITIONS
+    // ============================================
+    function setupChannelListener() {
+      if (!channel) return;
+
+      channel.subscribe('player-update', (message) => {
+        const data = message.data;
+        if (data.clientId === currentUserId) return;
+
+        // Update or create player
+        updateRemotePlayer(data.clientId, data);
+      });
+
+      // Presence - when players join
+      channel.presence.subscribe('enter', (presence) => {
+        const data = presence.data;
+        if (presence.clientId === currentUserId) return;
+        if (data) {
+          createRemotePlayer(presence.clientId, data);
+        }
+      });
+
+      channel.presence.subscribe('leave', (presence) => {
+        removeRemotePlayer(presence.clientId);
+      });
+
+      // Get existing players
+      channel.presence.get((err, members) => {
+        if (err) {
+          console.error('خطا در دریافت اعضا:', err);
+          return;
+        }
+        members.forEach((member) => {
+          if (member.clientId !== currentUserId && member.data) {
+            createRemotePlayer(member.clientId, member.data);
+          }
+        });
+        updateOnlineCount();
+      });
+
+      // Enter presence
+      channel.presence.enter({
+        x: characterGroup.position.x,
+        z: characterGroup.position.z,
+        rotation: characterRotation,
+        name: playerName
+      });
+    }
 
     // ============================================
     // CONTROLS
@@ -720,6 +1227,7 @@
     const RUN_SPEED = 7.0;
     const GRAVITY = -15;
     const JUMP_POWER = 4.5;
+    const GROUND_OFFSET = 0.05;
 
     // ---------- KEYBOARD ----------
     document.addEventListener('keydown', (e) => {
@@ -742,7 +1250,6 @@
     // ---------- JOYSTICK ----------
     const joystickBase = document.getElementById('joystick-base');
     const joystickKnob = document.getElementById('joystick-knob');
-    const joyRadius = 45;
 
     function updateJoystick(clientX, clientY) {
       const rect = joystickBase.getBoundingClientRect();
@@ -922,23 +1429,15 @@
     }, { passive: true });
 
     // ============================================
-    // GAME LOOP WITH FULL COLLISION
+    // GAME LOOP
     // ============================================
     const clock = new THREE.Clock();
     let walkTime = 0;
     let isMoving = false;
 
-    // Character radius for collision
-    const CHAR_RADIUS = 0.5;
-    const CHAR_HEIGHT = 1.2;
-    const GROUND_OFFSET = 0.05;
-
     function updateCharacter(delta) {
       if (!characterReady || !character) return;
 
-      // ============================================
-      // 1. GET INPUT
-      // ============================================
       let inputX = 0;
       let inputZ = 0;
 
@@ -955,23 +1454,18 @@
       const inputLen = Math.sqrt(inputX * inputX + inputZ * inputZ);
       isMoving = inputLen > 0.05;
 
-      // ============================================
-      // 2. GET CURRENT GROUND HEIGHT (RAYCAST)
-      // ============================================
       const currentX = characterGroup.position.x;
       const currentZ = characterGroup.position.z;
       const groundY = getGroundHeight(currentX, currentZ);
 
-      // ============================================
-      // 3. MOVEMENT WITH COLLISION
-      // ============================================
-      let speed = 0;
+      let newX = currentX;
+      let newZ = currentZ;
 
       if (isMoving) {
         const normX = inputX / inputLen;
         const normZ = inputZ / inputLen;
 
-        speed = (isRunning || keys.shift) ? RUN_SPEED : MOVE_SPEED;
+        const speed = (isRunning || keys.shift) ? RUN_SPEED : MOVE_SPEED;
 
         const forward = new THREE.Vector3(-Math.sin(cameraAngle), 0, -Math.cos(cameraAngle));
         const right = new THREE.Vector3(Math.cos(cameraAngle), 0, -Math.sin(cameraAngle));
@@ -981,22 +1475,18 @@
           .addScaledVector(right, normX)
           .normalize();
 
-        // Calculate new position
         const moveX = moveDir.x * speed * delta;
         const moveZ = moveDir.z * speed * delta;
 
-        let newX = currentX + moveX;
-        let newZ = currentZ + moveZ;
+        newX = currentX + moveX;
+        newZ = currentZ + moveZ;
 
-        // ============================================
-        // 4. TREE COLLISION
-        // ============================================
         for (const pos of treePositions) {
           const dx = newX - pos.x;
           const dz = newZ - pos.z;
           const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist < CHAR_RADIUS + 0.4) {
-            const push = ((CHAR_RADIUS + 0.4) - dist) / (CHAR_RADIUS + 0.4);
+          if (dist < 0.9) {
+            const push = (0.9 - dist) / 0.9;
             if (dist > 0.01) {
               newX += (dx / dist) * push * 0.3;
               newZ += (dz / dist) * push * 0.3;
@@ -1004,75 +1494,47 @@
           }
         }
 
-        // ============================================
-        // 5. APPLY POSITION
-        // ============================================
-        characterGroup.position.x = newX;
-        characterGroup.position.z = newZ;
-
-        // ============================================
-        // 6. ROTATE CHARACTER
-        // ============================================
         const targetRot = Math.atan2(-moveDir.x, -moveDir.z);
         let diff = targetRot - characterRotation;
         while (diff > Math.PI) diff -= Math.PI * 2;
         while (diff < -Math.PI) diff += Math.PI * 2;
         characterRotation += diff * Math.min(1, delta * 12);
 
-        // ============================================
-        // 7. WALKING ANIMATION (relaxed arms)
-        // ============================================
         walkTime += delta * (speed / MOVE_SPEED);
-        const legSwing = Math.sin(walkTime) * 0.35;
-        const armSwing = Math.sin(walkTime + Math.PI) * 0.12;
+        const legSwing = Math.sin(walkTime) * 0.5;
+        const legSwing2 = Math.sin(walkTime + Math.PI) * 0.5;
 
-        if (leftLeg) {
-          leftLeg.position.z = legSwing;
-          leftLeg.rotation.x = Math.sin(walkTime) * 0.4;
-        }
-        if (rightLeg) {
-          rightLeg.position.z = -legSwing;
-          rightLeg.rotation.x = -Math.sin(walkTime) * 0.4;
-        }
+        if (leftLeg) { leftLeg.rotation.x = legSwing;
+          leftLeg.position.z = Math.sin(walkTime) * 0.2; }
+        if (rightLeg) { rightLeg.rotation.x = legSwing2;
+          rightLeg.position.z = Math.sin(walkTime + Math.PI) * 0.2; }
 
-        // Arms swing naturally, staying relaxed
-        if (leftArm) {
-          leftArm.rotation.x = 0.1 + armSwing;
-          leftArm.rotation.z = 0.15;
-        }
-        if (rightArm) {
-          rightArm.rotation.x = -0.1 - armSwing;
-          rightArm.rotation.z = -0.15;
-        }
+        const armSwing = Math.sin(walkTime + Math.PI) * 0.2;
+        const armSwing2 = Math.sin(walkTime) * 0.2;
+
+        if (leftArm) { leftArm.rotation.x = 0.15 + armSwing;
+          leftArm.rotation.z = 0.2; }
+        if (rightArm) { rightArm.rotation.x = -0.15 - armSwing2;
+          rightArm.rotation.z = -0.2; }
 
       } else {
-        // ============================================
-        // 8. IDLE ANIMATION (relaxed pose)
-        // ============================================
-        // Return to relaxed position
-        if (leftLeg) {
-          leftLeg.position.z *= 0.9;
-          leftLeg.rotation.x *= 0.9;
-        }
-        if (rightLeg) {
-          rightLeg.position.z *= 0.9;
-          rightLeg.rotation.x *= 0.9;
-        }
-
-        // Arms naturally hanging down
+        if (leftLeg) { leftLeg.rotation.x *= 0.9;
+          leftLeg.position.z *= 0.9; }
+        if (rightLeg) { rightLeg.rotation.x *= 0.9;
+          rightLeg.position.z *= 0.9; }
         if (leftArm) {
-          leftArm.rotation.x += (0.1 - leftArm.rotation.x) * 0.05;
-          leftArm.rotation.z += (0.15 - leftArm.rotation.z) * 0.05;
+          leftArm.rotation.x += (0.15 - leftArm.rotation.x) * 0.05;
+          leftArm.rotation.z += (0.2 - leftArm.rotation.z) * 0.05;
         }
         if (rightArm) {
-          rightArm.rotation.x += (-0.1 - rightArm.rotation.x) * 0.05;
-          rightArm.rotation.z += (-0.15 - rightArm.rotation.z) * 0.05;
+          rightArm.rotation.x += (-0.15 - rightArm.rotation.x) * 0.05;
+          rightArm.rotation.z += (-0.2 - rightArm.rotation.z) * 0.05;
         }
       }
 
-      // ============================================
-      // 9. JUMPING
-      // ============================================
+      characterGroup.position.x = newX;
+      characterGroup.position.z = newZ;
+
       const currentGroundY = getGroundHeight(characterGroup.position.x, characterGroup.position.z);
 
       if (isJumping) {
@@ -1088,38 +1550,24 @@
           characterGroup.position.y = newY;
         }
       } else {
-        // ============================================
-        // 10. GROUND SNAPPING (PREVENT SINKING)
-        // ============================================
-        // Always stay exactly on ground surface
         const targetY = currentGroundY + GROUND_OFFSET;
+        const diffY = targetY - characterGroup.position.y;
 
-        // Smoothly interpolate to prevent bouncing
-        const currentY = characterGroup.position.y;
-        const diffY = targetY - currentY;
-
-        // If too far from ground, snap quickly
-        if (Math.abs(diffY) > 0.1) {
-          characterGroup.position.y = targetY;
+        if (characterGroup.position.y < currentGroundY + GROUND_OFFSET - 0.01) {
+          characterGroup.position.y = currentGroundY + GROUND_OFFSET;
         } else {
-          // Smooth follow for small changes
           characterGroup.position.y += diffY * 0.5;
         }
 
-        // Anti-sinking: if below ground, immediately correct
-        if (characterGroup.position.y < currentGroundY + GROUND_OFFSET - 0.01) {
-          characterGroup.position.y = currentGroundY + GROUND_OFFSET;
+        if (characterGroup.position.y < getGroundHeight(characterGroup.position.x, characterGroup.position.z) +
+          GROUND_OFFSET) {
+          characterGroup.position.y = getGroundHeight(characterGroup.position.x, characterGroup.position.z) +
+          GROUND_OFFSET;
         }
       }
 
-      // ============================================
-      // 11. APPLY ROTATION
-      // ============================================
       characterGroup.rotation.y = characterRotation;
 
-      // ============================================
-      // 12. BOUNDARIES
-      // ============================================
       const boundary = 140;
       if (Math.abs(characterGroup.position.x) > boundary) {
         characterGroup.position.x = Math.sign(characterGroup.position.x) * boundary;
@@ -1128,14 +1576,13 @@
         characterGroup.position.z = Math.sign(characterGroup.position.z) * boundary;
       }
 
-      // ============================================
-      // 13. FINAL GROUND CHECK
-      // ============================================
-      // One more check to ensure character is above ground
       const finalGroundY = getGroundHeight(characterGroup.position.x, characterGroup.position.z);
       if (characterGroup.position.y < finalGroundY + GROUND_OFFSET) {
         characterGroup.position.y = finalGroundY + GROUND_OFFSET;
       }
+
+      // Update label position
+      localLabel.position.set(0, 1.8, 0);
     }
 
     function updateCamera() {
@@ -1174,10 +1621,39 @@
       const delta = Math.min(clock.getDelta(), 0.05);
       updateCharacter(delta);
       updateCamera();
+
+      // Render main scene
       renderer.render(scene, camera);
+      // Render labels
+      labelRenderer.render(scene, camera);
     }
 
-    animate();
+    // ============================================
+    // START GAME
+    // ============================================
+    function startGame() {
+      loadAstronaut();
+
+      // Setup network after a moment
+      setTimeout(() => {
+        setupChannelListener();
+      }, 1000);
+
+      // Start animation
+      animate();
+
+      // Handle connection loss recovery
+      setInterval(() => {
+        if (!isConnected && ablyClient) {
+          console.log('🔄 تلاش برای اتصال مجدد...');
+          try {
+            ablyClient.connection.recover();
+          } catch (e) {
+            console.error('خطا در اتصال مجدد:', e);
+          }
+        }
+      }, 5000);
+    }
 
     // ============================================
     // RESIZE
@@ -1186,6 +1662,7 @@
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
+      labelRenderer.setSize(innerWidth, innerHeight);
     });
 
     document.addEventListener('keydown', (e) => {
@@ -1194,10 +1671,9 @@
       }
     });
 
-    console.log('🚀 فضانورد - نسخه نهایی با برخورد کامل!');
-    console.log('✅ کاراکتر همیشه روی زمین می‌ماند');
-    console.log('✅ دست‌ها در حالت طبیعی و آویزان');
-    console.log('✅ حرکت نرم و بدون لرزش');
+    console.log('🚀 فضانورد آنلاین - نسخه چندنفره!');
+    console.log('👥 هر کاربر با نام خودش وارد میشود');
+    console.log('📡 موقعیت کاربران به صورت زنده ارسال میشود');
   </script>
 </body>
 
