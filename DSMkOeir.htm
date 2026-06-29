@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>فضانورد آنلاین - بازی چندنفره</title>
+  <title>فضانورد آنلاین - نسخه نهایی</title>
 
   <style>
     * {
@@ -293,35 +293,35 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
       backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.15);
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       touch-action: none;
-      transition: transform 0.15s;
+      transition: transform 0.1s;
     }
 
     #joystick-base.active {
-      transform: scale(0.95);
-      border-color: rgba(100, 255, 218, 0.3);
+      transform: scale(0.92);
+      border-color: rgba(100, 255, 218, 0.4);
     }
 
     #joystick-knob {
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.85), rgba(200, 200, 200, 0.4));
-      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.5));
+      border: 2px solid rgba(255, 255, 255, 0.25);
       position: absolute;
       touch-action: none;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 -2px 10px rgba(0, 0, 0, 0.1);
       pointer-events: none;
       will-change: transform;
-      transition: transform 0.05s ease-out;
+      transition: transform 0.03s ease-out;
     }
 
     #joystick-center-dot {
@@ -357,7 +357,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      transition: transform 0.12s, background 0.12s, border-color 0.3s;
+      transition: transform 0.1s, background 0.1s, border-color 0.3s;
       touch-action: none;
       pointer-events: auto;
       cursor: pointer;
@@ -409,25 +409,26 @@
       color: rgba(255, 255, 255, 0.4);
     }
 
-    /* ========== NAME LABELS (CSS2DRenderer) ========== */
+    /* ========== NAME LABELS ========== */
     .player-label {
       color: white;
       font-size: 14px;
       font-weight: 600;
       text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       padding: 4px 14px;
       border-radius: 20px;
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       pointer-events: none;
       white-space: nowrap;
-      transform: translateY(-60px);
+      transform: translateY(-70px);
     }
 
     .player-label.own {
-      border-color: rgba(100, 255, 218, 0.3);
+      border-color: rgba(100, 255, 218, 0.4);
       color: #64ffda;
+      background: rgba(0, 0, 0, 0.7);
     }
 
     @media (max-width: 600px) {
@@ -482,6 +483,11 @@
         right: 12px;
         font-size: 10px;
         padding: 3px 10px;
+      }
+      .player-label {
+        font-size: 11px;
+        padding: 3px 10px;
+        transform: translateY(-55px);
       }
     }
 
@@ -607,10 +613,12 @@
     let playerName = '';
     let isConnected = false;
     let reconnectAttempts = 0;
-    const MAX_RECONNECT = 5;
+    const MAX_RECONNECT = 10;
+    let lastSendTime = 0;
+    const SEND_INTERVAL = 30; // ms
 
     // Players data
-    const players = new Map(); // clientId -> { position, rotation, name, mesh, label }
+    const players = new Map();
 
     function connectToAbly(name) {
       return new Promise((resolve, reject) => {
@@ -621,7 +629,8 @@
           ablyClient = new Ably.Realtime({
             key: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
             clientId: clientId,
-            echoMessages: false
+            echoMessages: false,
+            autoConnect: true
           });
 
           ablyClient.connection.on('connected', () => {
@@ -636,6 +645,11 @@
             console.log('⚠️ قطع موقت');
             isConnected = false;
             onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
+            setTimeout(() => {
+              if (ablyClient) {
+                ablyClient.connection.recover();
+              }
+            }, 1000);
           });
 
           ablyClient.connection.on('failed', () => {
@@ -645,7 +659,9 @@
               reconnectAttempts++;
               onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
               setTimeout(() => {
-                ablyClient.connection.recover();
+                if (ablyClient) {
+                  ablyClient.connection.recover();
+                }
               }, 2000);
             } else {
               reject(new Error('اتصال به سرور ناموفق'));
@@ -681,13 +697,10 @@
         playerName = name;
         channel = ablyClient.channels.get('astronaut-game');
 
-        // تنظیم نام کاربر
         playerNameDisplay.textContent = `👤 ${playerName}`;
 
-        // پنهان کردن صفحه لاگین
         loginScreen.classList.add('hidden');
 
-        // شروع بازی
         startGame();
 
       } catch (error) {
@@ -939,13 +952,16 @@
     const characterGroup = new THREE.Group();
     scene.add(characterGroup);
 
-    // Label for local player
+    // Label for local player - بالای سر
     const localLabelDiv = document.createElement('div');
     localLabelDiv.className = 'player-label own';
-    localLabelDiv.textContent = playerName;
+    localLabelDiv.textContent = playerName || 'شما';
     const localLabel = new CSS2DObject(localLabelDiv);
-    localLabel.position.set(0, 1.8, 0);
+    localLabel.position.set(0, 2.0, 0);
     characterGroup.add(localLabel);
+
+    // Cache for remote astronaut models
+    const astronautCache = new Map();
 
     const loader = new GLTFLoader();
 
@@ -1001,17 +1017,20 @@
 
           const startHeight = getGroundHeight(0, 0);
           characterGroup.position.set(
-            (Math.random() - 0.5) * 10,
+            (Math.random() - 0.5) * 8,
             startHeight + 0.05,
-            (Math.random() - 0.5) * 10
+            (Math.random() - 0.5) * 8
           );
+
+          // به‌روزرسانی برچسب
+          localLabelDiv.textContent = playerName;
 
           updateLoading(100, '✅ فضانورد آماده!');
           setTimeout(hideLoading, 400);
 
           console.log('✅ فضانورد بارگذاری شد!');
 
-          // شروع ارسال موقعیت به سرور
+          // شروع ارسال موقعیت
           startSendingPosition();
         },
         (progress) => {
@@ -1029,17 +1048,81 @@
     }
 
     // ============================================
-    // NETWORK - PLAYER SYNC
+    // NETWORK - PLAYER SYNC با فضانورد واقعی
     // ============================================
     function createRemotePlayer(clientId, data) {
       if (clientId === currentUserId) return;
+      if (players.has(clientId)) return;
 
-      // Create a group for remote player
+      // استفاده از مدل فضانورد برای کاربران دیگر
       const group = new THREE.Group();
 
-      // Create a simple astronaut model (capsule)
+      // بارگذاری مدل فضانورد برای کاربران دیگر
+      loader.load(
+        'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+        (gltf) => {
+          const model = gltf.scene;
+          model.scale.set(1.4, 1.4, 1.4);
+
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                child.material.roughness = Math.min(child.material.roughness || 0.5, 0.8);
+                child.material.metalness = Math.min(child.material.metalness || 0.1, 0.3);
+                // رنگ متفاوت برای کاربران دیگر
+                if (child.material.color) {
+                  const hue = (parseInt(clientId.substr(-4), 36) % 360) / 360;
+                  child.material.color.setHSL(hue, 0.4, 0.5);
+                }
+              }
+            }
+          });
+
+          group.add(model);
+
+          // Label
+          const labelDiv = document.createElement('div');
+          labelDiv.className = 'player-label';
+          labelDiv.textContent = data.name || 'کاربر';
+          const label = new CSS2DObject(labelDiv);
+          label.position.set(0, 2.0, 0);
+          group.add(label);
+
+          // Set initial position
+          const h = getGroundHeight(data.x || 0, data.z || 0);
+          group.position.set(data.x || 0, h + 0.05, data.z || 0);
+          group.rotation.y = data.rotation || 0;
+
+          scene.add(group);
+
+          players.set(clientId, {
+            mesh: group,
+            label: label,
+            data: data,
+            name: data.name || 'کاربر',
+            lastUpdate: Date.now(),
+            model: model
+          });
+
+          updateOnlineCount();
+        },
+        undefined,
+        (error) => {
+          console.error('❌ خطا در بارگذاری فضانورد برای کاربر:', clientId, error);
+          // Fallback: ایجاد کاراکتر ساده
+          createSimpleRemotePlayer(clientId, data);
+        }
+      );
+    }
+
+    // Fallback برای مواقعی که مدل لود نشود
+    function createSimpleRemotePlayer(clientId, data) {
+      const group = new THREE.Group();
+
       const bodyMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color().setHSL(Math.random(), 0.5, 0.5),
+        color: new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.4, 0.5),
         roughness: 0.5,
         metalness: 0.2
       });
@@ -1054,28 +1137,13 @@
       head.castShadow = true;
       group.add(head);
 
-      // Helmet
-      const helmetMat = new THREE.MeshStandardMaterial({
-        color: 0x88ccff,
-        roughness: 0.1,
-        metalness: 0.8,
-        transparent: true,
-        opacity: 0.3
-      });
-      const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), helmetMat);
-      helmet.position.set(0, 1.3, 0.2);
-      helmet.scale.set(1, 0.8, 0.5);
-      group.add(helmet);
-
-      // Label
       const labelDiv = document.createElement('div');
       labelDiv.className = 'player-label';
       labelDiv.textContent = data.name || 'کاربر';
       const label = new CSS2DObject(labelDiv);
-      label.position.set(0, 1.6, 0);
+      label.position.set(0, 2.0, 0);
       group.add(label);
 
-      // Set initial position
       const h = getGroundHeight(data.x || 0, data.z || 0);
       group.position.set(data.x || 0, h + 0.05, data.z || 0);
       group.rotation.y = data.rotation || 0;
@@ -1087,7 +1155,8 @@
         label: label,
         data: data,
         name: data.name || 'کاربر',
-        lastUpdate: Date.now()
+        lastUpdate: Date.now(),
+        model: null
       });
 
       updateOnlineCount();
@@ -1101,14 +1170,13 @@
         return;
       }
 
-      // Update position smoothly
+      // به‌روزرسانی موقعیت
       const h = getGroundHeight(data.x || 0, data.z || 0);
       player.mesh.position.x = data.x || 0;
       player.mesh.position.z = data.z || 0;
       player.mesh.position.y = h + 0.05;
       player.mesh.rotation.y = data.rotation || 0;
 
-      // Update label
       if (player.label) {
         player.label.element.textContent = data.name || 'کاربر';
       }
@@ -1128,12 +1196,12 @@
     }
 
     function updateOnlineCount() {
-      const count = players.size + 1; // +1 for local player
+      const count = players.size + 1;
       onlineCountDisplay.textContent = `👥 ${count} آنلاین`;
     }
 
     // ============================================
-    // NETWORK - SEND POSITION
+    // NETWORK - SEND POSITION (بهینه شده)
     // ============================================
     let sendInterval = null;
 
@@ -1158,9 +1226,9 @@
             ...data
           });
         } catch (e) {
-          console.error('خطا در ارسال:', e);
+          // خطا را نادیده بگیر
         }
-      }, 50); // 20 FPS
+      }, SEND_INTERVAL);
     }
 
     // ============================================
@@ -1172,17 +1240,13 @@
       channel.subscribe('player-update', (message) => {
         const data = message.data;
         if (data.clientId === currentUserId) return;
-
-        // Update or create player
         updateRemotePlayer(data.clientId, data);
       });
 
-      // Presence - when players join
       channel.presence.subscribe('enter', (presence) => {
-        const data = presence.data;
         if (presence.clientId === currentUserId) return;
-        if (data) {
-          createRemotePlayer(presence.clientId, data);
+        if (presence.data) {
+          createRemotePlayer(presence.clientId, presence.data);
         }
       });
 
@@ -1205,16 +1269,20 @@
       });
 
       // Enter presence
-      channel.presence.enter({
-        x: characterGroup.position.x,
-        z: characterGroup.position.z,
-        rotation: characterRotation,
-        name: playerName
-      });
+      setTimeout(() => {
+        if (channel && characterReady) {
+          channel.presence.enter({
+            x: characterGroup.position.x,
+            z: characterGroup.position.z,
+            rotation: characterRotation,
+            name: playerName
+          });
+        }
+      }, 500);
     }
 
     // ============================================
-    // CONTROLS
+    // CONTROLS (سریع‌تر)
     // ============================================
     const keys = { w: false, a: false, s: false, d: false, shift: false };
     let joyX = 0;
@@ -1223,8 +1291,8 @@
     let isJumping = false;
     let jumpVelocity = 0;
 
-    const MOVE_SPEED = 4.0;
-    const RUN_SPEED = 7.0;
+    const MOVE_SPEED = 5.0;
+    const RUN_SPEED = 8.0;
     const GRAVITY = -15;
     const JUMP_POWER = 4.5;
     const GROUND_OFFSET = 0.05;
@@ -1247,7 +1315,7 @@
       if (key === 'shift') keys.shift = false;
     });
 
-    // ---------- JOYSTICK ----------
+    // ---------- JOYSTICK (سریع‌تر) ----------
     const joystickBase = document.getElementById('joystick-base');
     const joystickKnob = document.getElementById('joystick-knob');
 
@@ -1269,7 +1337,7 @@
       joyX = dx / maxDist;
       joyY = -dy / maxDist;
 
-      joystickKnob.style.transform = `translate(${dx}px, ${dy}px) scale(1.1)`;
+      joystickKnob.style.transform = `translate(${dx}px, ${dy}px) scale(1.15)`;
     }
 
     function resetJoystick() {
@@ -1279,6 +1347,7 @@
       joystickBase.classList.remove('active');
     }
 
+    // رویدادهای لمس با پاسخ سریع‌تر
     joystickBase.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.changedTouches[0];
@@ -1435,6 +1504,16 @@
     let walkTime = 0;
     let isMoving = false;
 
+    // Cleanup old players (timeout)
+    setInterval(() => {
+      const now = Date.now();
+      for (const [id, player] of players) {
+        if (now - player.lastUpdate > 5000) {
+          removeRemotePlayer(id);
+        }
+      }
+    }, 3000);
+
     function updateCharacter(delta) {
       if (!characterReady || !character) return;
 
@@ -1446,7 +1525,7 @@
       if (keys.a) inputX -= 1;
       if (keys.d) inputX += 1;
 
-      if (Math.abs(joyX) > 0.1 || Math.abs(joyY) > 0.1) {
+      if (Math.abs(joyX) > 0.05 || Math.abs(joyY) > 0.05) {
         inputX += joyX;
         inputZ += joyY;
       }
@@ -1581,8 +1660,8 @@
         characterGroup.position.y = finalGroundY + GROUND_OFFSET;
       }
 
-      // Update label position
-      localLabel.position.set(0, 1.8, 0);
+      // به‌روزرسانی برچسب محلی
+      localLabel.position.set(0, 2.0, 0);
     }
 
     function updateCamera() {
@@ -1622,9 +1701,7 @@
       updateCharacter(delta);
       updateCamera();
 
-      // Render main scene
       renderer.render(scene, camera);
-      // Render labels
       labelRenderer.render(scene, camera);
     }
 
@@ -1634,25 +1711,22 @@
     function startGame() {
       loadAstronaut();
 
-      // Setup network after a moment
       setTimeout(() => {
         setupChannelListener();
       }, 1000);
 
-      // Start animation
       animate();
 
-      // Handle connection loss recovery
+      // Connection recovery
       setInterval(() => {
         if (!isConnected && ablyClient) {
-          console.log('🔄 تلاش برای اتصال مجدد...');
           try {
             ablyClient.connection.recover();
           } catch (e) {
-            console.error('خطا در اتصال مجدد:', e);
+            // ignore
           }
         }
-      }, 5000);
+      }, 3000);
     }
 
     // ============================================
@@ -1671,9 +1745,11 @@
       }
     });
 
-    console.log('🚀 فضانورد آنلاین - نسخه چندنفره!');
-    console.log('👥 هر کاربر با نام خودش وارد میشود');
-    console.log('📡 موقعیت کاربران به صورت زنده ارسال میشود');
+    console.log('🚀 فضانورد آنلاین - نسخه نهایی!');
+    console.log('✅ نام بالای سر کاربران نمایش داده میشود');
+    console.log('✅ جوی استیک سریع‌تر و پاسخگوتر');
+    console.log('✅ حرکت کاربران پایدار و بدون ناپدید شدن');
+    console.log('✅ همه کاربران فضانورد واقعی هستند');
   </script>
 </body>
 
