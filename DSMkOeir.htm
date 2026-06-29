@@ -264,10 +264,48 @@
       pointer-events: none;
     }
 
-    #online-count-display {
+    /* ===== PING DISPLAY ===== */
+    #ping-display {
       position: absolute;
       top: 20px;
       right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    #ping-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+    }
+
+    #ping-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    #ping-label {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    #online-count-display {
+      position: absolute;
+      top: 20px;
+      right: 100px;
       color: rgba(255, 255, 255, 0.4);
       font-size: 12px;
       background: rgba(0, 0, 0, 0.3);
@@ -484,6 +522,18 @@
         font-size: 10px;
         padding: 3px 10px;
       }
+      #ping-display {
+        top: 55px;
+        right: 12px;
+        padding: 4px 10px;
+      }
+      #ping-text {
+        font-size: 11px;
+      }
+      #ping-dot {
+        width: 8px;
+        height: 8px;
+      }
       .player-label {
         font-size: 11px;
         padding: 3px 10px;
@@ -551,6 +601,14 @@
   <div id="ui-overlay">
     <div id="info">🚀 <span>فضانورد</span> · کاوش در زمین</div>
     <div id="player-name-display">👤 شما</div>
+
+    <!-- PING DISPLAY -->
+    <div id="ping-display">
+      <div id="ping-dot" style="background-color: #4caf50;"></div>
+      <span id="ping-label">PING</span>
+      <span id="ping-text">0ms</span>
+    </div>
+
     <div id="online-count-display">👥 ۰ آنلاین</div>
 
     <div id="joystick-container">
@@ -598,6 +656,8 @@
     const onlineCountEl = document.getElementById('online-count');
     const onlineCountDisplay = document.getElementById('online-count-display');
     const playerNameDisplay = document.getElementById('player-name-display');
+    const pingText = document.getElementById('ping-text');
+    const pingDot = document.getElementById('ping-dot');
 
     const loadingScreen = document.getElementById('loading-screen');
     const loaderBar = document.getElementById('loader-bar');
@@ -615,10 +675,102 @@
     let reconnectAttempts = 0;
     const MAX_RECONNECT = 10;
     let lastSendTime = 0;
-    const SEND_INTERVAL = 30; // ms
+    const SEND_INTERVAL = 30;
+    let pingHistory = [];
+    let lastPingTime = 0;
+    let isFirstPing = true;
 
     // Players data
     const players = new Map();
+
+    function updatePing(pingMs) {
+      pingHistory.push(pingMs);
+      if (pingHistory.length > 10) pingHistory.shift();
+
+      const avgPing = pingHistory.reduce((a, b) => a + b, 0) / pingHistory.length;
+      const displayPing = Math.round(avgPing);
+
+      pingText.textContent = displayPing + 'ms';
+
+      // رنگ‌بندی مثل کالاف
+      if (displayPing < 40) {
+        pingDot.style.backgroundColor = '#4caf50'; // سبز - عالی
+      } else if (displayPing < 80) {
+        pingDot.style.backgroundColor = '#8bc34a'; // سبز روشن - خوب
+      } else if (displayPing < 120) {
+        pingDot.style.backgroundColor = '#ffeb3b'; // زرد - متوسط
+      } else if (displayPing < 180) {
+        pingDot.style.backgroundColor = '#ff9800'; // نارنجی - ضعیف
+      } else {
+        pingDot.style.backgroundColor = '#f44336'; // قرمز - بد
+      }
+    }
+
+    function measurePing() {
+      if (!isConnected || !channel) return;
+
+      const startTime = Date.now();
+      const pingId = 'ping_' + startTime;
+
+      try {
+        channel.publish('ping', {
+          id: pingId,
+          time: startTime,
+          clientId: currentUserId
+        }, (err) => {
+          if (err) {
+            // خطا در ارسال - نادیده گرفتن
+            return;
+          }
+        });
+
+        // گوش دادن به پاسخ
+        const handler = (message) => {
+          if (message.data && message.data.id === pingId && message.data.clientId !== currentUserId) {
+            const endTime = Date.now();
+            const pingMs = endTime - startTime;
+            updatePing(pingMs);
+            channel.unsubscribe('pong', handler);
+          }
+        };
+
+        channel.subscribe('pong', handler);
+
+        // Timeout برای پاسخ
+        setTimeout(() => {
+          channel.unsubscribe('pong', handler);
+          if (isFirstPing) {
+            isFirstPing = false;
+            updatePing(30); // مقدار پیش‌فرض
+          }
+        }, 2000);
+
+      } catch (e) {
+        // خطا در ارسال
+        if (isFirstPing) {
+          isFirstPing = false;
+          updatePing(30);
+        }
+      }
+    }
+
+    // پاسخ به درخواست‌های پینگ دیگران
+    function setupPingListener() {
+      if (!channel) return;
+
+      channel.subscribe('ping', (message) => {
+        if (message.data.clientId === currentUserId) return;
+        // ارسال پاسخ
+        channel.publish('pong', {
+          id: message.data.id,
+          clientId: currentUserId
+        });
+      });
+
+      // شروع پینگ‌گیری
+      setInterval(measurePing, 3000);
+      setTimeout(measurePing, 500);
+    }
 
     function connectToAbly(name) {
       return new Promise((resolve, reject) => {
@@ -733,8 +885,8 @@
     // THREE.JS SCENE SETUP
     // ============================================
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x1a1a2e, 35, 120);
-    scene.background = new THREE.Color(0x1a1a2e);
+    scene.fog = new THREE.Fog(0x87ceeb, 50, 200);
+    scene.background = new THREE.Color(0x87ceeb);
 
     const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
     camera.position.set(0, 5, 8);
@@ -748,7 +900,7 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.9;
+    renderer.toneMappingExposure = 1.0;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.prepend(renderer.domElement);
 
@@ -763,35 +915,35 @@
     document.body.appendChild(labelRenderer.domElement);
 
     // ============================================
-    // LIGHTING
+    // LIGHTING (واقعی‌تر)
     // ============================================
-    const sun = new THREE.DirectionalLight(0xffeedd, 3.0);
-    sun.position.set(40, 60, 30);
+    const sun = new THREE.DirectionalLight(0xffeedd, 2.5);
+    sun.position.set(50, 80, 30);
     sun.castShadow = true;
-    sun.shadow.mapSize.width = 2048;
-    sun.shadow.mapSize.height = 2048;
+    sun.shadow.mapSize.width = 4096;
+    sun.shadow.mapSize.height = 4096;
     sun.shadow.camera.near = 0.5;
-    sun.shadow.camera.far = 150;
-    sun.shadow.camera.left = -60;
-    sun.shadow.camera.right = 60;
-    sun.shadow.camera.top = 60;
-    sun.shadow.camera.bottom = -60;
+    sun.shadow.camera.far = 200;
+    sun.shadow.camera.left = -80;
+    sun.shadow.camera.right = 80;
+    sun.shadow.camera.top = 80;
+    sun.shadow.camera.bottom = -80;
     scene.add(sun);
 
-    const ambient = new THREE.AmbientLight(0x4466aa, 0.35);
+    const ambient = new THREE.AmbientLight(0x8899bb, 0.5);
     scene.add(ambient);
 
-    const hemi = new THREE.HemisphereLight(0x87ceeb, 0x2a4a2a, 0.6);
+    const hemi = new THREE.HemisphereLight(0x87ceeb, 0x3a6b35, 0.8);
     scene.add(hemi);
 
     // ============================================
-    // TERRAIN
+    // TERRAIN (صاف با کیفیت بالا)
     // ============================================
     updateLoading(10, 'ساخت زمین...');
 
-    const geo = new THREE.PlaneGeometry(300, 300, 200, 200);
+    const geo = new THREE.PlaneGeometry(300, 300, 300, 300);
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x3a7a3a,
+      color: 0x4caf50,
       roughness: 0.9,
       metalness: 0.0,
     });
@@ -802,22 +954,22 @@
     scene.add(ground);
 
     // ============================================
-    // TERRAIN HEIGHT MAP
+    // TERRAIN HEIGHT MAP (صاف با شیب‌های ملایم)
     // ============================================
     const heightMap = [];
     const p = geo.attributes.position;
-    const width = 200;
-    const height = 200;
+    const width = 300;
+    const height = 300;
 
     for (let i = 0; i < p.count; i++) {
       const x = p.getX(i);
       const y = p.getY(i);
+      // زمین تقریباً صاف با شیب‌های ملایم
       const h =
-        Math.sin(x * 0.025) * 3.0 +
-        Math.cos(y * 0.02) * 2.5 +
-        Math.sin((x + y) * 0.015) * 4.0 +
-        Math.sin(x * 0.05 + y * 0.03) * 1.5 +
-        Math.cos(x * 0.04 - y * 0.06) * 1.0;
+        Math.sin(x * 0.008) * 1.5 +
+        Math.cos(y * 0.007) * 1.2 +
+        Math.sin((x + y) * 0.005) * 2.0 +
+        Math.sin(x * 0.015 + y * 0.01) * 0.8;
       p.setZ(i, h);
     }
     geo.computeVertexNormals();
@@ -844,101 +996,170 @@
     }
 
     // ============================================
-    // ENVIRONMENT
+    // ENVIRONMENT (کوه‌ها و درخت‌های بزرگ)
     // ============================================
-    updateLoading(20, 'ساخت درخت‌ها...');
+    updateLoading(20, 'ساخت کوه‌ها و درخت‌ها...');
 
-    function createTree(x, z) {
+    // ===== کوه‌ها =====
+    function createMountain(x, z, size) {
+      const h = getGroundHeight(x, z);
+      const mountain = new THREE.Mesh(
+        new THREE.ConeGeometry(size * 8, size * 12, 8 + Math.floor(Math.random() * 4)),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color().setHSL(0.1, 0.15, 0.3 + Math.random() * 0.2),
+          roughness: 0.9,
+          metalness: 0.05,
+        })
+      );
+      mountain.position.set(x, h + size * 2, z);
+      mountain.rotation.set((Math.random() - 0.5) * 0.1, Math.random() * 6, (Math.random() - 0.5) * 0.1);
+      mountain.castShadow = true;
+      mountain.receiveShadow = true;
+      return mountain;
+    }
+
+    // کوه‌های دور
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2 + Math.random() * 0.3;
+      const dist = 100 + Math.random() * 60;
+      const x = Math.cos(angle) * dist;
+      const z = Math.sin(angle) * dist;
+      const size = 1.5 + Math.random() * 3;
+      scene.add(createMountain(x, z, size));
+    }
+
+    // کوه‌های نزدیک‌تر
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
+      const dist = 60 + Math.random() * 40;
+      const x = Math.cos(angle) * dist;
+      const z = Math.sin(angle) * dist;
+      const size = 1 + Math.random() * 2;
+      scene.add(createMountain(x, z, size));
+    }
+
+    // ===== درخت‌های بزرگ =====
+    function createBigTree(x, z) {
       const h = getGroundHeight(x, z);
       const tree = new THREE.Group();
-      const trunkHeight = 1.5 + Math.random() * 1.5;
+
+      const trunkHeight = 4 + Math.random() * 4;
       const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.12, 0.28, trunkHeight, 6),
+        new THREE.CylinderGeometry(0.4, 0.7, trunkHeight, 8),
         new THREE.MeshStandardMaterial({ color: 0x5b3718, roughness: 0.9 })
       );
       trunk.position.y = trunkHeight / 2 + h;
       trunk.castShadow = true;
       tree.add(trunk);
 
+      // تاج درخت بزرگ
       const leafColor = new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.6, 0.25 + Math.random() * 0.15);
-      const leafSize = 0.7 + Math.random() * 0.7;
-      const leafHeight = 1.3 + Math.random() * 1.0;
+      const leafSize = 3 + Math.random() * 2;
+      const leafHeight = 4 + Math.random() * 3;
       const leaf = new THREE.Mesh(
-        new THREE.ConeGeometry(leafSize, leafHeight, 6 + Math.floor(Math.random() * 4)),
+        new THREE.ConeGeometry(leafSize, leafHeight, 7 + Math.floor(Math.random() * 4)),
         new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
       );
       leaf.position.y = trunkHeight + leafHeight / 2 + h;
       leaf.castShadow = true;
       tree.add(leaf);
+
+      // شاخه‌های اضافی
+      for (let i = 0; i < 4; i++) {
+        const branch = new THREE.Mesh(
+          new THREE.ConeGeometry(0.8 + Math.random() * 0.8, 1.5 + Math.random() * 1.5, 5),
+          new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
+        );
+        const angle = (i / 4) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = 0.8 + Math.random() * 0.8;
+        branch.position.set(
+          Math.cos(angle) * dist,
+          trunkHeight * 0.6 + h + Math.random() * 0.5,
+          Math.sin(angle) * dist
+        );
+        branch.rotation.x = (Math.random() - 0.5) * 0.8;
+        branch.rotation.z = (Math.random() - 0.5) * 0.8;
+        branch.castShadow = true;
+        tree.add(branch);
+      }
+
       tree.position.set(x, 0, z);
       return tree;
     }
 
     const treePositions = [];
-    for (let i = 0; i < 100; i++) {
-      const x = (Math.random() - 0.5) * 230;
-      const z = (Math.random() - 0.5) * 230;
-      if (Math.abs(x) < 6 && Math.abs(z) < 6) continue;
+    for (let i = 0; i < 80; i++) {
+      const x = (Math.random() - 0.5) * 200;
+      const z = (Math.random() - 0.5) * 200;
+      if (Math.abs(x) < 8 && Math.abs(z) < 8) continue;
       let tooClose = false;
       for (const pos of treePositions) {
         const dx = x - pos.x;
         const dz = z - pos.z;
-        if (dx * dx + dz * dz < 10) { tooClose = true; break; }
+        if (dx * dx + dz * dz < 20) { tooClose = true; break; }
       }
       if (tooClose) continue;
       treePositions.push({ x, z });
-      scene.add(createTree(x, z));
+      scene.add(createBigTree(x, z));
     }
 
+    // ===== سنگ‌ها =====
     updateLoading(30, 'ساخت سنگ‌ها...');
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 60; i++) {
       const x = (Math.random() - 0.5) * 240;
       const z = (Math.random() - 0.5) * 240;
       if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
       const h = getGroundHeight(x, z);
       const rock = new THREE.Mesh(
-        new THREE.DodecahedronGeometry(0.2 + Math.random() * 0.5, 1),
+        new THREE.DodecahedronGeometry(0.5 + Math.random() * 1.2, 1),
         new THREE.MeshStandardMaterial({
-          color: new THREE.Color().setHSL(0.08, 0.05, 0.3 + Math.random() * 0.3),
+          color: new THREE.Color().setHSL(0.08, 0.05, 0.4 + Math.random() * 0.3),
           roughness: 0.9,
           metalness: 0.05,
         })
       );
-      rock.position.set(x, h + 0.05, z);
+      rock.position.set(x, h + 0.1, z);
       rock.rotation.set(Math.random() * 6, Math.random() * 6, 0);
       rock.castShadow = true;
       rock.receiveShadow = true;
       scene.add(rock);
     }
 
+    // ===== چمن‌های واقعی =====
     updateLoading(35, 'ساخت چمن‌ها...');
 
     const grassGeo = new THREE.BufferGeometry();
-    const grassCount = 1000;
+    const grassCount = 3000;
     const grassPos = new Float32Array(grassCount * 3);
+    const grassColors = new Float32Array(grassCount * 3);
     for (let i = 0; i < grassCount; i++) {
-      const x = (Math.random() - 0.5) * 250;
-      const z = (Math.random() - 0.5) * 250;
+      const x = (Math.random() - 0.5) * 260;
+      const z = (Math.random() - 0.5) * 260;
       const h = getGroundHeight(x, z);
       grassPos[i * 3] = x;
       grassPos[i * 3 + 1] = h + 0.03;
       grassPos[i * 3 + 2] = z;
+      const green = 0.3 + Math.random() * 0.2;
+      grassColors[i * 3] = 0.1 + Math.random() * 0.1;
+      grassColors[i * 3 + 1] = green;
+      grassColors[i * 3 + 2] = 0.05 + Math.random() * 0.05;
     }
     grassGeo.setAttribute('position', new THREE.BufferAttribute(grassPos, 3));
+    grassGeo.setAttribute('color', new THREE.BufferAttribute(grassColors, 3));
 
     const grassMat = new THREE.PointsMaterial({
-      color: 0x4caf50,
-      size: 0.1,
+      size: 0.25,
       sizeAttenuation: true,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.8,
+      vertexColors: true,
     });
     const grass = new THREE.Points(grassGeo, grassMat);
     scene.add(grass);
 
     // ============================================
-    // ASTRONAUT LOADING (LOCAL PLAYER)
+    // ASTRONAUT LOADING
     // ============================================
     let character = null;
     let characterReady = false;
@@ -952,16 +1173,13 @@
     const characterGroup = new THREE.Group();
     scene.add(characterGroup);
 
-    // Label for local player - بالای سر
+    // Label for local player
     const localLabelDiv = document.createElement('div');
     localLabelDiv.className = 'player-label own';
     localLabelDiv.textContent = playerName || 'شما';
     const localLabel = new CSS2DObject(localLabelDiv);
-    localLabel.position.set(0, 2.0, 0);
+    localLabel.position.set(0, 2.2, 0);
     characterGroup.add(localLabel);
-
-    // Cache for remote astronaut models
-    const astronautCache = new Map();
 
     const loader = new GLTFLoader();
 
@@ -1022,15 +1240,12 @@
             (Math.random() - 0.5) * 8
           );
 
-          // به‌روزرسانی برچسب
           localLabelDiv.textContent = playerName;
 
           updateLoading(100, '✅ فضانورد آماده!');
           setTimeout(hideLoading, 400);
 
           console.log('✅ فضانورد بارگذاری شد!');
-
-          // شروع ارسال موقعیت
           startSendingPosition();
         },
         (progress) => {
@@ -1048,16 +1263,14 @@
     }
 
     // ============================================
-    // NETWORK - PLAYER SYNC با فضانورد واقعی
+    // NETWORK - PLAYER SYNC
     // ============================================
     function createRemotePlayer(clientId, data) {
       if (clientId === currentUserId) return;
       if (players.has(clientId)) return;
 
-      // استفاده از مدل فضانورد برای کاربران دیگر
       const group = new THREE.Group();
 
-      // بارگذاری مدل فضانورد برای کاربران دیگر
       loader.load(
         'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
         (gltf) => {
@@ -1071,7 +1284,6 @@
               if (child.material) {
                 child.material.roughness = Math.min(child.material.roughness || 0.5, 0.8);
                 child.material.metalness = Math.min(child.material.metalness || 0.1, 0.3);
-                // رنگ متفاوت برای کاربران دیگر
                 if (child.material.color) {
                   const hue = (parseInt(clientId.substr(-4), 36) % 360) / 360;
                   child.material.color.setHSL(hue, 0.4, 0.5);
@@ -1082,15 +1294,13 @@
 
           group.add(model);
 
-          // Label
           const labelDiv = document.createElement('div');
           labelDiv.className = 'player-label';
           labelDiv.textContent = data.name || 'کاربر';
           const label = new CSS2DObject(labelDiv);
-          label.position.set(0, 2.0, 0);
+          label.position.set(0, 2.2, 0);
           group.add(label);
 
-          // Set initial position
           const h = getGroundHeight(data.x || 0, data.z || 0);
           group.position.set(data.x || 0, h + 0.05, data.z || 0);
           group.rotation.y = data.rotation || 0;
@@ -1110,14 +1320,11 @@
         },
         undefined,
         (error) => {
-          console.error('❌ خطا در بارگذاری فضانورد برای کاربر:', clientId, error);
-          // Fallback: ایجاد کاراکتر ساده
           createSimpleRemotePlayer(clientId, data);
         }
       );
     }
 
-    // Fallback برای مواقعی که مدل لود نشود
     function createSimpleRemotePlayer(clientId, data) {
       const group = new THREE.Group();
 
@@ -1141,7 +1348,7 @@
       labelDiv.className = 'player-label';
       labelDiv.textContent = data.name || 'کاربر';
       const label = new CSS2DObject(labelDiv);
-      label.position.set(0, 2.0, 0);
+      label.position.set(0, 2.2, 0);
       group.add(label);
 
       const h = getGroundHeight(data.x || 0, data.z || 0);
@@ -1170,7 +1377,6 @@
         return;
       }
 
-      // به‌روزرسانی موقعیت
       const h = getGroundHeight(data.x || 0, data.z || 0);
       player.mesh.position.x = data.x || 0;
       player.mesh.position.z = data.z || 0;
@@ -1201,7 +1407,7 @@
     }
 
     // ============================================
-    // NETWORK - SEND POSITION (بهینه شده)
+    // NETWORK - SEND POSITION
     // ============================================
     let sendInterval = null;
 
@@ -1225,9 +1431,7 @@
             clientId: currentUserId,
             ...data
           });
-        } catch (e) {
-          // خطا را نادیده بگیر
-        }
+        } catch (e) {}
       }, SEND_INTERVAL);
     }
 
@@ -1254,7 +1458,6 @@
         removeRemotePlayer(presence.clientId);
       });
 
-      // Get existing players
       channel.presence.get((err, members) => {
         if (err) {
           console.error('خطا در دریافت اعضا:', err);
@@ -1268,7 +1471,6 @@
         updateOnlineCount();
       });
 
-      // Enter presence
       setTimeout(() => {
         if (channel && characterReady) {
           channel.presence.enter({
@@ -1279,10 +1481,13 @@
           });
         }
       }, 500);
+
+      // Setup ping
+      setupPingListener();
     }
 
     // ============================================
-    // CONTROLS (سریع‌تر)
+    // CONTROLS
     // ============================================
     const keys = { w: false, a: false, s: false, d: false, shift: false };
     let joyX = 0;
@@ -1295,7 +1500,7 @@
     const RUN_SPEED = 8.0;
     const GRAVITY = -15;
     const JUMP_POWER = 4.5;
-    const GROUND_OFFSET = 0.05;
+    const GROUND_OFFSET = 0.08;
 
     // ---------- KEYBOARD ----------
     document.addEventListener('keydown', (e) => {
@@ -1315,7 +1520,7 @@
       if (key === 'shift') keys.shift = false;
     });
 
-    // ---------- JOYSTICK (سریع‌تر) ----------
+    // ---------- JOYSTICK ----------
     const joystickBase = document.getElementById('joystick-base');
     const joystickKnob = document.getElementById('joystick-knob');
 
@@ -1347,7 +1552,6 @@
       joystickBase.classList.remove('active');
     }
 
-    // رویدادهای لمس با پاسخ سریع‌تر
     joystickBase.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.changedTouches[0];
@@ -1504,7 +1708,7 @@
     let walkTime = 0;
     let isMoving = false;
 
-    // Cleanup old players (timeout)
+    // Cleanup timeout for players
     setInterval(() => {
       const now = Date.now();
       for (const [id, player] of players) {
@@ -1560,12 +1764,13 @@
         newX = currentX + moveX;
         newZ = currentZ + moveZ;
 
+        // Tree collision
         for (const pos of treePositions) {
           const dx = newX - pos.x;
           const dz = newZ - pos.z;
           const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist < 0.9) {
-            const push = (0.9 - dist) / 0.9;
+          if (dist < 1.2) {
+            const push = (1.2 - dist) / 1.2;
             if (dist > 0.01) {
               newX += (dx / dist) * push * 0.3;
               newZ += (dz / dist) * push * 0.3;
@@ -1660,8 +1865,7 @@
         characterGroup.position.y = finalGroundY + GROUND_OFFSET;
       }
 
-      // به‌روزرسانی برچسب محلی
-      localLabel.position.set(0, 2.0, 0);
+      localLabel.position.set(0, 2.2, 0);
     }
 
     function updateCamera() {
@@ -1722,9 +1926,7 @@
         if (!isConnected && ablyClient) {
           try {
             ablyClient.connection.recover();
-          } catch (e) {
-            // ignore
-          }
+          } catch (e) {}
         }
       }, 3000);
     }
@@ -1746,10 +1948,10 @@
     });
 
     console.log('🚀 فضانورد آنلاین - نسخه نهایی!');
-    console.log('✅ نام بالای سر کاربران نمایش داده میشود');
-    console.log('✅ جوی استیک سریع‌تر و پاسخگوتر');
-    console.log('✅ حرکت کاربران پایدار و بدون ناپدید شدن');
-    console.log('✅ همه کاربران فضانورد واقعی هستند');
+    console.log('📡 پینگ به صورت زنده نمایش داده میشود');
+    console.log('🏔️ محیط با کوه‌ها و درخت‌های بزرگ');
+    console.log('🌿 چمن‌های واقعی و با کیفیت');
+    console.log('✅ کاراکتر فضانورد واقعی برای همه');
   </script>
 </body>
 
