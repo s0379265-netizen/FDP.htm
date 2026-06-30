@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>مسابقه ماشین آنلاین</title>
+  <title>مسابقه ماشین حرفه‌ای</title>
 
   <style>
     * {
@@ -19,7 +19,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #0a0a1a;
+      background: #87ceeb;
       touch-action: none;
       font-family: 'Segoe UI', Arial, sans-serif;
       position: fixed;
@@ -34,6 +34,7 @@
       height: 100%;
     }
 
+    /* ===== LOGIN ===== */
     #login-screen {
       position: fixed;
       top: 0;
@@ -141,6 +142,7 @@
       margin-top: 16px;
     }
 
+    /* ===== LOADING ===== */
     #loading-screen {
       position: fixed;
       top: 0;
@@ -212,6 +214,7 @@
       font-family: monospace;
     }
 
+    /* ===== UI ===== */
     #ui-overlay {
       position: fixed;
       top: 0;
@@ -248,15 +251,15 @@
 
     #speed-display {
       position: absolute;
-      bottom: 100px;
+      bottom: 180px;
       left: 50%;
       transform: translateX(-50%);
       color: white;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
       font-family: monospace;
       background: rgba(0, 0, 0, 0.5);
-      padding: 8px 24px;
+      padding: 8px 28px;
       border-radius: 12px;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -299,122 +302,195 @@
       pointer-events: none;
     }
 
-    #joystick-container {
+    /* ===== فرمان دکمه‌ای ===== */
+    #steering-container {
       position: fixed;
       bottom: 40px;
       left: 40px;
-      width: 140px;
-      height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
       pointer-events: auto;
       z-index: 20;
-      touch-action: none;
     }
 
-    #joystick-base {
-      width: 100%;
-      height: 100%;
+    .steer-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .steer-btn {
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
       backdrop-filter: blur(15px);
       border: 2px solid rgba(255, 255, 255, 0.15);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      touch-action: none;
-      transition: transform 0.1s;
-    }
-
-    #joystick-base.active {
-      transform: scale(0.92);
-      border-color: rgba(255, 107, 53, 0.4);
-    }
-
-    #joystick-knob {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.5));
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      position: absolute;
-      touch-action: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 -2px 10px rgba(0, 0, 0, 0.1);
-      pointer-events: none;
-      will-change: transform;
-      transition: transform 0.03s ease-out;
-    }
-
-    #joystick-center-dot {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      pointer-events: none;
-    }
-
-    #action-buttons {
-      position: fixed;
-      bottom: 55px;
-      right: 35px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      pointer-events: auto;
-      z-index: 20;
-    }
-
-    .action-btn {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.12);
       color: white;
-      font-size: 22px;
+      font-size: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      transition: transform 0.1s, background 0.1s, border-color 0.3s;
+      touch-action: none;
+      pointer-events: auto;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.05s, border-color 0.1s;
+    }
+
+    .steer-btn:active {
+      transform: scale(0.88);
+      border-color: rgba(255, 107, 53, 0.4);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.05));
+    }
+
+    .steer-btn.active {
+      border-color: rgba(255, 107, 53, 0.4);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.05));
+    }
+
+    .steer-label {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    /* ===== گاز و ترمز ===== */
+    #gas-container {
+      position: fixed;
+      bottom: 100px;
+      right: 80px;
+      width: 80px;
+      height: 120px;
+      pointer-events: auto;
+      z-index: 20;
+      touch-action: none;
+    }
+
+    #gas-pedal {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.03));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(76, 175, 80, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      touch-action: none;
+      transition: transform 0.03s, border-color 0.05s;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    #gas-pedal.active {
+      border-color: rgba(76, 175, 80, 0.6);
+      background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.05));
+      transform: scale(0.95);
+    }
+
+    #gas-pedal .icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    #brake-container {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 50px;
+      height: 80px;
+      pointer-events: auto;
+      z-index: 20;
+      touch-action: none;
+    }
+
+    #brake-pedal {
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      background: radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.03));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(244, 67, 54, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      touch-action: none;
+      transition: transform 0.03s, border-color 0.05s;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    #brake-pedal.active {
+      border-color: rgba(244, 67, 54, 0.6);
+      background: radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.05));
+      transform: scale(0.95);
+    }
+
+    #extra-buttons {
+      position: fixed;
+      bottom: 220px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+      z-index: 20;
+    }
+
+    .extra-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.05s, background 0.05s, border-color 0.1s;
       touch-action: none;
       pointer-events: auto;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .action-btn:active {
+    .extra-btn:active {
       transform: scale(0.85);
-      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.05));
+      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.05));
       border-color: rgba(255, 107, 53, 0.3);
     }
 
-    .action-btn.active {
+    .extra-btn.active {
       border-color: rgba(255, 107, 53, 0.4);
       background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.03));
     }
 
-    #boost-btn {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: #ff6b35;
-    }
-
     #controls-hint {
       position: fixed;
-      bottom: 25px;
+      bottom: 15px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.25);
-      font-size: 10px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 4px 14px;
-      border-radius: 16px;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 9px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 12px;
+      border-radius: 12px;
       backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.03);
       pointer-events: none;
       text-align: center;
       letter-spacing: 0.5px;
@@ -422,20 +498,11 @@
       z-index: 5;
     }
 
-    #controls-hint kbd {
-      background: rgba(255, 255, 255, 0.06);
-      padding: 1px 6px;
-      border-radius: 3px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      font-size: 9px;
-      color: rgba(255, 255, 255, 0.4);
-    }
-
     .player-label {
       color: white;
       font-size: 12px;
       font-weight: 600;
-      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
       background: rgba(0, 0, 0, 0.6);
       padding: 2px 12px;
       border-radius: 12px;
@@ -449,29 +516,48 @@
     .player-label.own {
       border-color: rgba(255, 107, 53, 0.4);
       color: #ff6b35;
-      background: rgba(0, 0, 0, 0.7);
     }
 
     @media (max-width: 600px) {
-      #joystick-container {
-        width: 110px;
-        height: 110px;
+      .steer-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+      }
+      #steering-container {
         bottom: 25px;
         left: 20px;
+        gap: 6px;
       }
-      #joystick-knob {
+      .steer-row {
+        gap: 8px;
+      }
+      #gas-container {
+        width: 60px;
+        height: 90px;
+        bottom: 70px;
+        right: 60px;
+      }
+      #brake-container {
+        width: 40px;
+        height: 60px;
+        bottom: 70px;
+        right: 15px;
+      }
+      #extra-buttons {
+        bottom: 160px;
+        right: 15px;
+        gap: 8px;
+      }
+      .extra-btn {
         width: 40px;
         height: 40px;
+        font-size: 14px;
       }
-      #action-buttons {
-        bottom: 35px;
-        right: 20px;
-        gap: 12px;
-      }
-      .action-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 18px;
+      #speed-display {
+        font-size: 24px;
+        padding: 6px 18px;
+        bottom: 140px;
       }
       #info {
         font-size: 12px;
@@ -482,20 +568,8 @@
       #controls-hint {
         display: none;
       }
-      #loading-title {
-        font-size: 22px;
-      }
-      .loader-container {
-        width: 160px;
-      }
-      #login-box {
-        padding: 30px 25px;
-      }
-      #login-title {
-        font-size: 24px;
-      }
       #player-name-display {
-        top: 60px;
+        top: 55px;
         font-size: 10px;
         padding: 3px 12px;
       }
@@ -505,15 +579,19 @@
         font-size: 10px;
         padding: 3px 10px;
       }
-      #speed-display {
-        font-size: 22px;
-        padding: 6px 16px;
-        bottom: 80px;
-      }
       .player-label {
         font-size: 10px;
         padding: 2px 8px;
         transform: translateY(-25px);
+      }
+      #gas-pedal {
+        font-size: 11px;
+      }
+      #gas-pedal .icon {
+        font-size: 22px;
+      }
+      #brake-pedal {
+        font-size: 8px;
       }
     }
 
@@ -524,30 +602,45 @@
     }
 
     @media (max-height: 600px) {
-      #joystick-container {
-        width: 90px;
-        height: 90px;
+      .steer-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+      }
+      #steering-container {
         bottom: 15px;
         left: 15px;
+        gap: 4px;
       }
-      #joystick-knob {
-        width: 34px;
-        height: 34px;
+      .steer-row {
+        gap: 6px;
       }
-      #action-buttons {
-        bottom: 20px;
-        right: 15px;
-        gap: 10px;
+      #gas-container {
+        width: 50px;
+        height: 75px;
+        bottom: 50px;
+        right: 50px;
       }
-      .action-btn {
-        width: 42px;
-        height: 42px;
-        font-size: 16px;
+      #brake-container {
+        width: 35px;
+        height: 50px;
+        bottom: 50px;
+        right: 10px;
+      }
+      #extra-buttons {
+        bottom: 130px;
+        right: 10px;
+        gap: 6px;
+      }
+      .extra-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
       }
       #speed-display {
-        font-size: 18px;
-        padding: 4px 12px;
-        bottom: 60px;
+        font-size: 20px;
+        padding: 4px 14px;
+        bottom: 110px;
       }
     }
   </style>
@@ -555,6 +648,7 @@
 
 <body>
 
+  <!-- ====== LOGIN ====== -->
   <div id="login-screen">
     <div id="login-title">🏎️ <span>مسابقه</span> ماشین</div>
     <div id="login-sub">به جاده سرعت خوش آمدید</div>
@@ -566,6 +660,7 @@
     </div>
   </div>
 
+  <!-- ====== LOADING ====== -->
   <div id="loading-screen">
     <div id="loading-title">🏎️ <span>مسابقه</span></div>
     <div id="loading-sub">در حال آماده‌سازی جاده</div>
@@ -576,26 +671,43 @@
     <div id="loading-status">در حال بارگذاری...</div>
   </div>
 
+  <!-- ====== UI ====== -->
   <div id="ui-overlay">
     <div id="info">🏎️ <span>مسابقه</span> · جاده سرعت</div>
     <div id="player-name-display">👤 شما</div>
     <div id="online-count-display">👥 ۰ آنلاین</div>
     <div id="speed-display">0 <span>km/h</span></div>
 
-    <div id="joystick-container">
-      <div id="joystick-base">
-        <div id="joystick-center-dot"></div>
-        <div id="joystick-knob"></div>
+    <div id="steering-container">
+      <div class="steer-row">
+        <div class="steer-btn" id="steer-left-btn">◀</div>
+        <div class="steer-btn" id="steer-right-btn">▶</div>
+      </div>
+      <div class="steer-label">فرمان</div>
+    </div>
+
+    <div id="gas-container">
+      <div id="gas-pedal">
+        <span class="icon">⏫</span>
+        گاز
       </div>
     </div>
 
-    <div id="action-buttons">
-      <div class="action-btn" id="boost-btn">🔥</div>
-      <div class="action-btn" id="brake-btn">⛔</div>
+    <div id="brake-container">
+      <div id="brake-pedal">
+        ⏬
+        ترمز
+      </div>
+    </div>
+
+    <div id="extra-buttons">
+      <div class="extra-btn" id="reverse-btn">↩️</div>
+      <div class="extra-btn" id="handbrake-btn">🔄</div>
+      <div class="extra-btn" id="reset-btn">⟳</div>
     </div>
 
     <div id="controls-hint">
-      <kbd>W</kbd> گاز · <kbd>S</kbd> ترمز · <kbd>A</kbd><kbd>D</kbd> فرمان · 🖱️ ماوس چرخش
+      🖱️ ماوس چرخش دوربین
     </div>
   </div>
 
@@ -641,7 +753,7 @@
     let playerName = '';
     let isConnected = false;
     let reconnectAttempts = 0;
-    const MAX_RECONNECT = 10;
+    const MAX_RECONNECT = 20;
     const SEND_INTERVAL = 30;
 
     const players = new Map();
@@ -673,7 +785,11 @@
             onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
             setTimeout(() => {
               if (ablyClient) {
-                ablyClient.connection.recover();
+                try {
+                  ablyClient.connection.recover();
+                } catch (e) {
+                  ablyClient.connection.connect();
+                }
               }
             }, 1000);
           });
@@ -686,7 +802,11 @@
               onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
               setTimeout(() => {
                 if (ablyClient) {
-                  ablyClient.connection.recover();
+                  try {
+                    ablyClient.connection.recover();
+                  } catch (e) {
+                    ablyClient.connection.connect();
+                  }
                 }
               }, 2000);
             } else {
@@ -701,7 +821,7 @@
     }
 
     // ============================================
-    // LOGIN SYSTEM
+    // LOGIN
     // ============================================
     async function handleLogin() {
       const name = nameInput.value.trim();
@@ -742,7 +862,7 @@
     });
 
     // ============================================
-    // LOADING SYSTEM
+    // LOADING
     // ============================================
     function updateLoading(percent, status) {
       loaderBar.style.width = Math.min(percent, 100) + '%';
@@ -756,13 +876,13 @@
     }
 
     // ============================================
-    // THREE.JS SCENE SETUP
+    // THREE.JS SCENE (کیفیت حرفه‌ای)
     // ============================================
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x87ceeb, 80, 250);
+    scene.fog = new THREE.Fog(0x87ceeb, 100, 250);
     scene.background = new THREE.Color(0x87ceeb);
 
-    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 500);
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
     camera.position.set(0, 8, 12);
 
     const renderer = new THREE.WebGLRenderer({
@@ -790,137 +910,115 @@
     // ============================================
     // LIGHTING
     // ============================================
-    const sun = new THREE.DirectionalLight(0xffeedd, 2.5);
-    sun.position.set(50, 80, 30);
-    sun.castShadow = true;
-    sun.shadow.mapSize.width = 4096;
-    sun.shadow.mapSize.height = 4096;
-    sun.shadow.camera.near = 0.5;
-    sun.shadow.camera.far = 200;
-    sun.shadow.camera.left = -80;
-    sun.shadow.camera.right = 80;
-    sun.shadow.camera.top = 80;
-    sun.shadow.camera.bottom = -80;
-    scene.add(sun);
+    const sunLight = new THREE.DirectionalLight(0xffeedd, 2.5);
+    sunLight.position.set(50, 80, 30);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 150;
+    sunLight.shadow.camera.left = -80;
+    sunLight.shadow.camera.right = 80;
+    sunLight.shadow.camera.top = 80;
+    sunLight.shadow.camera.bottom = -80;
+    scene.add(sunLight);
 
-    const ambient = new THREE.AmbientLight(0x8899bb, 0.5);
-    scene.add(ambient);
+    const ambientLight = new THREE.AmbientLight(0x8899bb, 0.5);
+    scene.add(ambientLight);
 
-    const hemi = new THREE.HemisphereLight(0x87ceeb, 0x3a6b35, 0.8);
-    scene.add(hemi);
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x3a6b35, 0.7);
+    scene.add(hemiLight);
 
     // ============================================
-    // ROAD
+    // GROUND (زمین صاف و سبز)
     // ============================================
-    updateLoading(10, 'ساخت جاده...');
+    updateLoading(10, 'ساخت زمین...');
 
-    // زمین زیر جاده
-    const groundGeo = new THREE.PlaneGeometry(600, 600, 1, 1);
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x2d5a27,
-      roughness: 1,
+      color: 0x4caf50,
+      roughness: 0.9,
       metalness: 0,
     });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.1;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // جاده اصلی (دایره‌ای)
+    // ============================================
+    // ROAD (جاده صاف و واقعی)
+    // ============================================
+    updateLoading(20, 'ساخت جاده...');
+
     const roadGroup = new THREE.Group();
     scene.add(roadGroup);
 
-    const roadWidth = 8;
-    const roadRadius = 50;
-    const segments = 120;
+    // جاده اصلی - مستقیم
+    const roadLength = 400;
+    const roadWidth = 12;
 
-    function createRoadSegment(angle) {
-      const x = Math.cos(angle) * roadRadius;
-      const z = Math.sin(angle) * roadRadius;
+    // جاده طولی
+    const roadMat = new THREE.MeshStandardMaterial({
+      color: 0x333333,
+      roughness: 0.7,
+      metalness: 0.1,
+    });
 
-      // جاده
-      const roadGeo = new THREE.PlaneGeometry(roadWidth, 2, 1, 1);
-      const roadMat = new THREE.MeshStandardMaterial({
-        color: 0x333333,
-        roughness: 0.8,
-        metalness: 0.2,
-      });
-      const road = new THREE.Mesh(roadGeo, roadMat);
-      road.position.set(x, 0.01, z);
-      road.rotation.x = -Math.PI / 2;
-      road.rotation.z = -angle;
-      road.receiveShadow = true;
-      road.castShadow = true;
-      roadGroup.add(road);
+    const roadMain = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, roadWidth), roadMat);
+    roadMain.rotation.x = -Math.PI / 2;
+    roadMain.position.set(0, 0.01, 0);
+    roadMain.receiveShadow = true;
+    roadGroup.add(roadMain);
 
-      // خط وسط جاده (خط‌چین)
-      if (angle % 0.3 < 0.15) {
-        const lineGeo = new THREE.PlaneGeometry(0.3, 1.2, 1, 1);
-        const lineMat = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-          roughness: 0.5,
-          metalness: 0,
-        });
-        const line = new THREE.Mesh(lineGeo, lineMat);
-        line.position.set(x, 0.02, z);
-        line.rotation.x = -Math.PI / 2;
-        line.rotation.z = -angle;
-        roadGroup.add(line);
-      }
+    // خط وسط جاده
+    const lineMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.5,
+    });
 
-      // خط کناری (سفید)
-      for (let side = -1; side <= 1; side += 2) {
-        const edgeGeo = new THREE.PlaneGeometry(0.2, 2, 1, 1);
-        const edgeMat = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-          roughness: 0.5,
-          metalness: 0,
-        });
-        const edge = new THREE.Mesh(edgeGeo, edgeMat);
-        const offset = (roadWidth / 2) * side;
-        edge.position.set(x + Math.sin(angle) * offset, 0.02, z - Math.cos(angle) * offset);
-        edge.rotation.x = -Math.PI / 2;
-        edge.rotation.z = -angle;
-        roadGroup.add(edge);
-      }
+    for (let i = -190; i < 190; i += 6) {
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 3), lineMat);
+      line.rotation.x = -Math.PI / 2;
+      line.position.set(i, 0.02, 0);
+      roadGroup.add(line);
     }
 
-    for (let i = 0; i < segments; i++) {
-      const angle = (i / segments) * Math.PI * 2;
-      createRoadSegment(angle);
+    // خطوط کناری
+    const edgeMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.5,
+    });
+
+    for (let side = -1; side <= 1; side += 2) {
+      const edge = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, 0.2), edgeMat);
+      edge.rotation.x = -Math.PI / 2;
+      edge.position.set(0, 0.02, (roadWidth / 2) * side);
+      roadGroup.add(edge);
     }
 
-    // چمن اطراف جاده
-    for (let i = 0; i < 2000; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = roadRadius + roadWidth / 2 + Math.random() * 80;
-      const x = Math.cos(angle) * dist;
-      const z = Math.sin(angle) * dist;
+    // جاده عرضی (تقاطع)
+    const roadCross = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth, 200), roadMat);
+    roadCross.rotation.x = -Math.PI / 2;
+    roadCross.position.set(0, 0.01, 0);
+    roadCross.receiveShadow = true;
+    roadGroup.add(roadCross);
 
-      const grassPatch = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5 + Math.random() * 1.5, 0.5 + Math.random() * 1.5),
-        new THREE.MeshStandardMaterial({
-          color: new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.5, 0.25 + Math.random() * 0.15),
-          roughness: 1,
-          metalness: 0,
-        })
-      );
-      grassPatch.rotation.x = -Math.PI / 2;
-      grassPatch.position.set(x, 0, z);
-      grassPatch.rotation.z = Math.random() * 6;
-      grassPatch.receiveShadow = true;
-      scene.add(grassPatch);
+    // خطوط عرضی
+    for (let i = -90; i < 90; i += 6) {
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(3, 0.3), lineMat);
+      line.rotation.x = -Math.PI / 2;
+      line.position.set(0, 0.02, i);
+      roadGroup.add(line);
     }
 
     // ============================================
     // درخت‌ها
     // ============================================
-    updateLoading(20, 'ساخت درخت‌ها...');
+    updateLoading(30, 'ساخت درخت‌ها...');
 
     function createTree(x, z) {
       const tree = new THREE.Group();
-      const trunkHeight = 2 + Math.random() * 3;
+      const trunkHeight = 2 + Math.random() * 2;
       const trunk = new THREE.Mesh(
         new THREE.CylinderGeometry(0.2, 0.4, trunkHeight, 6),
         new THREE.MeshStandardMaterial({ color: 0x5b3718, roughness: 0.9 })
@@ -944,35 +1042,43 @@
       return tree;
     }
 
-    for (let i = 0; i < 150; i++) {
+    // درخت‌ها در اطراف جاده
+    for (let i = 0; i < 120; i++) {
+      const side = Math.random() > 0.5 ? 1 : -1;
+      const dist = roadWidth / 2 + 3 + Math.random() * 20;
+      const x = (Math.random() - 0.5) * 500;
+      const z = side * dist + (Math.random() - 0.5) * 3;
+      scene.add(createTree(x, z));
+    }
+
+    // درخت‌ها در جای دورتر
+    for (let i = 0; i < 80; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const dist = roadRadius + roadWidth / 2 + 5 + Math.random() * 70;
+      const dist = 50 + Math.random() * 150;
       const x = Math.cos(angle) * dist;
       const z = Math.sin(angle) * dist;
+      if (Math.abs(x) < 30 && Math.abs(z) < 30) continue;
       scene.add(createTree(x, z));
     }
 
     // ============================================
     // CAR
     // ============================================
-    updateLoading(30, 'ساخت ماشین...');
+    updateLoading(40, 'ساخت ماشین...');
 
     const carGroup = new THREE.Group();
     scene.add(carGroup);
 
-    // بدنه ماشین
     const bodyMat = new THREE.MeshStandardMaterial({
       color: 0xff2200,
       roughness: 0.2,
       metalness: 0.6,
     });
-
     const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2.2), bodyMat);
     body.position.y = 0.3;
     body.castShadow = true;
     carGroup.add(body);
 
-    // کابین
     const cabinMat = new THREE.MeshStandardMaterial({
       color: 0x222244,
       roughness: 0.1,
@@ -985,20 +1091,17 @@
     cabin.castShadow = true;
     carGroup.add(cabin);
 
-    // چرخ‌ها
     const wheelMat = new THREE.MeshStandardMaterial({
       color: 0x111111,
       roughness: 0.9,
       metalness: 0.1,
     });
-
     const wheelPositions = [
       [-0.6, 0.15, 0.8],
       [0.6, 0.15, 0.8],
       [-0.6, 0.15, -0.8],
       [0.6, 0.15, -0.8]
     ];
-
     const wheels = [];
     for (const pos of wheelPositions) {
       const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.15, 8), wheelMat);
@@ -1009,18 +1112,8 @@
       wheels.push(wheel);
     }
 
-    // سپر جلو
-    const bumperMat = new THREE.MeshStandardMaterial({
-      color: 0x333333,
-      roughness: 0.8,
-      metalness: 0.1,
-    });
-    const bumper = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.15, 0.1), bumperMat);
-    bumper.position.set(0, 0.15, 1.15);
-    carGroup.add(bumper);
-
     // چراغ‌ها
-    const lightMat = new THREE.MeshStandardMaterial({
+    const headlightMat = new THREE.MeshStandardMaterial({
       color: 0xffff00,
       roughness: 0.1,
       metalness: 0.8,
@@ -1028,12 +1121,11 @@
       emissiveIntensity: 0.3,
     });
     for (let side = -1; side <= 1; side += 2) {
-      const light = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), lightMat);
+      const light = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), headlightMat);
       light.position.set(side * 0.4, 0.3, 1.15);
       carGroup.add(light);
     }
 
-    // چراغ عقب
     const tailMat = new THREE.MeshStandardMaterial({
       color: 0xff0000,
       roughness: 0.1,
@@ -1047,7 +1139,6 @@
       carGroup.add(tail);
     }
 
-    // برچسب نام
     const labelDiv = document.createElement('div');
     labelDiv.className = 'player-label own';
     labelDiv.textContent = playerName || 'شما';
@@ -1055,20 +1146,21 @@
     label.position.set(0, 1.5, 0);
     carGroup.add(label);
 
-    // موقعیت اولیه
-    carGroup.position.set(roadRadius, 0.1, 0);
-    carGroup.rotation.y = Math.PI / 2;
+    carGroup.position.set(0, 0.1, 0);
+    carGroup.rotation.y = 0;
 
     // ============================================
     // CAR PHYSICS
     // ============================================
     let carSpeed = 0;
-    let carAngle = Math.PI / 2;
-    let maxSpeed = 12;
+    let carAngle = 0;
+    let maxSpeed = 15;
     let acceleration = 8;
-    let braking = 10;
+    let braking = 12;
     let friction = 2;
-    let turnSpeed = 3;
+    let turnSpeed = 3.5;
+    let isReversing = false;
+    let isHandBrake = false;
 
     // ============================================
     // NETWORK
@@ -1078,8 +1170,6 @@
       if (players.has(clientId)) return;
 
       const group = new THREE.Group();
-
-      // ماشین ساده برای کاربران دیگر
       const carColor = new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.7, 0.5);
       const mat = new THREE.MeshStandardMaterial({
         color: carColor,
@@ -1124,8 +1214,7 @@
       label2.position.set(0, 1.3, 0);
       group.add(label2);
 
-      const h = 0.1;
-      group.position.set(data.x || 0, h, data.z || 0);
+      group.position.set(data.x || 0, 0.1, data.z || 0);
       group.rotation.y = data.rotation || 0;
 
       scene.add(group);
@@ -1253,132 +1342,218 @@
     // ============================================
     // CONTROLS
     // ============================================
-    const keys = { w: false, a: false, s: false, d: false };
-    let joyX = 0;
-    let joyY = 0;
+    let steerInput = 0;
+    let gasInput = 0;
+    let brakeInput = 0;
     let isBoosting = false;
-    let isBraking = false;
+    let isReversingBtn = false;
+    let isHandBrakeBtn = false;
 
-    // ---------- KEYBOARD ----------
-    document.addEventListener('keydown', (e) => {
-      const key = e.key.toLowerCase();
-      if (key === 'w' || key === 'a' || key === 's' || key === 'd') keys[key] = true;
-      if (key === 'shift') isBoosting = true;
-    });
+    // ---------- فرمان دکمه‌ای ----------
+    const steerLeftBtn = document.getElementById('steer-left-btn');
+    const steerRightBtn = document.getElementById('steer-right-btn');
 
-    document.addEventListener('keyup', (e) => {
-      const key = e.key.toLowerCase();
-      if (key === 'w' || key === 'a' || key === 's' || key === 'd') keys[key] = false;
-      if (key === 'shift') isBoosting = false;
-    });
-
-    // ---------- JOYSTICK ----------
-    const joystickBase = document.getElementById('joystick-base');
-    const joystickKnob = document.getElementById('joystick-knob');
-
-    function updateJoystick(clientX, clientY) {
-      const rect = joystickBase.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      let dx = clientX - cx;
-      let dy = clientY - cy;
-      const maxDist = rect.width / 2;
-
-      const len = Math.sqrt(dx * dx + dy * dy);
-      if (len > maxDist) {
-        dx = (dx / len) * maxDist;
-        dy = (dy / len) * maxDist;
+    function setSteer(value) {
+      steerInput = value;
+      if (value === -1) {
+        steerLeftBtn.classList.add('active');
+        steerRightBtn.classList.remove('active');
+      } else if (value === 1) {
+        steerRightBtn.classList.add('active');
+        steerLeftBtn.classList.remove('active');
+      } else {
+        steerLeftBtn.classList.remove('active');
+        steerRightBtn.classList.remove('active');
       }
-
-      joyX = dx / maxDist;
-      joyY = -dy / maxDist;
-
-      joystickKnob.style.transform = `translate(${dx}px, ${dy}px) scale(1.15)`;
     }
 
-    function resetJoystick() {
-      joyX = 0;
-      joyY = 0;
-      joystickKnob.style.transform = 'translate(0px, 0px) scale(1)';
-      joystickBase.classList.remove('active');
-    }
-
-    joystickBase.addEventListener('touchstart', (e) => {
+    steerLeftBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      const touch = e.changedTouches[0];
-      joystickBase.classList.add('active');
-      updateJoystick(touch.clientX, touch.clientY);
+      setSteer(-1);
     }, { passive: false });
 
-    document.addEventListener('touchmove', (e) => {
-      for (const touch of e.changedTouches) {
-        if (touch.target === joystickBase || touch.target.closest('#joystick-container')) {
-          e.preventDefault();
-          updateJoystick(touch.clientX, touch.clientY);
-        }
-      }
+    steerLeftBtn.addEventListener('touchend', () => setSteer(0), { passive: true });
+    steerLeftBtn.addEventListener('touchcancel', () => setSteer(0), { passive: true });
+    steerLeftBtn.addEventListener('mousedown', () => setSteer(-1));
+    steerLeftBtn.addEventListener('mouseup', () => setSteer(0));
+    steerLeftBtn.addEventListener('mouseleave', () => setSteer(0));
+
+    steerRightBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      setSteer(1);
+    }, { passive: false });
+
+    steerRightBtn.addEventListener('touchend', () => setSteer(0), { passive: true });
+    steerRightBtn.addEventListener('touchcancel', () => setSteer(0), { passive: true });
+    steerRightBtn.addEventListener('mousedown', () => setSteer(1));
+    steerRightBtn.addEventListener('mouseup', () => setSteer(0));
+    steerRightBtn.addEventListener('mouseleave', () => setSteer(0));
+
+    // ---------- گاز ----------
+    const gasPedal = document.getElementById('gas-pedal');
+    let gasTouchId = null;
+
+    gasPedal.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      gasTouchId = touch.identifier;
+      gasInput = 1;
+      gasPedal.classList.add('active');
     }, { passive: false });
 
     document.addEventListener('touchend', (e) => {
       for (const touch of e.changedTouches) {
-        if (touch.target === joystickBase || touch.target.closest('#joystick-container')) {
-          resetJoystick();
+        if (touch.identifier === gasTouchId) {
+          gasInput = 0;
+          gasPedal.classList.remove('active');
+          gasTouchId = null;
         }
       }
     }, { passive: true });
 
-    document.addEventListener('touchcancel', resetJoystick, { passive: true });
+    document.addEventListener('touchcancel', () => {
+      gasInput = 0;
+      gasPedal.classList.remove('active');
+      gasTouchId = null;
+    }, { passive: true });
 
-    // Mouse support
-    let isMouseJoystick = false;
-    joystickBase.addEventListener('mousedown', (e) => {
-      isMouseJoystick = true;
-      joystickBase.classList.add('active');
-      updateJoystick(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (isMouseJoystick) {
-        updateJoystick(e.clientX, e.clientY);
-      }
+    gasPedal.addEventListener('mousedown', () => {
+      gasInput = 1;
+      gasPedal.classList.add('active');
     });
 
     document.addEventListener('mouseup', () => {
-      if (isMouseJoystick) {
-        isMouseJoystick = false;
-        resetJoystick();
+      gasInput = 0;
+      gasPedal.classList.remove('active');
+    });
+
+    // ---------- ترمز ----------
+    const brakePedal = document.getElementById('brake-pedal');
+    let brakeTouchId = null;
+
+    brakePedal.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      brakeTouchId = touch.identifier;
+      brakeInput = 1;
+      brakePedal.classList.add('active');
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+      for (const touch of e.changedTouches) {
+        if (touch.identifier === brakeTouchId) {
+          brakeInput = 0;
+          brakePedal.classList.remove('active');
+          brakeTouchId = null;
+        }
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchcancel', () => {
+      brakeInput = 0;
+      brakePedal.classList.remove('active');
+      brakeTouchId = null;
+    }, { passive: true });
+
+    brakePedal.addEventListener('mousedown', () => {
+      brakeInput = 1;
+      brakePedal.classList.add('active');
+    });
+
+    document.addEventListener('mouseup', () => {
+      brakeInput = 0;
+      brakePedal.classList.remove('active');
+    });
+
+    // ---------- دکمه‌های اضافی ----------
+    const reverseBtn = document.getElementById('reverse-btn');
+    const handbrakeBtn = document.getElementById('handbrake-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    reverseBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isReversingBtn = !isReversingBtn;
+      reverseBtn.classList.toggle('active');
+      isReversing = isReversingBtn;
+      if (isReversingBtn) {
+        carSpeed = -3;
+      } else {
+        if (carSpeed < 0) carSpeed = 0;
+      }
+    }, { passive: false });
+
+    reverseBtn.addEventListener('click', () => {
+      isReversingBtn = !isReversingBtn;
+      reverseBtn.classList.toggle('active');
+      isReversing = isReversingBtn;
+      if (isReversingBtn) {
+        carSpeed = -3;
+      } else {
+        if (carSpeed < 0) carSpeed = 0;
       }
     });
 
-    // ---------- ACTION BUTTONS ----------
-    const boostBtn = document.getElementById('boost-btn');
-    const brakeBtn = document.getElementById('brake-btn');
-
-    boostBtn.addEventListener('touchstart', (e) => {
+    handbrakeBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      isBoosting = !isBoosting;
-      boostBtn.classList.toggle('active');
+      isHandBrakeBtn = !isHandBrakeBtn;
+      handbrakeBtn.classList.toggle('active');
+      isHandBrake = isHandBrakeBtn;
     }, { passive: false });
 
-    boostBtn.addEventListener('click', () => {
-      isBoosting = !isBoosting;
-      boostBtn.classList.toggle('active');
+    handbrakeBtn.addEventListener('click', () => {
+      isHandBrakeBtn = !isHandBrakeBtn;
+      handbrakeBtn.classList.toggle('active');
+      isHandBrake = isHandBrakeBtn;
     });
 
-    brakeBtn.addEventListener('touchstart', (e) => {
+    resetBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      isBraking = !isBraking;
-      brakeBtn.classList.toggle('active');
+      carGroup.position.set(0, 0.1, 0);
+      carGroup.rotation.y = 0;
+      carSpeed = 0;
+      carAngle = 0;
+      resetBtn.style.transform = 'scale(0.85)';
+      setTimeout(() => { resetBtn.style.transform = ''; }, 200);
     }, { passive: false });
 
-    brakeBtn.addEventListener('click', () => {
-      isBraking = !isBraking;
-      brakeBtn.classList.toggle('active');
+    resetBtn.addEventListener('click', () => {
+      carGroup.position.set(0, 0.1, 0);
+      carGroup.rotation.y = 0;
+      carSpeed = 0;
+      carAngle = 0;
+      resetBtn.style.transform = 'scale(0.85)';
+      setTimeout(() => { resetBtn.style.transform = ''; }, 200);
     });
 
     // ============================================
-    // CAMERA (دنبال‌کننده)
+    // KEYBOARD
+    // ============================================
+    const keys = { w: false, a: false, s: false, d: false };
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (key === 'w') { keys.w = true;
+        gasInput = 1; }
+      if (key === 's') { keys.s = true;
+        brakeInput = 1; }
+      if (key === 'a') { keys.a = true;
+        setSteer(-1); }
+      if (key === 'd') { keys.d = true;
+        setSteer(1); }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      const key = e.key.toLowerCase();
+      if (key === 'w') { keys.w = false;
+        gasInput = 0; }
+      if (key === 's') { keys.s = false;
+        brakeInput = 0; }
+      if (key === 'a' && !keys.a) { setSteer(0); }
+      if (key === 'd' && !keys.d) { setSteer(0); }
+    });
+
+    // ============================================
+    // CAMERA (سریع‌تر)
     // ============================================
     let cameraAngle = 0;
     let cameraDistance = 10;
@@ -1404,8 +1579,8 @@
       if (!isMouseDown) return;
       const dx = e.clientX - lastMouseX;
       const dy = e.clientY - lastMouseY;
-      targetCameraAngle -= dx * 0.005;
-      targetCameraHeight += dy * 0.03;
+      targetCameraAngle -= dx * 0.015;
+      targetCameraHeight += dy * 0.08;
       targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
@@ -1420,7 +1595,7 @@
       const rect = renderer.domElement.getBoundingClientRect();
       const touch = e.changedTouches[0];
       const x = touch.clientX - rect.left;
-      const isRightSide = x > rect.width * 0.3;
+      const isRightSide = x > rect.width * 0.3 && x < rect.width * 0.7;
 
       if (e.touches.length === 1 && isRightSide) {
         touchCamId = touch.identifier;
@@ -1435,8 +1610,8 @@
           if (touch.identifier === touchCamId) {
             const dx = touch.clientX - touchCamStartX;
             const dy = touch.clientY - touchCamStartY;
-            targetCameraAngle -= dx * 0.005;
-            targetCameraHeight += dy * 0.03;
+            targetCameraAngle -= dx * 0.015;
+            targetCameraHeight += dy * 0.08;
             targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
             touchCamStartX = touch.clientX;
             touchCamStartY = touch.clientY;
@@ -1454,7 +1629,6 @@
     // ============================================
     const clock = new THREE.Clock();
 
-    // Cleanup old players
     setInterval(() => {
       const now = Date.now();
       for (const [id, player] of players) {
@@ -1465,35 +1639,28 @@
     }, 3000);
 
     function updateCar(delta) {
-      // ===== INPUT =====
-      let gas = 0;
-      let steer = 0;
+      let gas = gasInput;
+      let brake = brakeInput;
+      let steer = steerInput;
 
-      // Keyboard
-      if (keys.w) gas = 1;
-      if (keys.s) gas = -1;
-      if (keys.a) steer = -1;
-      if (keys.d) steer = 1;
-
-      // Joystick
-      if (Math.abs(joyX) > 0.1 || Math.abs(joyY) > 0.1) {
-        gas = joyY;
-        steer = joyX;
+      if (isReversing) {
+        gas = -0.5;
       }
 
-      // ===== SPEED =====
-      const currentMaxSpeed = isBoosting ? maxSpeed * 1.5 : maxSpeed;
-      const accelerationForce = isBoosting ? acceleration * 1.5 : acceleration;
+      const currentMaxSpeed = isBoosting ? maxSpeed * 1.3 : maxSpeed;
 
-      if (Math.abs(gas) > 0.1) {
-        carSpeed += gas * accelerationForce * delta;
+      if (Math.abs(gas) > 0.05) {
+        const accel = isBoosting ? acceleration * 1.3 : acceleration;
+        carSpeed += gas * accel * delta;
         if (carSpeed > currentMaxSpeed) carSpeed = currentMaxSpeed;
-        if (carSpeed < -currentMaxSpeed * 0.5) carSpeed = -currentMaxSpeed * 0.5;
-      } else if (isBraking) {
-        carSpeed -= Math.sign(carSpeed) * braking * delta;
+        if (carSpeed < -currentMaxSpeed * 0.4) carSpeed = -currentMaxSpeed * 0.4;
+      } else if (brake > 0.1) {
+        carSpeed -= Math.sign(carSpeed) * braking * delta * 1.5;
+        if (Math.abs(carSpeed) < 0.1) carSpeed = 0;
+      } else if (isHandBrake) {
+        carSpeed *= 0.95;
         if (Math.abs(carSpeed) < 0.1) carSpeed = 0;
       } else {
-        // اصطکاک
         if (Math.abs(carSpeed) > 0.1) {
           carSpeed -= Math.sign(carSpeed) * friction * delta;
         } else {
@@ -1501,72 +1668,59 @@
         }
       }
 
-      // ===== STEERING =====
-      if (Math.abs(carSpeed) > 0.2) {
+      if (Math.abs(carSpeed) > 0.2 || isHandBrake) {
         const turnFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
-        carAngle += steer * turnSpeed * turnFactor * delta;
+        const handBrakeMultiplier = isHandBrake ? 1.5 : 1;
+        carAngle += steer * turnSpeed * turnFactor * delta * handBrakeMultiplier;
       }
 
-      // ===== MOVEMENT =====
       const moveX = Math.sin(carAngle) * carSpeed * delta;
       const moveZ = Math.cos(carAngle) * carSpeed * delta;
 
       let newX = carGroup.position.x + moveX;
       let newZ = carGroup.position.z + moveZ;
 
-      // ===== ROAD BOUNDARY =====
-      const distFromCenter = Math.sqrt(newX * newX + newZ * newZ);
-      const roadBoundary = roadRadius + roadWidth / 2;
-
-      if (distFromCenter > roadBoundary) {
-        const angle = Math.atan2(newX, newZ);
-        newX = Math.sin(angle) * roadBoundary;
-        newZ = Math.cos(angle) * roadBoundary;
-        carSpeed *= 0.7;
-      }
-
-      if (distFromCenter < roadRadius - roadWidth / 2) {
-        const angle = Math.atan2(newX, newZ);
-        newX = Math.sin(angle) * (roadRadius - roadWidth / 2);
-        newZ = Math.cos(angle) * (roadRadius - roadWidth / 2);
-        carSpeed *= 0.7;
-      }
+      // محدودیت محیط (آزاد)
+      const boundary = 280;
+      if (Math.abs(newX) > boundary) newX = Math.sign(newX) * boundary;
+      if (Math.abs(newZ) > boundary) newZ = Math.sign(newZ) * boundary;
 
       carGroup.position.x = newX;
       carGroup.position.z = newZ;
       carGroup.rotation.y = carAngle;
 
-      // ===== SPEED DISPLAY =====
       const speedKmh = Math.round(Math.abs(carSpeed) * 8);
       speedDisplay.innerHTML = `${speedKmh} <span>km/h</span>`;
 
-      // ===== WHEEL ANIMATION =====
       const wheelRot = carSpeed * delta * 10;
       for (const wheel of wheels) {
         wheel.rotation.z += wheelRot;
       }
 
-      // ===== LABEL =====
       label.position.set(0, 1.5, 0);
     }
 
     function updateCamera() {
-      cameraAngle += (targetCameraAngle - cameraAngle) * 0.08;
-      cameraHeight += (targetCameraHeight - cameraHeight) * 0.08;
+      cameraAngle += (targetCameraAngle - cameraAngle) * 0.18;
+      cameraHeight += (targetCameraHeight - cameraHeight) * 0.18;
+
+      const speedFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
+      const dynamicDistance = cameraDistance + speedFactor * 3;
+      const dynamicHeight = cameraHeight + speedFactor * 1;
 
       const targetPos = carGroup.position.clone();
       targetPos.y += 0.5;
 
-      const offsetX = Math.sin(cameraAngle) * cameraDistance;
-      const offsetZ = Math.cos(cameraAngle) * cameraDistance;
+      const offsetX = Math.sin(cameraAngle) * dynamicDistance;
+      const offsetZ = Math.cos(cameraAngle) * dynamicDistance;
 
       let camPos = new THREE.Vector3(
         targetPos.x + offsetX,
-        targetPos.y + cameraHeight,
+        targetPos.y + dynamicHeight,
         targetPos.z + offsetZ
       );
 
-      camera.position.lerp(camPos, 0.08);
+      camera.position.lerp(camPos, 0.18);
       camera.lookAt(targetPos);
     }
 
@@ -1584,7 +1738,7 @@
     // START GAME
     // ============================================
     function startGame() {
-      updateLoading(40, 'بارگذاری ماشین...');
+      updateLoading(50, 'بارگذاری ماشین...');
       setTimeout(() => {
         updateLoading(100, '✅ آماده!');
         setTimeout(hideLoading, 400);
@@ -1600,8 +1754,16 @@
       setInterval(() => {
         if (!isConnected && ablyClient) {
           try {
-            ablyClient.connection.recover();
-          } catch (e) {}
+            if (typeof ablyClient.connection.recover === 'function') {
+              ablyClient.connection.recover();
+            } else {
+              ablyClient.connection.connect();
+            }
+          } catch (e) {
+            try {
+              ablyClient.connection.connect();
+            } catch (e2) {}
+          }
         }
       }, 3000);
     }
@@ -1622,11 +1784,11 @@
       }
     });
 
-    console.log('🏎️ مسابقه ماشین آنلاین!');
-    console.log('✅ جاده دایره‌ای حرفه‌ای');
-    console.log('✅ ماشین با فیزیک واقعی');
-    console.log('✅ گاز، ترمز، فرمان');
-    console.log('✅ چندنفره آنلاین');
+    console.log('🏎️ مسابقه ماشین حرفه‌ای!');
+    console.log('✅ کیفیت حرفه‌ای با آنتی‌آلیاس');
+    console.log('✅ جاده صاف و واقعی با خط‌کشی');
+    console.log('✅ محیط آزاد - هر جا بری');
+    console.log('✅ فرمان نرم و روان');
   </script>
 </body>
 
