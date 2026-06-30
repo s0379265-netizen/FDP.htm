@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>🏎️ مسابقه ماشین - نسل جدید</title>
+  <title>🏙️ مسابقه شهری - نسل جدید</title>
 
   <style>
     * {
@@ -19,7 +19,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #0a0a1a;
+      background: #1a1a2e;
       touch-action: none;
       font-family: 'Segoe UI', Arial, sans-serif;
       position: fixed;
@@ -232,7 +232,7 @@
       transform: translateX(-50%);
       color: white;
       font-size: 15px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       padding: 6px 18px;
       border-radius: 30px;
       backdrop-filter: blur(10px);
@@ -258,7 +258,7 @@
       font-size: 36px;
       font-weight: 700;
       font-family: monospace;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       padding: 8px 32px;
       border-radius: 12px;
       backdrop-filter: blur(10px);
@@ -309,21 +309,6 @@
       pointer-events: none;
     }
 
-    #time-display {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 13px;
-      font-family: monospace;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 4px 12px;
-      border-radius: 12px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      pointer-events: none;
-    }
-
     #best-speed {
       position: absolute;
       bottom: 240px;
@@ -341,7 +326,7 @@
       text-align: center;
     }
 
-    /* ===== فرمان ===== */
+    /* ===== CONTROLS ===== */
     #steering-container {
       position: fixed;
       bottom: 40px;
@@ -396,7 +381,6 @@
       letter-spacing: 2px;
     }
 
-    /* ===== گاز و ترمز ===== */
     #gas-container {
       position: fixed;
       bottom: 100px;
@@ -476,7 +460,6 @@
       transform: scale(0.95);
     }
 
-    /* ===== دکمه‌ها ===== */
     #extra-buttons {
       position: fixed;
       bottom: 220px;
@@ -622,12 +605,6 @@
         font-size: 10px;
         padding: 3px 10px;
       }
-      #time-display {
-        top: 12px;
-        left: 12px;
-        font-size: 11px;
-        padding: 3px 10px;
-      }
       #best-speed {
         bottom: 200px;
         font-size: 10px;
@@ -708,11 +685,11 @@
 
   <!-- ====== LOGIN ====== -->
   <div id="login-screen">
-    <div id="login-title">🏎️ <span>مسابقه</span> ماشین</div>
-    <div id="login-sub">به جاده سرعت خوش آمدید</div>
+    <div id="login-title">🏙️ <span>مسابقه</span> شهری</div>
+    <div id="login-sub">به خیابان‌های مدرن خوش آمدید</div>
     <div id="login-box">
       <input type="text" id="name-input" placeholder="نام خود را وارد کنید..." maxlength="20" autofocus>
-      <button id="login-btn">🔥 وارد جاده شو</button>
+      <button id="login-btn">🔥 وارد شهر شو</button>
       <div id="login-error"></div>
       <div id="online-count">🔗 در حال اتصال به سرور...</div>
     </div>
@@ -720,8 +697,8 @@
 
   <!-- ====== LOADING ====== -->
   <div id="loading-screen">
-    <div id="loading-title">🏎️ <span>مسابقه</span></div>
-    <div id="loading-sub">در حال آماده‌سازی محیط</div>
+    <div id="loading-title">🏙️ <span>شهر</span> مدرن</div>
+    <div id="loading-sub">در حال ساخت خیابان‌ها...</div>
     <div class="loader-container">
       <div class="loader-bar" id="loader-bar"></div>
     </div>
@@ -731,8 +708,7 @@
 
   <!-- ====== UI ====== -->
   <div id="ui-overlay">
-    <div id="info">🏎️ <span>مسابقه</span> · جاده سرعت</div>
-    <div id="time-display">☀️ ۱۲:۰۰</div>
+    <div id="info">🏙️ <span>مسابقه</span> شهری · خیابان‌های مدرن</div>
     <div id="player-name-display">👤 شما</div>
     <div id="online-count-display">👥 ۰ آنلاین</div>
     <div id="best-speed">🏆 بهترین سرعت: ۰ km/h</div>
@@ -805,9 +781,9 @@
     console.log('📊 کیفیت تشخیص داده شده:', quality);
 
     const settings = {
-      low: { pixelRatio: 1.2, shadowSize: 512, antialias: false, treeCount: 40, grassCount: 500, lod: true },
-      medium: { pixelRatio: 1.5, shadowSize: 1024, antialias: true, treeCount: 70, grassCount: 1000, lod: true },
-      ultra: { pixelRatio: 2, shadowSize: 2048, antialias: true, treeCount: 120, grassCount: 2000, lod: false }
+      low: { pixelRatio: 1.2, shadowSize: 512, antialias: false, buildingCount: 30, lod: true },
+      medium: { pixelRatio: 1.5, shadowSize: 1024, antialias: true, buildingCount: 50, lod: true },
+      ultra: { pixelRatio: 2, shadowSize: 2048, antialias: true, buildingCount: 80, lod: false }
     };
 
     const config = settings[quality];
@@ -824,7 +800,6 @@
     const playerNameDisplay = document.getElementById('player-name-display');
     const speedDisplay = document.getElementById('speed-display');
     const bestSpeedDisplay = document.getElementById('best-speed');
-    const timeDisplay = document.getElementById('time-display');
 
     const loadingScreen = document.getElementById('loading-screen');
     const loaderBar = document.getElementById('loader-bar');
@@ -920,7 +895,7 @@
       try {
         await connectToAbly(name);
         playerName = name;
-        channel = ablyClient.channels.get('car-race');
+        channel = ablyClient.channels.get('city-race');
 
         playerNameDisplay.textContent = `👤 ${playerName}`;
 
@@ -930,7 +905,7 @@
 
       } catch (error) {
         loginError.textContent = '❌ ' + error.message;
-        loginBtn.textContent = '🔥 وارد جاده شو';
+        loginBtn.textContent = '🔥 وارد شهر شو';
         loginBtn.disabled = false;
       }
     }
@@ -958,8 +933,8 @@
     // THREE.JS SCENE
     // ============================================
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x87ceeb, 120, 300);
-    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x1a1a2e, 80, 250);
+    scene.background = new THREE.Color(0x1a1a2e);
 
     const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
     camera.position.set(0, 8, 12);
@@ -973,7 +948,7 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 1.2;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.prepend(renderer.domElement);
 
@@ -1002,21 +977,26 @@
     sunLight.shadow.camera.bottom = -80;
     scene.add(sunLight);
 
-    const ambientLight = new THREE.AmbientLight(0x8899bb, 0.5);
+    const ambientLight = new THREE.AmbientLight(0x445577, 0.5);
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x3a6b35, 0.7);
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x2a2a3a, 0.6);
     scene.add(hemiLight);
 
+    // نور شهر (شب)
+    const cityLight = new THREE.PointLight(0xffaa44, 0.5, 50);
+    cityLight.position.set(0, 10, 0);
+    scene.add(cityLight);
+
     // ============================================
-    // GROUND
+    // GROUND (آسفالت شهری)
     // ============================================
-    updateLoading(10, 'ساخت زمین...');
+    updateLoading(10, 'ساخت خیابان...');
 
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x4caf50,
+      color: 0x2a2a2a,
       roughness: 0.9,
-      metalness: 0,
+      metalness: 0.1,
     });
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), groundMat);
     ground.rotation.x = -Math.PI / 2;
@@ -1025,7 +1005,7 @@
     scene.add(ground);
 
     // ============================================
-    // ROAD
+    // ROAD (خیابان اصلی)
     // ============================================
     updateLoading(20, 'ساخت جاده...');
 
@@ -1033,15 +1013,14 @@
     scene.add(roadGroup);
 
     const roadLength = 400;
-    const roadWidth = 14;
+    const roadWidth = 16;
 
     const roadMat = new THREE.MeshStandardMaterial({
       color: 0x333333,
-      roughness: 0.7,
+      roughness: 0.8,
       metalness: 0.1,
     });
 
-    // جاده اصلی
     const roadMain = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, roadWidth), roadMat);
     roadMain.rotation.x = -Math.PI / 2;
     roadMain.position.set(0, 0.01, 0);
@@ -1075,111 +1054,267 @@
     }
 
     // ============================================
-    // ENVIRONMENT
+    // BUILDINGS (ساختمان‌های شیشه‌ای)
     // ============================================
-    updateLoading(30, 'ساخت محیط...');
+    updateLoading(30, 'ساختن ساختمان‌ها...');
 
-    function createTree(x, z, size = 1) {
-      const tree = new THREE.Group();
-      const trunkHeight = (2 + Math.random() * 2) * size;
-      const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.2 * size, 0.4 * size, trunkHeight, 5),
-        new THREE.MeshStandardMaterial({ color: 0x5b3718, roughness: 0.9 })
-      );
-      trunk.position.y = trunkHeight / 2;
-      trunk.castShadow = true;
-      tree.add(trunk);
+    function createBuilding(x, z, width, depth, height, color, hasWindows = true) {
+      const group = new THREE.Group();
 
-      const leafColor = new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.6, 0.25 + Math.random() * 0.15);
-      const leafSize = (1.5 + Math.random() * 1.5) * size;
-      const leafHeight = (2 + Math.random() * 2) * size;
-      const leaf = new THREE.Mesh(
-        new THREE.ConeGeometry(leafSize, leafHeight, 5 + Math.floor(Math.random() * 3)),
-        new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
-      );
-      leaf.position.y = trunkHeight + leafHeight / 2;
-      leaf.castShadow = true;
-      tree.add(leaf);
+      // بدنه اصلی
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: color,
+        roughness: 0.2,
+        metalness: 0.7,
+        emissive: color,
+        emissiveIntensity: 0.05,
+      });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), bodyMat);
+      body.position.y = height / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+      group.add(body);
 
-      tree.position.set(x, 0, z);
-      return tree;
+      // پنجره‌ها (شیشه‌ای)
+      if (hasWindows) {
+        const windowMat = new THREE.MeshStandardMaterial({
+          color: 0x88ccff,
+          roughness: 0.1,
+          metalness: 0.9,
+          emissive: 0x4488ff,
+          emissiveIntensity: 0.1,
+        });
+
+        const windowCount = Math.floor(Math.random() * 8) + 4;
+        for (let i = 0; i < windowCount; i++) {
+          const wx = (Math.random() - 0.5) * width * 0.6;
+          const wz = (Math.random() - 0.5) * depth * 0.6;
+          const wy = Math.random() * height * 0.7 + height * 0.15;
+          const wSize = 0.2 + Math.random() * 0.3;
+
+          const windowMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(wSize, wSize * 1.2),
+            windowMat
+          );
+          // قرار دادن روی یک وجه تصادفی
+          const face = Math.floor(Math.random() * 4);
+          if (face === 0) { windowMesh.position.set(wx, wy, depth / 2 + 0.01); } else if (face === 1) { windowMesh.position
+              .set(wx, wy, -depth / 2 - 0.01);
+            windowMesh.rotation.y = Math.PI; } else if (face === 2) { windowMesh.position.set(width / 2 + 0.01, wy, wz);
+            windowMesh.rotation.y = Math.PI / 2; } else { windowMesh.position.set(-width / 2 - 0.01, wy, wz);
+            windowMesh.rotation.y = -Math.PI / 2; }
+
+          group.add(windowMesh);
+        }
+      }
+
+      group.position.set(x, 0, z);
+      return group;
     }
 
-    // درخت‌ها اطراف جاده
-    for (let i = 0; i < config.treeCount; i++) {
-      const side = Math.random() > 0.5 ? 1 : -1;
-      const dist = roadWidth / 2 + 3 + Math.random() * 25;
-      const x = (Math.random() - 0.5) * 500;
-      const z = side * dist + (Math.random() - 0.5) * 4;
-      const size = 0.7 + Math.random() * 0.6;
-      scene.add(createTree(x, z, size));
+    function createBuildingBlock(cx, cz, count, spread) {
+      const block = new THREE.Group();
+
+      for (let i = 0; i < count; i++) {
+        const x = cx + (Math.random() - 0.5) * spread;
+        const z = cz + (Math.random() - 0.5) * spread;
+        if (Math.abs(x) < 20 && Math.abs(z) < 20) continue;
+
+        const width = 2 + Math.random() * 4;
+        const depth = 2 + Math.random() * 4;
+        const height = 5 + Math.random() * 20;
+        const hue = 0.55 + Math.random() * 0.15;
+        const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
+
+        const building = createBuilding(x, z, width, depth, height, color);
+        block.add(building);
+      }
+
+      return block;
     }
 
-    // درخت‌ها دورتر
-    for (let i = 0; i < config.treeCount * 0.5; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 50 + Math.random() * 150;
+    // ساختمان‌ها در دو طرف خیابان
+    const buildingCount = config.buildingCount;
+
+    // سمت چپ خیابان
+    for (let i = 0; i < buildingCount / 2; i++) {
+      const x = (Math.random() - 0.5) * 350;
+      const z = -10 - Math.random() * 20;
+      if (Math.abs(x) < 15) continue;
+
+      const width = 2 + Math.random() * 4;
+      const depth = 2 + Math.random() * 4;
+      const height = 5 + Math.random() * 20;
+      const hue = 0.55 + Math.random() * 0.15;
+      const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
+
+      const building = createBuilding(x, z, width, depth, height, color);
+      scene.add(building);
+    }
+
+    // سمت راست خیابان
+    for (let i = 0; i < buildingCount / 2; i++) {
+      const x = (Math.random() - 0.5) * 350;
+      const z = 10 + Math.random() * 20;
+      if (Math.abs(x) < 15) continue;
+
+      const width = 2 + Math.random() * 4;
+      const depth = 2 + Math.random() * 4;
+      const height = 5 + Math.random() * 20;
+      const hue = 0.55 + Math.random() * 0.15;
+      const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
+
+      const building = createBuilding(x, z, width, depth, height, color);
+      scene.add(building);
+    }
+
+    // ساختمان‌های بلندتر در انتهای خیابان
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2 + Math.random() * 0.3;
+      const dist = 80 + Math.random() * 40;
       const x = Math.cos(angle) * dist;
       const z = Math.sin(angle) * dist;
-      if (Math.abs(x) < 40 && Math.abs(z) < 40) continue;
-      const size = 0.5 + Math.random() * 0.5;
-      scene.add(createTree(x, z, size));
+
+      const width = 4 + Math.random() * 6;
+      const depth = 4 + Math.random() * 6;
+      const height = 15 + Math.random() * 25;
+      const color = new THREE.Color().setHSL(0.58, 0.2, 0.5 + Math.random() * 0.3);
+
+      const building = createBuilding(x, z, width, depth, height, color);
+      scene.add(building);
     }
 
-    // سنگ‌ها
-    for (let i = 0; i < 30; i++) {
-      const x = (Math.random() - 0.5) * 500;
-      const z = (Math.random() - 0.5) * 500;
-      if (Math.abs(x) < 20 && Math.abs(z) < 20) continue;
-      const rock = new THREE.Mesh(
-        new THREE.DodecahedronGeometry(0.3 + Math.random() * 0.8, 1),
-        new THREE.MeshStandardMaterial({
-          color: new THREE.Color().setHSL(0.08, 0.05, 0.4 + Math.random() * 0.3),
-          roughness: 0.9,
-          metalness: 0.05,
-        })
-      );
-      rock.position.set(x, 0.05, z);
-      rock.rotation.set(Math.random() * 6, Math.random() * 6, 0);
-      rock.castShadow = true;
-      rock.receiveShadow = true;
-      scene.add(rock);
+    // ============================================
+    // چراغ‌های خیابان
+    // ============================================
+    updateLoading(40, 'نورپردازی خیابان...');
+
+    function createStreetLight(x, z) {
+      const group = new THREE.Group();
+
+      const poleMat = new THREE.MeshStandardMaterial({
+        color: 0x555555,
+        roughness: 0.5,
+        metalness: 0.3,
+      });
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.15, 4, 6), poleMat);
+      pole.position.y = 2;
+      pole.castShadow = true;
+      group.add(pole);
+
+      const armMat = new THREE.MeshStandardMaterial({
+        color: 0x555555,
+        roughness: 0.5,
+        metalness: 0.3,
+      });
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.05, 0.05), armMat);
+      arm.position.set(0, 4.05, 0);
+      group.add(arm);
+
+      const lightMat = new THREE.MeshStandardMaterial({
+        color: 0xffee88,
+        emissive: 0xffaa33,
+        emissiveIntensity: 0.5,
+        roughness: 0.3,
+      });
+      const light = new THREE.Mesh(new THREE.SphereGeometry(0.15, 6, 6), lightMat);
+      light.position.set(0, 4.1, 0);
+      group.add(light);
+
+      const pointLight = new THREE.PointLight(0xffaa33, 0.3, 15);
+      pointLight.position.set(0, 4, 0);
+      group.add(pointLight);
+
+      group.position.set(x, 0, z);
+      return group;
     }
 
-    // چمن‌ها
-    const grassGeo = new THREE.BufferGeometry();
-    const grassCount = config.grassCount;
-    const grassPos = new Float32Array(grassCount * 3);
-    const grassColors = new Float32Array(grassCount * 3);
-    for (let i = 0; i < grassCount; i++) {
-      const x = (Math.random() - 0.5) * 500;
-      const z = (Math.random() - 0.5) * 500;
-      if (Math.abs(x) < 10 && Math.abs(z) < 10) continue;
-      grassPos[i * 3] = x;
-      grassPos[i * 3 + 1] = 0.03;
-      grassPos[i * 3 + 2] = z;
-      const green = 0.3 + Math.random() * 0.2;
-      grassColors[i * 3] = 0.1 + Math.random() * 0.1;
-      grassColors[i * 3 + 1] = green;
-      grassColors[i * 3 + 2] = 0.05 + Math.random() * 0.05;
+    // چراغ‌ها در دو طرف خیابان
+    for (let i = -180; i < 180; i += 20) {
+      for (let side = -1; side <= 1; side += 2) {
+        const z = side * (roadWidth / 2 + 2);
+        scene.add(createStreetLight(i, z));
+      }
     }
-    grassGeo.setAttribute('position', new THREE.BufferAttribute(grassPos, 3));
-    grassGeo.setAttribute('color', new THREE.BufferAttribute(grassColors, 3));
 
-    const grassMat = new THREE.PointsMaterial({
-      size: 0.2,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.7,
-      vertexColors: true,
-    });
-    const grass = new THREE.Points(grassGeo, grassMat);
-    scene.add(grass);
+    // ============================================
+    // NPC Cars (ماشین‌های ترافیک)
+    // ============================================
+    const npcCars = [];
+
+    function createNPCCar(x, z, color, speed) {
+      const group = new THREE.Group();
+
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: color,
+        roughness: 0.3,
+        metalness: 0.5,
+      });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.25, 1.6), bodyMat);
+      body.position.y = 0.2;
+      body.castShadow = true;
+      group.add(body);
+
+      const cabinMat = new THREE.MeshStandardMaterial({
+        color: 0x222244,
+        roughness: 0.1,
+        metalness: 0.8,
+        transparent: true,
+        opacity: 0.5,
+      });
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.9), cabinMat);
+      cabin.position.set(0, 0.4, -0.05);
+      group.add(cabin);
+
+      const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+      const wPos = [
+        [-0.4, 0.1, 0.55],
+        [0.4, 0.1, 0.55],
+        [-0.4, 0.1, -0.55],
+        [0.4, 0.1, -0.55]
+      ];
+      for (const p of wPos) {
+        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.1, 6), wheelMat);
+        w.rotation.x = Math.PI / 2;
+        w.position.set(p[0], p[1], p[2]);
+        group.add(w);
+      }
+
+      group.position.set(x, 0.1, z);
+      group.rotation.y = Math.random() * 0.5 - 0.25;
+
+      scene.add(group);
+
+      npcCars.push({
+        mesh: group,
+        speed: speed || (0.5 + Math.random() * 1.5),
+        direction: Math.random() > 0.5 ? 1 : -1,
+        x: x,
+        z: z,
+        minX: -180,
+        maxX: 180
+      });
+
+      return group;
+    }
+
+    // تولید ماشین‌های NPC
+    const npcColors = [0xff0000, 0x0000ff, 0x00ff00, 0xffff00, 0xff00ff, 0x00ffff, 0xffffff, 0x888888];
+
+    for (let i = 0; i < 8; i++) {
+      const x = (Math.random() - 0.5) * 300;
+      const z = (Math.random() - 0.5) * (roadWidth / 2 - 2);
+      const color = npcColors[Math.floor(Math.random() * npcColors.length)];
+      const speed = 0.5 + Math.random() * 2;
+
+      if (Math.abs(x) < 20) continue;
+      createNPCCar(x, z, color, speed);
+    }
 
     // ============================================
     // CAR
     // ============================================
-    updateLoading(40, 'ساخت ماشین...');
+    updateLoading(50, 'ساخت ماشین شما...');
 
     const carGroup = new THREE.Group();
     scene.add(carGroup);
@@ -1279,26 +1414,6 @@
     let bestSpeed = 0;
     let cameraMode = 0;
     const cameraModes = ['follow', 'top', 'front', 'far'];
-
-    // ============================================
-    // TIME SYSTEM
-    // ============================================
-    let gameTime = 0;
-
-    function updateTime() {
-      gameTime += 0.001;
-      const hours = Math.floor(gameTime % 24);
-      const minutes = Math.floor((gameTime % 1) * 60);
-      const ampm = hours >= 12 ? '🌙' : '☀️';
-      const displayHours = hours % 12 || 12;
-      timeDisplay.textContent = `${ampm} ${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-
-      // تغییر نور بر اساس زمان
-      const timeOfDay = (gameTime % 24) / 24;
-      const sunIntensity = Math.max(0.2, Math.sin(timeOfDay * Math.PI * 2) * 0.8 + 0.5);
-      sunLight.intensity = sunIntensity * 2.5;
-      ambientLight.intensity = 0.2 + sunIntensity * 0.5;
-    }
 
     // ============================================
     // NETWORK
@@ -1708,7 +1823,7 @@
     });
 
     // ============================================
-    // CAMERA (حرفه‌ای)
+    // CAMERA
     // ============================================
     let cameraAngle = 0;
     let cameraDistance = 10;
@@ -1848,27 +1963,23 @@
       const speedKmh = Math.round(Math.abs(carSpeed) * 8);
       speedDisplay.innerHTML = `${speedKmh} <span>km/h</span>`;
 
-      // بهترین سرعت
       if (speedKmh > bestSpeed) {
         bestSpeed = speedKmh;
         bestSpeedDisplay.textContent = `🏆 بهترین سرعت: ${bestSpeed} km/h`;
       }
 
-      // افکت سرعت
       if (speedKmh > 80) {
         speedDisplay.classList.add('boost');
       } else {
         speedDisplay.classList.remove('boost');
       }
 
-      // لرزش دوربین
       if (speedKmh > 60) {
         cameraShake = (speedKmh / 200) * 0.03;
       } else {
         cameraShake *= 0.9;
       }
 
-      // FOV تغییر با سرعت
       fovTarget = 50 + speedKmh * 0.08;
       fovTarget = Math.min(fovTarget, 70);
 
@@ -1878,13 +1989,24 @@
       }
 
       label.position.set(0, 1.5, 0);
+
+      // ===== NPC Cars =====
+      for (const npc of npcCars) {
+        npc.x += npc.speed * npc.direction * delta * 2;
+        if (npc.x > npc.maxX) { npc.x = npc.maxX;
+          npc.direction = -1; }
+        if (npc.x < npc.minX) { npc.x = npc.minX;
+          npc.direction = 1; }
+        npc.mesh.position.x = npc.x;
+        npc.mesh.position.z = npc.z;
+        npc.mesh.rotation.y = npc.direction > 0 ? 0 : Math.PI;
+      }
     }
 
     function updateCamera() {
       cameraAngle += (targetCameraAngle - cameraAngle) * 0.18;
       cameraHeight += (targetCameraHeight - cameraHeight) * 0.18;
 
-      // FOV نرم
       camera.fov += (fovTarget - camera.fov) * 0.05;
       camera.updateProjectionMatrix();
 
@@ -1922,7 +2044,6 @@
           offset.set(0, 5, 10);
       }
 
-      // لرزش
       const shakeX = (Math.random() - 0.5) * cameraShake;
       const shakeY = (Math.random() - 0.5) * cameraShake;
       offset.x += shakeX;
@@ -1943,7 +2064,6 @@
       const delta = Math.min(clock.getDelta(), 0.05);
       updateCar(delta);
       updateCamera();
-      updateTime();
 
       renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
@@ -1953,9 +2073,9 @@
     // START GAME
     // ============================================
     function startGame() {
-      updateLoading(50, 'بارگذاری ماشین...');
+      updateLoading(60, 'نهایی‌سازی شهر...');
       setTimeout(() => {
-        updateLoading(100, '✅ آماده!');
+        updateLoading(100, '✅ شهر آماده!');
         setTimeout(hideLoading, 400);
       }, 500);
 
@@ -1999,12 +2119,12 @@
       }
     });
 
-    console.log('🏎️ مسابقه ماشین - نسل جدید!');
+    console.log('🏙️ مسابقه شهری - نسل جدید!');
     console.log(`📊 کیفیت: ${quality}`);
-    console.log('✅ گرافیک تطبیقی');
-    console.log('✅ دوربین حرفه‌ای با لرزش');
-    console.log('✅ چرخه روز و شب');
-    console.log('✅ بهترین سرعت');
+    console.log('✅ ساختمان‌های شیشه‌ای مدرن');
+    console.log('✅ خیابان با نورپردازی');
+    console.log('✅ ترافیک NPC');
+    console.log('✅ دوربین حرفه‌ای');
   </script>
 </body>
 
