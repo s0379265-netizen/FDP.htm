@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>مسابقه ماشین حرفه‌ای</title>
+  <title>🏎️ مسابقه ماشین - نسل جدید</title>
 
   <style>
     * {
@@ -19,7 +19,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #87ceeb;
+      background: #0a0a1a;
       touch-action: none;
       font-family: 'Segoe UI', Arial, sans-serif;
       position: fixed;
@@ -255,22 +255,29 @@
       left: 50%;
       transform: translateX(-50%);
       color: white;
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 700;
       font-family: monospace;
       background: rgba(0, 0, 0, 0.5);
-      padding: 8px 28px;
+      padding: 8px 32px;
       border-radius: 12px;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       pointer-events: none;
       text-align: center;
+      transition: all 0.1s;
     }
 
     #speed-display span {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 300;
       color: rgba(255, 255, 255, 0.4);
+    }
+
+    #speed-display.boost {
+      border-color: #ff6b35;
+      color: #ff6b35;
+      transform: scale(1.05);
     }
 
     #player-name-display {
@@ -302,7 +309,39 @@
       pointer-events: none;
     }
 
-    /* ===== فرمان دکمه‌ای ===== */
+    #time-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    #best-speed {
+      position: absolute;
+      bottom: 240px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 11px;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2px 14px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      pointer-events: none;
+      text-align: center;
+    }
+
+    /* ===== فرمان ===== */
     #steering-container {
       position: fixed;
       bottom: 40px;
@@ -437,6 +476,7 @@
       transform: scale(0.95);
     }
 
+    /* ===== دکمه‌ها ===== */
     #extra-buttons {
       position: fixed;
       bottom: 220px;
@@ -555,9 +595,12 @@
         font-size: 14px;
       }
       #speed-display {
-        font-size: 24px;
-        padding: 6px 18px;
+        font-size: 28px;
+        padding: 6px 20px;
         bottom: 140px;
+      }
+      #speed-display span {
+        font-size: 14px;
       }
       #info {
         font-size: 12px;
@@ -578,6 +621,17 @@
         right: 12px;
         font-size: 10px;
         padding: 3px 10px;
+      }
+      #time-display {
+        top: 12px;
+        left: 12px;
+        font-size: 11px;
+        padding: 3px 10px;
+      }
+      #best-speed {
+        bottom: 200px;
+        font-size: 10px;
+        padding: 2px 12px;
       }
       .player-label {
         font-size: 10px;
@@ -638,9 +692,13 @@
         font-size: 12px;
       }
       #speed-display {
-        font-size: 20px;
-        padding: 4px 14px;
+        font-size: 22px;
+        padding: 4px 16px;
         bottom: 110px;
+      }
+      #best-speed {
+        bottom: 160px;
+        font-size: 9px;
       }
     }
   </style>
@@ -663,7 +721,7 @@
   <!-- ====== LOADING ====== -->
   <div id="loading-screen">
     <div id="loading-title">🏎️ <span>مسابقه</span></div>
-    <div id="loading-sub">در حال آماده‌سازی جاده</div>
+    <div id="loading-sub">در حال آماده‌سازی محیط</div>
     <div class="loader-container">
       <div class="loader-bar" id="loader-bar"></div>
     </div>
@@ -674,8 +732,10 @@
   <!-- ====== UI ====== -->
   <div id="ui-overlay">
     <div id="info">🏎️ <span>مسابقه</span> · جاده سرعت</div>
+    <div id="time-display">☀️ ۱۲:۰۰</div>
     <div id="player-name-display">👤 شما</div>
     <div id="online-count-display">👥 ۰ آنلاین</div>
+    <div id="best-speed">🏆 بهترین سرعت: ۰ km/h</div>
     <div id="speed-display">0 <span>km/h</span></div>
 
     <div id="steering-container">
@@ -704,6 +764,7 @@
       <div class="extra-btn" id="reverse-btn">↩️</div>
       <div class="extra-btn" id="handbrake-btn">🔄</div>
       <div class="extra-btn" id="reset-btn">⟳</div>
+      <div class="extra-btn" id="camera-btn">📷</div>
     </div>
 
     <div id="controls-hint">
@@ -728,6 +789,30 @@
     import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
     // ============================================
+    // ADAPTIVE GRAPHICS
+    // ============================================
+    function detectQuality() {
+      const mem = navigator.deviceMemory || 4;
+      const cores = navigator.hardwareConcurrency || 4;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isMobile || mem < 2 || cores < 4) return 'low';
+      if (mem < 4 || cores < 6) return 'medium';
+      return 'ultra';
+    }
+
+    const quality = detectQuality();
+    console.log('📊 کیفیت تشخیص داده شده:', quality);
+
+    const settings = {
+      low: { pixelRatio: 1.2, shadowSize: 512, antialias: false, treeCount: 40, grassCount: 500, lod: true },
+      medium: { pixelRatio: 1.5, shadowSize: 1024, antialias: true, treeCount: 70, grassCount: 1000, lod: true },
+      ultra: { pixelRatio: 2, shadowSize: 2048, antialias: true, treeCount: 120, grassCount: 2000, lod: false }
+    };
+
+    const config = settings[quality];
+
+    // ============================================
     // DOM ELEMENTS
     // ============================================
     const loginScreen = document.getElementById('login-screen');
@@ -738,6 +823,8 @@
     const onlineCountDisplay = document.getElementById('online-count-display');
     const playerNameDisplay = document.getElementById('player-name-display');
     const speedDisplay = document.getElementById('speed-display');
+    const bestSpeedDisplay = document.getElementById('best-speed');
+    const timeDisplay = document.getElementById('time-display');
 
     const loadingScreen = document.getElementById('loading-screen');
     const loaderBar = document.getElementById('loader-bar');
@@ -785,11 +872,7 @@
             onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
             setTimeout(() => {
               if (ablyClient) {
-                try {
-                  ablyClient.connection.recover();
-                } catch (e) {
-                  ablyClient.connection.connect();
-                }
+                try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection.connect(); }
               }
             }, 1000);
           });
@@ -802,11 +885,7 @@
               onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
               setTimeout(() => {
                 if (ablyClient) {
-                  try {
-                    ablyClient.connection.recover();
-                  } catch (e) {
-                    ablyClient.connection.connect();
-                  }
+                  try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection.connect(); }
                 }
               }, 2000);
             } else {
@@ -876,21 +955,21 @@
     }
 
     // ============================================
-    // THREE.JS SCENE (کیفیت حرفه‌ای)
+    // THREE.JS SCENE
     // ============================================
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x87ceeb, 100, 250);
+    scene.fog = new THREE.Fog(0x87ceeb, 120, 300);
     scene.background = new THREE.Color(0x87ceeb);
 
     const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
     camera.position.set(0, 8, 12);
 
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: config.antialias,
       powerPreference: "high-performance"
     });
     renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, config.pixelRatio));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -913,8 +992,8 @@
     const sunLight = new THREE.DirectionalLight(0xffeedd, 2.5);
     sunLight.position.set(50, 80, 30);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.mapSize.width = config.shadowSize;
+    sunLight.shadow.mapSize.height = config.shadowSize;
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 150;
     sunLight.shadow.camera.left = -80;
@@ -930,7 +1009,7 @@
     scene.add(hemiLight);
 
     // ============================================
-    // GROUND (زمین صاف و سبز)
+    // GROUND
     // ============================================
     updateLoading(10, 'ساخت زمین...');
 
@@ -946,38 +1025,37 @@
     scene.add(ground);
 
     // ============================================
-    // ROAD (جاده صاف و واقعی)
+    // ROAD
     // ============================================
     updateLoading(20, 'ساخت جاده...');
 
     const roadGroup = new THREE.Group();
     scene.add(roadGroup);
 
-    // جاده اصلی - مستقیم
     const roadLength = 400;
-    const roadWidth = 12;
+    const roadWidth = 14;
 
-    // جاده طولی
     const roadMat = new THREE.MeshStandardMaterial({
       color: 0x333333,
       roughness: 0.7,
       metalness: 0.1,
     });
 
+    // جاده اصلی
     const roadMain = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, roadWidth), roadMat);
     roadMain.rotation.x = -Math.PI / 2;
     roadMain.position.set(0, 0.01, 0);
     roadMain.receiveShadow = true;
     roadGroup.add(roadMain);
 
-    // خط وسط جاده
+    // خطوط وسط
     const lineMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       roughness: 0.5,
     });
 
-    for (let i = -190; i < 190; i += 6) {
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 3), lineMat);
+    for (let i = -190; i < 190; i += 5) {
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 2.5), lineMat);
       line.rotation.x = -Math.PI / 2;
       line.position.set(i, 0.02, 0);
       roadGroup.add(line);
@@ -996,31 +1074,16 @@
       roadGroup.add(edge);
     }
 
-    // جاده عرضی (تقاطع)
-    const roadCross = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth, 200), roadMat);
-    roadCross.rotation.x = -Math.PI / 2;
-    roadCross.position.set(0, 0.01, 0);
-    roadCross.receiveShadow = true;
-    roadGroup.add(roadCross);
-
-    // خطوط عرضی
-    for (let i = -90; i < 90; i += 6) {
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(3, 0.3), lineMat);
-      line.rotation.x = -Math.PI / 2;
-      line.position.set(0, 0.02, i);
-      roadGroup.add(line);
-    }
-
     // ============================================
-    // درخت‌ها
+    // ENVIRONMENT
     // ============================================
-    updateLoading(30, 'ساخت درخت‌ها...');
+    updateLoading(30, 'ساخت محیط...');
 
-    function createTree(x, z) {
+    function createTree(x, z, size = 1) {
       const tree = new THREE.Group();
-      const trunkHeight = 2 + Math.random() * 2;
+      const trunkHeight = (2 + Math.random() * 2) * size;
       const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.2, 0.4, trunkHeight, 6),
+        new THREE.CylinderGeometry(0.2 * size, 0.4 * size, trunkHeight, 5),
         new THREE.MeshStandardMaterial({ color: 0x5b3718, roughness: 0.9 })
       );
       trunk.position.y = trunkHeight / 2;
@@ -1028,10 +1091,10 @@
       tree.add(trunk);
 
       const leafColor = new THREE.Color().setHSL(0.28 + Math.random() * 0.05, 0.6, 0.25 + Math.random() * 0.15);
-      const leafSize = 1.5 + Math.random() * 1.5;
-      const leafHeight = 2 + Math.random() * 2;
+      const leafSize = (1.5 + Math.random() * 1.5) * size;
+      const leafHeight = (2 + Math.random() * 2) * size;
       const leaf = new THREE.Mesh(
-        new THREE.ConeGeometry(leafSize, leafHeight, 6 + Math.floor(Math.random() * 4)),
+        new THREE.ConeGeometry(leafSize, leafHeight, 5 + Math.floor(Math.random() * 3)),
         new THREE.MeshStandardMaterial({ color: leafColor, roughness: 0.8 })
       );
       leaf.position.y = trunkHeight + leafHeight / 2;
@@ -1042,24 +1105,76 @@
       return tree;
     }
 
-    // درخت‌ها در اطراف جاده
-    for (let i = 0; i < 120; i++) {
+    // درخت‌ها اطراف جاده
+    for (let i = 0; i < config.treeCount; i++) {
       const side = Math.random() > 0.5 ? 1 : -1;
-      const dist = roadWidth / 2 + 3 + Math.random() * 20;
+      const dist = roadWidth / 2 + 3 + Math.random() * 25;
       const x = (Math.random() - 0.5) * 500;
-      const z = side * dist + (Math.random() - 0.5) * 3;
-      scene.add(createTree(x, z));
+      const z = side * dist + (Math.random() - 0.5) * 4;
+      const size = 0.7 + Math.random() * 0.6;
+      scene.add(createTree(x, z, size));
     }
 
-    // درخت‌ها در جای دورتر
-    for (let i = 0; i < 80; i++) {
+    // درخت‌ها دورتر
+    for (let i = 0; i < config.treeCount * 0.5; i++) {
       const angle = Math.random() * Math.PI * 2;
       const dist = 50 + Math.random() * 150;
       const x = Math.cos(angle) * dist;
       const z = Math.sin(angle) * dist;
-      if (Math.abs(x) < 30 && Math.abs(z) < 30) continue;
-      scene.add(createTree(x, z));
+      if (Math.abs(x) < 40 && Math.abs(z) < 40) continue;
+      const size = 0.5 + Math.random() * 0.5;
+      scene.add(createTree(x, z, size));
     }
+
+    // سنگ‌ها
+    for (let i = 0; i < 30; i++) {
+      const x = (Math.random() - 0.5) * 500;
+      const z = (Math.random() - 0.5) * 500;
+      if (Math.abs(x) < 20 && Math.abs(z) < 20) continue;
+      const rock = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(0.3 + Math.random() * 0.8, 1),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color().setHSL(0.08, 0.05, 0.4 + Math.random() * 0.3),
+          roughness: 0.9,
+          metalness: 0.05,
+        })
+      );
+      rock.position.set(x, 0.05, z);
+      rock.rotation.set(Math.random() * 6, Math.random() * 6, 0);
+      rock.castShadow = true;
+      rock.receiveShadow = true;
+      scene.add(rock);
+    }
+
+    // چمن‌ها
+    const grassGeo = new THREE.BufferGeometry();
+    const grassCount = config.grassCount;
+    const grassPos = new Float32Array(grassCount * 3);
+    const grassColors = new Float32Array(grassCount * 3);
+    for (let i = 0; i < grassCount; i++) {
+      const x = (Math.random() - 0.5) * 500;
+      const z = (Math.random() - 0.5) * 500;
+      if (Math.abs(x) < 10 && Math.abs(z) < 10) continue;
+      grassPos[i * 3] = x;
+      grassPos[i * 3 + 1] = 0.03;
+      grassPos[i * 3 + 2] = z;
+      const green = 0.3 + Math.random() * 0.2;
+      grassColors[i * 3] = 0.1 + Math.random() * 0.1;
+      grassColors[i * 3 + 1] = green;
+      grassColors[i * 3 + 2] = 0.05 + Math.random() * 0.05;
+    }
+    grassGeo.setAttribute('position', new THREE.BufferAttribute(grassPos, 3));
+    grassGeo.setAttribute('color', new THREE.BufferAttribute(grassColors, 3));
+
+    const grassMat = new THREE.PointsMaterial({
+      size: 0.2,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.7,
+      vertexColors: true,
+    });
+    const grass = new THREE.Points(grassGeo, grassMat);
+    scene.add(grass);
 
     // ============================================
     // CAR
@@ -1161,6 +1276,29 @@
     let turnSpeed = 3.5;
     let isReversing = false;
     let isHandBrake = false;
+    let bestSpeed = 0;
+    let cameraMode = 0;
+    const cameraModes = ['follow', 'top', 'front', 'far'];
+
+    // ============================================
+    // TIME SYSTEM
+    // ============================================
+    let gameTime = 0;
+
+    function updateTime() {
+      gameTime += 0.001;
+      const hours = Math.floor(gameTime % 24);
+      const minutes = Math.floor((gameTime % 1) * 60);
+      const ampm = hours >= 12 ? '🌙' : '☀️';
+      const displayHours = hours % 12 || 12;
+      timeDisplay.textContent = `${ampm} ${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+      // تغییر نور بر اساس زمان
+      const timeOfDay = (gameTime % 24) / 24;
+      const sunIntensity = Math.max(0.2, Math.sin(timeOfDay * Math.PI * 2) * 0.8 + 0.5);
+      sunLight.intensity = sunIntensity * 2.5;
+      ambientLight.intensity = 0.2 + sunIntensity * 0.5;
+    }
 
     // ============================================
     // NETWORK
@@ -1349,7 +1487,7 @@
     let isReversingBtn = false;
     let isHandBrakeBtn = false;
 
-    // ---------- فرمان دکمه‌ای ----------
+    // ---------- فرمان ----------
     const steerLeftBtn = document.getElementById('steer-left-btn');
     const steerRightBtn = document.getElementById('steer-right-btn');
 
@@ -1465,10 +1603,11 @@
       brakePedal.classList.remove('active');
     });
 
-    // ---------- دکمه‌های اضافی ----------
+    // ---------- دکمه‌ها ----------
     const reverseBtn = document.getElementById('reverse-btn');
     const handbrakeBtn = document.getElementById('handbrake-btn');
     const resetBtn = document.getElementById('reset-btn');
+    const cameraBtn = document.getElementById('camera-btn');
 
     reverseBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
@@ -1525,6 +1664,19 @@
       setTimeout(() => { resetBtn.style.transform = ''; }, 200);
     });
 
+    cameraBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      cameraMode = (cameraMode + 1) % cameraModes.length;
+      cameraBtn.style.transform = 'scale(0.85)';
+      setTimeout(() => { cameraBtn.style.transform = ''; }, 200);
+    }, { passive: false });
+
+    cameraBtn.addEventListener('click', () => {
+      cameraMode = (cameraMode + 1) % cameraModes.length;
+      cameraBtn.style.transform = 'scale(0.85)';
+      setTimeout(() => { cameraBtn.style.transform = ''; }, 200);
+    });
+
     // ============================================
     // KEYBOARD
     // ============================================
@@ -1540,6 +1692,9 @@
         setSteer(-1); }
       if (key === 'd') { keys.d = true;
         setSteer(1); }
+      if (key === ' ') { e.preventDefault();
+        isHandBrake = !isHandBrake;
+        handbrakeBtn.classList.toggle('active'); }
     });
 
     document.addEventListener('keyup', (e) => {
@@ -1553,13 +1708,15 @@
     });
 
     // ============================================
-    // CAMERA (سریع‌تر)
+    // CAMERA (حرفه‌ای)
     // ============================================
     let cameraAngle = 0;
     let cameraDistance = 10;
     let cameraHeight = 6;
     let targetCameraAngle = 0;
     let targetCameraHeight = 6;
+    let cameraShake = 0;
+    let fovTarget = 50;
 
     let isMouseDown = false;
     let lastMouseX = 0;
@@ -1581,7 +1738,7 @@
       const dy = e.clientY - lastMouseY;
       targetCameraAngle -= dx * 0.015;
       targetCameraHeight += dy * 0.08;
-      targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
+      targetCameraHeight = Math.max(3, Math.min(9, targetCameraHeight));
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
     });
@@ -1612,7 +1769,7 @@
             const dy = touch.clientY - touchCamStartY;
             targetCameraAngle -= dx * 0.015;
             targetCameraHeight += dy * 0.08;
-            targetCameraHeight = Math.max(4, Math.min(10, targetCameraHeight));
+            targetCameraHeight = Math.max(3, Math.min(9, targetCameraHeight));
             touchCamStartX = touch.clientX;
             touchCamStartY = touch.clientY;
           }
@@ -1670,7 +1827,7 @@
 
       if (Math.abs(carSpeed) > 0.2 || isHandBrake) {
         const turnFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
-        const handBrakeMultiplier = isHandBrake ? 1.5 : 1;
+        const handBrakeMultiplier = isHandBrake ? 1.8 : 1;
         carAngle += steer * turnSpeed * turnFactor * delta * handBrakeMultiplier;
       }
 
@@ -1680,7 +1837,6 @@
       let newX = carGroup.position.x + moveX;
       let newZ = carGroup.position.z + moveZ;
 
-      // محدودیت محیط (آزاد)
       const boundary = 280;
       if (Math.abs(newX) > boundary) newX = Math.sign(newX) * boundary;
       if (Math.abs(newZ) > boundary) newZ = Math.sign(newZ) * boundary;
@@ -1691,6 +1847,30 @@
 
       const speedKmh = Math.round(Math.abs(carSpeed) * 8);
       speedDisplay.innerHTML = `${speedKmh} <span>km/h</span>`;
+
+      // بهترین سرعت
+      if (speedKmh > bestSpeed) {
+        bestSpeed = speedKmh;
+        bestSpeedDisplay.textContent = `🏆 بهترین سرعت: ${bestSpeed} km/h`;
+      }
+
+      // افکت سرعت
+      if (speedKmh > 80) {
+        speedDisplay.classList.add('boost');
+      } else {
+        speedDisplay.classList.remove('boost');
+      }
+
+      // لرزش دوربین
+      if (speedKmh > 60) {
+        cameraShake = (speedKmh / 200) * 0.03;
+      } else {
+        cameraShake *= 0.9;
+      }
+
+      // FOV تغییر با سرعت
+      fovTarget = 50 + speedKmh * 0.08;
+      fovTarget = Math.min(fovTarget, 70);
 
       const wheelRot = carSpeed * delta * 10;
       for (const wheel of wheels) {
@@ -1704,20 +1884,54 @@
       cameraAngle += (targetCameraAngle - cameraAngle) * 0.18;
       cameraHeight += (targetCameraHeight - cameraHeight) * 0.18;
 
+      // FOV نرم
+      camera.fov += (fovTarget - camera.fov) * 0.05;
+      camera.updateProjectionMatrix();
+
       const speedFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
-      const dynamicDistance = cameraDistance + speedFactor * 3;
-      const dynamicHeight = cameraHeight + speedFactor * 1;
+
+      let dist = cameraDistance;
+      let height = cameraHeight;
+      let offset = new THREE.Vector3(0, 0, 0);
 
       const targetPos = carGroup.position.clone();
       targetPos.y += 0.5;
 
-      const offsetX = Math.sin(cameraAngle) * dynamicDistance;
-      const offsetZ = Math.cos(cameraAngle) * dynamicDistance;
+      switch (cameraModes[cameraMode]) {
+        case 'follow':
+          dist = 10 + speedFactor * 2;
+          height = 5 + speedFactor * 1;
+          const offsetX = Math.sin(cameraAngle) * dist;
+          const offsetZ = Math.cos(cameraAngle) * dist;
+          offset.set(offsetX, height, offsetZ);
+          break;
+        case 'top':
+          offset.set(0, 15, 0.1);
+          break;
+        case 'front':
+          const frontX = Math.sin(carAngle) * -5;
+          const frontZ = Math.cos(carAngle) * -5;
+          offset.set(frontX, 2, frontZ);
+          break;
+        case 'far':
+          const farX = Math.sin(cameraAngle) * 20;
+          const farZ = Math.cos(cameraAngle) * 20;
+          offset.set(farX, 8, farZ);
+          break;
+        default:
+          offset.set(0, 5, 10);
+      }
+
+      // لرزش
+      const shakeX = (Math.random() - 0.5) * cameraShake;
+      const shakeY = (Math.random() - 0.5) * cameraShake;
+      offset.x += shakeX;
+      offset.y += shakeY;
 
       let camPos = new THREE.Vector3(
-        targetPos.x + offsetX,
-        targetPos.y + dynamicHeight,
-        targetPos.z + offsetZ
+        targetPos.x + offset.x,
+        targetPos.y + offset.y,
+        targetPos.z + offset.z
       );
 
       camera.position.lerp(camPos, 0.18);
@@ -1729,6 +1943,7 @@
       const delta = Math.min(clock.getDelta(), 0.05);
       updateCar(delta);
       updateCamera();
+      updateTime();
 
       renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
@@ -1784,11 +1999,12 @@
       }
     });
 
-    console.log('🏎️ مسابقه ماشین حرفه‌ای!');
-    console.log('✅ کیفیت حرفه‌ای با آنتی‌آلیاس');
-    console.log('✅ جاده صاف و واقعی با خط‌کشی');
-    console.log('✅ محیط آزاد - هر جا بری');
-    console.log('✅ فرمان نرم و روان');
+    console.log('🏎️ مسابقه ماشین - نسل جدید!');
+    console.log(`📊 کیفیت: ${quality}`);
+    console.log('✅ گرافیک تطبیقی');
+    console.log('✅ دوربین حرفه‌ای با لرزش');
+    console.log('✅ چرخه روز و شب');
+    console.log('✅ بهترین سرعت');
   </script>
 </body>
 
