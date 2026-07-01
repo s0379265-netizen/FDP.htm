@@ -1,2131 +1,1570 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <title>🏙️ مسابقه شهری - نسل جدید</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>🥊 Online Fist Fighting</title>
+    <style>
+        * { margin: 0; padding: 0; user-select: none; -webkit-touch-callout: none; }
+        body {
+            overflow: hidden;
+            background: #0a0a12;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            touch-action: none;
+        }
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-    }
+        #team-select {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            gap: 30px;
+        }
+        #team-select h1 {
+            color: white;
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+        #team-select h1 span { color: #ffaa00; }
+        .team-buttons {
+            display: flex;
+            gap: 50px;
+        }
+        .team-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 30px;
+            border: 4px solid rgba(255,255,255,0.2);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        .team-btn:hover {
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .team-btn:active { transform: scale(0.95); }
+        .team-btn.red { border-color: #ff3333; }
+        .team-btn.red:hover { background: rgba(255,50,50,0.3); }
+        .team-btn.blue { border-color: #3333ff; }
+        .team-btn.blue:hover { background: rgba(50,50,255,0.3); }
+        .team-btn .emoji { font-size: 60px; }
 
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #1a1a2e;
-      touch-action: none;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      position: fixed;
-      width: 100%;
-      height: 100%;
-    }
+        #status {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 20;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        #status span { color: #6af; font-weight: bold; }
 
-    canvas {
-      display: block;
-      touch-action: none;
-      width: 100%;
-      height: 100%;
-    }
+        #scoreboard {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 20;
+            min-width: 150px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+        #scoreboard .player-score {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        #scoreboard .player-score:last-child { border-bottom: none; }
+        #scoreboard .red-team { color: #ff4444; }
+        #scoreboard .blue-team { color: #4444ff; }
 
-    /* ===== LOGIN ===== */
-    #login-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, #1a1a3e, #0a0a1a);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      transition: opacity 0.8s ease;
-    }
+        #controls {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 30;
+            pointer-events: none;
+        }
+        .ctrl-group {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+        .ctrl-btn {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            color: white;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ctrl-btn:active, .ctrl-btn.active {
+            background: rgba(102, 126, 234, 0.5);
+            border-color: rgba(102, 126, 234, 0.8);
+            transform: scale(0.90);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.4);
+        }
 
-    #login-screen.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+        #punch-btn {
+            position: absolute;
+            bottom: 160px;
+            right: 30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,200,50,0.6);
+            background: rgba(255,200,50,0.2);
+            backdrop-filter: blur(12px);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 35;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 60px rgba(255,200,50,0.2);
+            transition: all 0.1s;
+            letter-spacing: 1px;
+            gap: 4px;
+        }
+        #punch-btn:active {
+            transform: scale(0.85);
+            background: rgba(255,200,50,0.5);
+            border-color: rgba(255,200,50,0.9);
+            box-shadow: 0 0 80px rgba(255,200,50,0.5);
+        }
+        #punch-btn .icon { font-size: 32px; }
 
-    #login-title {
-      color: white;
-      font-size: 32px;
-      font-weight: 300;
-      letter-spacing: 4px;
-      margin-bottom: 8px;
-    }
+        #info-hint {
+            position: absolute;
+            bottom: 280px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.3);
+            font-size: 13px;
+            z-index: 15;
+            text-align: center;
+            pointer-events: none;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
 
-    #login-title span {
-      color: #ff6b35;
-      font-weight: 600;
-    }
+        #camera-control-area {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 10;
+            touch-action: none;
+            cursor: grab;
+        }
+        #camera-control-area:active { cursor: grabbing; }
 
-    #login-sub {
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 14px;
-      letter-spacing: 2px;
-      margin-bottom: 30px;
-    }
+        /* Punch flash effect */
+        #punch-flash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            background: radial-gradient(circle, rgba(255,200,50,0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.05s;
+        }
+        #punch-flash.active {
+            opacity: 1;
+        }
 
-    #login-box {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 40px 50px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-
-    #login-box input {
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s;
-      margin-bottom: 16px;
-    }
-
-    #login-box input:focus {
-      border-color: #ff6b35;
-    }
-
-    #login-box input::placeholder {
-      color: rgba(255, 255, 255, 0.3);
-    }
-
-    #login-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #ff6b35, #ff4500);
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    #login-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
-    }
-
-    #login-btn:active {
-      transform: scale(0.95);
-    }
-
-    #login-error {
-      color: #ff6b6b;
-      font-size: 13px;
-      margin-top: 12px;
-      min-height: 20px;
-    }
-
-    #online-count {
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 12px;
-      margin-top: 16px;
-    }
-
-    /* ===== LOADING ===== */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, #1a1a3e, #0a0a1a);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: opacity 0.8s ease;
-    }
-
-    #loading-screen.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #loading-title {
-      color: white;
-      font-size: 28px;
-      font-weight: 300;
-      letter-spacing: 4px;
-      margin-bottom: 10px;
-    }
-
-    #loading-title span {
-      color: #ff6b35;
-      font-weight: 600;
-    }
-
-    #loading-sub {
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 14px;
-      letter-spacing: 2px;
-      margin-bottom: 30px;
-    }
-
-    .loader-container {
-      width: 200px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .loader-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff6b35, #ff4500);
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-
-    #loading-percent {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 12px;
-      margin-top: 12px;
-      font-family: monospace;
-    }
-
-    #loading-status {
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 11px;
-      margin-top: 6px;
-      font-family: monospace;
-    }
-
-    /* ===== UI ===== */
-    #ui-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    #info {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 15px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 6px 18px;
-      border-radius: 30px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      pointer-events: none;
-      text-align: center;
-      letter-spacing: 1px;
-      font-weight: 300;
-      white-space: nowrap;
-    }
-
-    #info span {
-      color: #ff6b35;
-      font-weight: 600;
-    }
-
-    #speed-display {
-      position: absolute;
-      bottom: 180px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 36px;
-      font-weight: 700;
-      font-family: monospace;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 8px 32px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      pointer-events: none;
-      text-align: center;
-      transition: all 0.1s;
-    }
-
-    #speed-display span {
-      font-size: 18px;
-      font-weight: 300;
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    #speed-display.boost {
-      border-color: #ff6b35;
-      color: #ff6b35;
-      transform: scale(1.05);
-    }
-
-    #player-name-display {
-      position: absolute;
-      top: 75px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 4px 16px;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      pointer-events: none;
-    }
-
-    #online-count-display {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 4px 12px;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      pointer-events: none;
-    }
-
-    #best-speed {
-      position: absolute;
-      bottom: 240px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 11px;
-      font-family: monospace;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 2px 14px;
-      border-radius: 10px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      pointer-events: none;
-      text-align: center;
-    }
-
-    /* ===== CONTROLS ===== */
-    #steering-container {
-      position: fixed;
-      bottom: 40px;
-      left: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      pointer-events: auto;
-      z-index: 20;
-    }
-
-    .steer-row {
-      display: flex;
-      gap: 12px;
-    }
-
-    .steer-btn {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      color: white;
-      font-size: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      touch-action: none;
-      pointer-events: auto;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.05s, border-color 0.1s;
-    }
-
-    .steer-btn:active {
-      transform: scale(0.88);
-      border-color: rgba(255, 107, 53, 0.4);
-      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.05));
-    }
-
-    .steer-btn.active {
-      border-color: rgba(255, 107, 53, 0.4);
-      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.05));
-    }
-
-    .steer-label {
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 10px;
-      letter-spacing: 2px;
-    }
-
-    #gas-container {
-      position: fixed;
-      bottom: 100px;
-      right: 80px;
-      width: 80px;
-      height: 120px;
-      pointer-events: auto;
-      z-index: 20;
-      touch-action: none;
-    }
-
-    #gas-pedal {
-      width: 100%;
-      height: 100%;
-      border-radius: 20px;
-      background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.03));
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(76, 175, 80, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      touch-action: none;
-      transition: transform 0.03s, border-color 0.05s;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 2px;
-    }
-
-    #gas-pedal.active {
-      border-color: rgba(76, 175, 80, 0.6);
-      background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.05));
-      transform: scale(0.95);
-    }
-
-    #gas-pedal .icon {
-      font-size: 28px;
-      margin-bottom: 4px;
-    }
-
-    #brake-container {
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      width: 50px;
-      height: 80px;
-      pointer-events: auto;
-      z-index: 20;
-      touch-action: none;
-    }
-
-    #brake-pedal {
-      width: 100%;
-      height: 100%;
-      border-radius: 15px;
-      background: radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.03));
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(244, 67, 54, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      touch-action: none;
-      transition: transform 0.03s, border-color 0.05s;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-
-    #brake-pedal.active {
-      border-color: rgba(244, 67, 54, 0.6);
-      background: radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.05));
-      transform: scale(0.95);
-    }
-
-    #extra-buttons {
-      position: fixed;
-      bottom: 220px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: auto;
-      z-index: 20;
-    }
-
-    .extra-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      transition: transform 0.05s, background 0.05s, border-color 0.1s;
-      touch-action: none;
-      pointer-events: auto;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .extra-btn:active {
-      transform: scale(0.85);
-      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.05));
-      border-color: rgba(255, 107, 53, 0.3);
-    }
-
-    .extra-btn.active {
-      border-color: rgba(255, 107, 53, 0.4);
-      background: radial-gradient(circle at 30% 30%, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.03));
-    }
-
-    #controls-hint {
-      position: fixed;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.15);
-      font-size: 9px;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 3px 12px;
-      border-radius: 12px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      pointer-events: none;
-      text-align: center;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      z-index: 5;
-    }
-
-    .player-label {
-      color: white;
-      font-size: 12px;
-      font-weight: 600;
-      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 2px 12px;
-      border-radius: 12px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      pointer-events: none;
-      white-space: nowrap;
-      transform: translateY(-30px);
-    }
-
-    .player-label.own {
-      border-color: rgba(255, 107, 53, 0.4);
-      color: #ff6b35;
-    }
-
-    @media (max-width: 600px) {
-      .steer-btn {
-        width: 55px;
-        height: 55px;
-        font-size: 22px;
-      }
-      #steering-container {
-        bottom: 25px;
-        left: 20px;
-        gap: 6px;
-      }
-      .steer-row {
-        gap: 8px;
-      }
-      #gas-container {
-        width: 60px;
-        height: 90px;
-        bottom: 70px;
-        right: 60px;
-      }
-      #brake-container {
-        width: 40px;
-        height: 60px;
-        bottom: 70px;
-        right: 15px;
-      }
-      #extra-buttons {
-        bottom: 160px;
-        right: 15px;
-        gap: 8px;
-      }
-      .extra-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 14px;
-      }
-      #speed-display {
-        font-size: 28px;
-        padding: 6px 20px;
-        bottom: 140px;
-      }
-      #speed-display span {
-        font-size: 14px;
-      }
-      #info {
-        font-size: 12px;
-        padding: 4px 12px;
-        top: 12px;
-        white-space: normal;
-      }
-      #controls-hint {
-        display: none;
-      }
-      #player-name-display {
-        top: 55px;
-        font-size: 10px;
-        padding: 3px 12px;
-      }
-      #online-count-display {
-        top: 12px;
-        right: 12px;
-        font-size: 10px;
-        padding: 3px 10px;
-      }
-      #best-speed {
-        bottom: 200px;
-        font-size: 10px;
-        padding: 2px 12px;
-      }
-      .player-label {
-        font-size: 10px;
-        padding: 2px 8px;
-        transform: translateY(-25px);
-      }
-      #gas-pedal {
-        font-size: 11px;
-      }
-      #gas-pedal .icon {
-        font-size: 22px;
-      }
-      #brake-pedal {
-        font-size: 8px;
-      }
-    }
-
-    @media (pointer: coarse) {
-      #controls-hint {
-        display: none;
-      }
-    }
-
-    @media (max-height: 600px) {
-      .steer-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-      }
-      #steering-container {
-        bottom: 15px;
-        left: 15px;
-        gap: 4px;
-      }
-      .steer-row {
-        gap: 6px;
-      }
-      #gas-container {
-        width: 50px;
-        height: 75px;
-        bottom: 50px;
-        right: 50px;
-      }
-      #brake-container {
-        width: 35px;
-        height: 50px;
-        bottom: 50px;
-        right: 10px;
-      }
-      #extra-buttons {
-        bottom: 130px;
-        right: 10px;
-        gap: 6px;
-      }
-      .extra-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 12px;
-      }
-      #speed-display {
-        font-size: 22px;
-        padding: 4px 16px;
-        bottom: 110px;
-      }
-      #best-speed {
-        bottom: 160px;
-        font-size: 9px;
-      }
-    }
-  </style>
+        @media (max-width: 500px) {
+            .ctrl-btn { width: 60px; height: 60px; font-size: 24px; }
+            #controls { padding: 0 15px; bottom: 25px; }
+            .ctrl-group { gap: 12px; }
+            #status { font-size: 12px; padding: 6px 16px; top: 12px; white-space: normal; }
+            #info-hint { bottom: 230px; font-size: 11px; }
+            #punch-btn { width: 75px; height: 75px; bottom: 130px; right: 20px; font-size: 12px; }
+            #punch-btn .icon { font-size: 24px; }
+            #team-select h1 { font-size: 28px; }
+            .team-btn { width: 140px; height: 140px; font-size: 20px; }
+            .team-btn .emoji { font-size: 40px; }
+            .team-buttons { gap: 20px; }
+            #scoreboard { font-size: 12px; padding: 10px 15px; top: 70px; right: 10px; min-width: 120px; }
+        }
+    </style>
 </head>
-
 <body>
-
-  <!-- ====== LOGIN ====== -->
-  <div id="login-screen">
-    <div id="login-title">🏙️ <span>مسابقه</span> شهری</div>
-    <div id="login-sub">به خیابان‌های مدرن خوش آمدید</div>
-    <div id="login-box">
-      <input type="text" id="name-input" placeholder="نام خود را وارد کنید..." maxlength="20" autofocus>
-      <button id="login-btn">🔥 وارد شهر شو</button>
-      <div id="login-error"></div>
-      <div id="online-count">🔗 در حال اتصال به سرور...</div>
-    </div>
-  </div>
-
-  <!-- ====== LOADING ====== -->
-  <div id="loading-screen">
-    <div id="loading-title">🏙️ <span>شهر</span> مدرن</div>
-    <div id="loading-sub">در حال ساخت خیابان‌ها...</div>
-    <div class="loader-container">
-      <div class="loader-bar" id="loader-bar"></div>
-    </div>
-    <div id="loading-percent">۰٪</div>
-    <div id="loading-status">در حال بارگذاری...</div>
-  </div>
-
-  <!-- ====== UI ====== -->
-  <div id="ui-overlay">
-    <div id="info">🏙️ <span>مسابقه</span> شهری · خیابان‌های مدرن</div>
-    <div id="player-name-display">👤 شما</div>
-    <div id="online-count-display">👥 ۰ آنلاین</div>
-    <div id="best-speed">🏆 بهترین سرعت: ۰ km/h</div>
-    <div id="speed-display">0 <span>km/h</span></div>
-
-    <div id="steering-container">
-      <div class="steer-row">
-        <div class="steer-btn" id="steer-left-btn">◀</div>
-        <div class="steer-btn" id="steer-right-btn">▶</div>
-      </div>
-      <div class="steer-label">فرمان</div>
+    <!-- Team Selection -->
+    <div id="team-select">
+        <h1>⚔️ <span>CHOOSE</span> YOUR TEAM</h1>
+        <div class="team-buttons">
+            <button class="team-btn red" id="team-red">
+                <span class="emoji">🔴</span>
+                RED TEAM
+                <span style="font-size:14px;opacity:0.6;">🔥 Attackers</span>
+            </button>
+            <button class="team-btn blue" id="team-blue">
+                <span class="emoji">🔵</span>
+                BLUE TEAM
+                <span style="font-size:14px;opacity:0.6;">💪 Defenders</span>
+            </button>
+        </div>
+        <div style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:10px;">
+            👥 Choose your side and fight!
+        </div>
     </div>
 
-    <div id="gas-container">
-      <div id="gas-pedal">
-        <span class="icon">⏫</span>
-        گاز
-      </div>
+    <div id="punch-flash"></div>
+
+    <div id="status">🥊 <span>Waiting</span> | Online Fist Fight</div>
+    <div id="scoreboard">
+        <div style="font-weight:bold;margin-bottom:8px;color:#ffaa00;">🏆 SCOREBOARD</div>
+        <div id="score-list"></div>
+    </div>
+    <div id="info-hint">⬆️⬇️⬅️➡️ Move | 👆 Rotate Camera | 👊 Punch!</div>
+
+    <div id="camera-control-area"></div>
+
+    <div id="controls">
+        <div class="ctrl-group">
+            <button class="ctrl-btn" id="btnLeft" aria-label="چپ">◀</button>
+            <button class="ctrl-btn" id="btnRight" aria-label="راست">▶</button>
+        </div>
+        <div class="ctrl-group">
+            <button class="ctrl-btn" id="btnForward" aria-label="جلو">▲</button>
+            <button class="ctrl-btn" id="btnBack" aria-label="عقب">▼</button>
+        </div>
     </div>
 
-    <div id="brake-container">
-      <div id="brake-pedal">
-        ⏬
-        ترمز
-      </div>
-    </div>
+    <button id="punch-btn">
+        <span class="icon">👊</span>
+        PUNCH!
+    </button>
 
-    <div id="extra-buttons">
-      <div class="extra-btn" id="reverse-btn">↩️</div>
-      <div class="extra-btn" id="handbrake-btn">🔄</div>
-      <div class="extra-btn" id="reset-btn">⟳</div>
-      <div class="extra-btn" id="camera-btn">📷</div>
-    </div>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+            }
+        }
+    </script>
 
-    <div id="controls-hint">
-      🖱️ ماوس چرخش دوربین
-    </div>
-  </div>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-  <script src="https://cdn.ably.com/lib/ably.min-1.js">
-  </script>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
-      }
-    }
-  </script>
-
-  <script type="module">
-    import * as THREE from 'three';
-    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-
-    // ============================================
-    // ADAPTIVE GRAPHICS
-    // ============================================
-    function detectQuality() {
-      const mem = navigator.deviceMemory || 4;
-      const cores = navigator.hardwareConcurrency || 4;
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-      if (isMobile || mem < 2 || cores < 4) return 'low';
-      if (mem < 4 || cores < 6) return 'medium';
-      return 'ultra';
-    }
-
-    const quality = detectQuality();
-    console.log('📊 کیفیت تشخیص داده شده:', quality);
-
-    const settings = {
-      low: { pixelRatio: 1.2, shadowSize: 512, antialias: false, buildingCount: 30, lod: true },
-      medium: { pixelRatio: 1.5, shadowSize: 1024, antialias: true, buildingCount: 50, lod: true },
-      ultra: { pixelRatio: 2, shadowSize: 2048, antialias: true, buildingCount: 80, lod: false }
-    };
-
-    const config = settings[quality];
-
-    // ============================================
-    // DOM ELEMENTS
-    // ============================================
-    const loginScreen = document.getElementById('login-screen');
-    const loginBtn = document.getElementById('login-btn');
-    const nameInput = document.getElementById('name-input');
-    const loginError = document.getElementById('login-error');
-    const onlineCountEl = document.getElementById('online-count');
-    const onlineCountDisplay = document.getElementById('online-count-display');
-    const playerNameDisplay = document.getElementById('player-name-display');
-    const speedDisplay = document.getElementById('speed-display');
-    const bestSpeedDisplay = document.getElementById('best-speed');
-
-    const loadingScreen = document.getElementById('loading-screen');
-    const loaderBar = document.getElementById('loader-bar');
-    const loadingPercent = document.getElementById('loading-percent');
-    const loadingStatus = document.getElementById('loading-status');
-
-    // ============================================
-    // ABLY SETUP
-    // ============================================
-    let ablyClient = null;
-    let channel = null;
-    let currentUserId = '';
-    let playerName = '';
-    let isConnected = false;
-    let reconnectAttempts = 0;
-    const MAX_RECONNECT = 20;
-    const SEND_INTERVAL = 30;
-
-    const players = new Map();
-
-    function connectToAbly(name) {
-      return new Promise((resolve, reject) => {
-        try {
-          const clientId = 'car_' + Math.random().toString(36).substr(2, 8);
-          currentUserId = clientId;
-
-          ablyClient = new Ably.Realtime({
+        // ============================================================
+        // ABLY CONNECTION
+        // ============================================================
+        const ably = new Ably.Realtime({
             key: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
-            clientId: clientId,
-            echoMessages: false,
-            autoConnect: true
-          });
+            clientId: 'player_' + Math.random().toString(36).substr(2, 6)
+        });
 
-          ablyClient.connection.on('connected', () => {
-            console.log('✅ متصل به Ably!');
-            isConnected = true;
-            reconnectAttempts = 0;
-            onlineCountEl.textContent = '🔗 متصل به سرور';
-            resolve();
-          });
+        let channel;
+        let playerId = ably.clientId;
+        let myTeam = null;
+        let isConnected = false;
 
-          ablyClient.connection.on('disconnected', () => {
-            console.log('⚠️ قطع موقت');
-            isConnected = false;
-            onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
-            setTimeout(() => {
-              if (ablyClient) {
-                try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection.connect(); }
-              }
-            }, 1000);
-          });
+        // ============================================================
+        // GAME STATE
+        // ============================================================
+        const MAX_HEALTH = 100;
+        const PUNCH_DAMAGE = 15;
+        const PUNCH_COOLDOWN = 300; // ms - faster for more action
+        const PUNCH_RANGE = 2.0;
+        const RESPAWN_DELAY = 2000;
 
-          ablyClient.connection.on('failed', () => {
-            console.log('❌ اتصال ناموفق');
-            isConnected = false;
-            if (reconnectAttempts < MAX_RECONNECT) {
-              reconnectAttempts++;
-              onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
-              setTimeout(() => {
-                if (ablyClient) {
-                  try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection.connect(); }
+        let lastPunchTime = 0;
+        let isPunching = false;
+        let punchSide = 'right';
+
+        // ============================================================
+        // THREE.JS SETUP
+        // ============================================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+        scene.fog = new THREE.Fog(0x1a1a2e, 20, 40);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 40);
+        camera.position.set(0, 1.6, 3.0);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.9;
+        document.body.appendChild(renderer.domElement);
+
+        // ============================================================
+        // CAMERA CONTROL
+        // ============================================================
+        const cameraRadius = 3.0;
+        const cameraHeight = 1.6;
+        let cameraTheta = 0;
+        let cameraPhi = 0.3;
+        let targetCameraTheta = 0;
+        let targetCameraPhi = 0.3;
+        let playerTarget = new THREE.Vector3(0, 1.0, 0);
+
+        const PHI_MIN = 0.1;
+        const PHI_MAX = 0.8;
+
+        function updateCamera() {
+            cameraTheta += (targetCameraTheta - cameraTheta) * 0.15;
+            cameraPhi += (targetCameraPhi - cameraPhi) * 0.15;
+            cameraPhi = Math.max(PHI_MIN, Math.min(PHI_MAX, cameraPhi));
+            
+            const x = Math.sin(cameraTheta) * cameraRadius * Math.cos(cameraPhi);
+            const y = Math.sin(cameraPhi) * cameraRadius + cameraHeight;
+            const z = Math.cos(cameraTheta) * cameraRadius * Math.cos(cameraPhi);
+            
+            const targetPos = playerTarget.clone().add(new THREE.Vector3(x, y, z));
+            
+            camera.position.lerp(targetPos, 0.2);
+            camera.lookAt(playerTarget);
+        }
+
+        // Camera controls
+        const cameraControlArea = document.getElementById('camera-control-area');
+        let isCameraDragging = false;
+        let lastTouchX = 0, lastTouchY = 0, touchId = null;
+
+        cameraControlArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            isCameraDragging = true;
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+            touchId = touch.identifier;
+        }, { passive: false });
+
+        cameraControlArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isCameraDragging) return;
+            for (const touch of e.changedTouches) {
+                if (touch.identifier === touchId) {
+                    const deltaX = touch.clientX - lastTouchX;
+                    const deltaY = touch.clientY - lastTouchY;
+                    targetCameraTheta -= deltaX * 0.008;
+                    targetCameraPhi += deltaY * 0.008;
+                    targetCameraPhi = Math.max(PHI_MIN, Math.min(PHI_MAX, targetCameraPhi));
+                    lastTouchX = touch.clientX;
+                    lastTouchY = touch.clientY;
+                    break;
                 }
-              }, 2000);
-            } else {
-              reject(new Error('اتصال به سرور ناموفق'));
             }
-          });
+        }, { passive: false });
 
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }
+        cameraControlArea.addEventListener('touchend', (e) => {
+            for (const touch of e.changedTouches) {
+                if (touch.identifier === touchId) {
+                    isCameraDragging = false;
+                    touchId = null;
+                    break;
+                }
+            }
+        }, { passive: true });
 
-    // ============================================
-    // LOGIN
-    // ============================================
-    async function handleLogin() {
-      const name = nameInput.value.trim();
-      if (!name) {
-        loginError.textContent = '⚠️ لطفاً نام خود را وارد کنید';
-        return;
-      }
-      if (name.length < 2) {
-        loginError.textContent = '⚠️ نام باید حداقل ۲ حرف باشد';
-        return;
-      }
+        let isMouseDragging = false;
+        let lastMouseX = 0, lastMouseY = 0;
 
-      loginBtn.textContent = '⏳ در حال اتصال...';
-      loginBtn.disabled = true;
-      loginError.textContent = '';
-
-      try {
-        await connectToAbly(name);
-        playerName = name;
-        channel = ablyClient.channels.get('city-race');
-
-        playerNameDisplay.textContent = `👤 ${playerName}`;
-
-        loginScreen.classList.add('hidden');
-
-        startGame();
-
-      } catch (error) {
-        loginError.textContent = '❌ ' + error.message;
-        loginBtn.textContent = '🔥 وارد شهر شو';
-        loginBtn.disabled = false;
-      }
-    }
-
-    loginBtn.addEventListener('click', handleLogin);
-    nameInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleLogin();
-    });
-
-    // ============================================
-    // LOADING
-    // ============================================
-    function updateLoading(percent, status) {
-      loaderBar.style.width = Math.min(percent, 100) + '%';
-      loadingPercent.textContent = Math.round(Math.min(percent, 100)) + '%';
-      if (status) loadingStatus.textContent = status;
-    }
-
-    function hideLoading() {
-      loadingScreen.classList.add('hidden');
-      setTimeout(() => { loadingScreen.style.display = 'none'; }, 800);
-    }
-
-    // ============================================
-    // THREE.JS SCENE
-    // ============================================
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x1a1a2e, 80, 250);
-    scene.background = new THREE.Color(0x1a1a2e);
-
-    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
-    camera.position.set(0, 8, 12);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: config.antialias,
-      powerPreference: "high-performance"
-    });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, config.pixelRatio));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    document.body.prepend(renderer.domElement);
-
-    const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(innerWidth, innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0';
-    labelRenderer.domElement.style.left = '0';
-    labelRenderer.domElement.style.pointerEvents = 'none';
-    labelRenderer.domElement.style.zIndex = '5';
-    document.body.appendChild(labelRenderer.domElement);
-
-    // ============================================
-    // LIGHTING
-    // ============================================
-    const sunLight = new THREE.DirectionalLight(0xffeedd, 2.5);
-    sunLight.position.set(50, 80, 30);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = config.shadowSize;
-    sunLight.shadow.mapSize.height = config.shadowSize;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 150;
-    sunLight.shadow.camera.left = -80;
-    sunLight.shadow.camera.right = 80;
-    sunLight.shadow.camera.top = 80;
-    sunLight.shadow.camera.bottom = -80;
-    scene.add(sunLight);
-
-    const ambientLight = new THREE.AmbientLight(0x445577, 0.5);
-    scene.add(ambientLight);
-
-    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x2a2a3a, 0.6);
-    scene.add(hemiLight);
-
-    // نور شهر (شب)
-    const cityLight = new THREE.PointLight(0xffaa44, 0.5, 50);
-    cityLight.position.set(0, 10, 0);
-    scene.add(cityLight);
-
-    // ============================================
-    // GROUND (آسفالت شهری)
-    // ============================================
-    updateLoading(10, 'ساخت خیابان...');
-
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x2a2a2a,
-      roughness: 0.9,
-      metalness: 0.1,
-    });
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.1;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    // ============================================
-    // ROAD (خیابان اصلی)
-    // ============================================
-    updateLoading(20, 'ساخت جاده...');
-
-    const roadGroup = new THREE.Group();
-    scene.add(roadGroup);
-
-    const roadLength = 400;
-    const roadWidth = 16;
-
-    const roadMat = new THREE.MeshStandardMaterial({
-      color: 0x333333,
-      roughness: 0.8,
-      metalness: 0.1,
-    });
-
-    const roadMain = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, roadWidth), roadMat);
-    roadMain.rotation.x = -Math.PI / 2;
-    roadMain.position.set(0, 0.01, 0);
-    roadMain.receiveShadow = true;
-    roadGroup.add(roadMain);
-
-    // خطوط وسط
-    const lineMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.5,
-    });
-
-    for (let i = -190; i < 190; i += 5) {
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 2.5), lineMat);
-      line.rotation.x = -Math.PI / 2;
-      line.position.set(i, 0.02, 0);
-      roadGroup.add(line);
-    }
-
-    // خطوط کناری
-    const edgeMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.5,
-    });
-
-    for (let side = -1; side <= 1; side += 2) {
-      const edge = new THREE.Mesh(new THREE.PlaneGeometry(roadLength, 0.2), edgeMat);
-      edge.rotation.x = -Math.PI / 2;
-      edge.position.set(0, 0.02, (roadWidth / 2) * side);
-      roadGroup.add(edge);
-    }
-
-    // ============================================
-    // BUILDINGS (ساختمان‌های شیشه‌ای)
-    // ============================================
-    updateLoading(30, 'ساختن ساختمان‌ها...');
-
-    function createBuilding(x, z, width, depth, height, color, hasWindows = true) {
-      const group = new THREE.Group();
-
-      // بدنه اصلی
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: color,
-        roughness: 0.2,
-        metalness: 0.7,
-        emissive: color,
-        emissiveIntensity: 0.05,
-      });
-      const body = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), bodyMat);
-      body.position.y = height / 2;
-      body.castShadow = true;
-      body.receiveShadow = true;
-      group.add(body);
-
-      // پنجره‌ها (شیشه‌ای)
-      if (hasWindows) {
-        const windowMat = new THREE.MeshStandardMaterial({
-          color: 0x88ccff,
-          roughness: 0.1,
-          metalness: 0.9,
-          emissive: 0x4488ff,
-          emissiveIntensity: 0.1,
+        cameraControlArea.addEventListener('mousedown', (e) => {
+            isMouseDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            cameraControlArea.style.cursor = 'grabbing';
         });
 
-        const windowCount = Math.floor(Math.random() * 8) + 4;
-        for (let i = 0; i < windowCount; i++) {
-          const wx = (Math.random() - 0.5) * width * 0.6;
-          const wz = (Math.random() - 0.5) * depth * 0.6;
-          const wy = Math.random() * height * 0.7 + height * 0.15;
-          const wSize = 0.2 + Math.random() * 0.3;
-
-          const windowMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(wSize, wSize * 1.2),
-            windowMat
-          );
-          // قرار دادن روی یک وجه تصادفی
-          const face = Math.floor(Math.random() * 4);
-          if (face === 0) { windowMesh.position.set(wx, wy, depth / 2 + 0.01); } else if (face === 1) { windowMesh.position
-              .set(wx, wy, -depth / 2 - 0.01);
-            windowMesh.rotation.y = Math.PI; } else if (face === 2) { windowMesh.position.set(width / 2 + 0.01, wy, wz);
-            windowMesh.rotation.y = Math.PI / 2; } else { windowMesh.position.set(-width / 2 - 0.01, wy, wz);
-            windowMesh.rotation.y = -Math.PI / 2; }
-
-          group.add(windowMesh);
-        }
-      }
-
-      group.position.set(x, 0, z);
-      return group;
-    }
-
-    function createBuildingBlock(cx, cz, count, spread) {
-      const block = new THREE.Group();
-
-      for (let i = 0; i < count; i++) {
-        const x = cx + (Math.random() - 0.5) * spread;
-        const z = cz + (Math.random() - 0.5) * spread;
-        if (Math.abs(x) < 20 && Math.abs(z) < 20) continue;
-
-        const width = 2 + Math.random() * 4;
-        const depth = 2 + Math.random() * 4;
-        const height = 5 + Math.random() * 20;
-        const hue = 0.55 + Math.random() * 0.15;
-        const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
-
-        const building = createBuilding(x, z, width, depth, height, color);
-        block.add(building);
-      }
-
-      return block;
-    }
-
-    // ساختمان‌ها در دو طرف خیابان
-    const buildingCount = config.buildingCount;
-
-    // سمت چپ خیابان
-    for (let i = 0; i < buildingCount / 2; i++) {
-      const x = (Math.random() - 0.5) * 350;
-      const z = -10 - Math.random() * 20;
-      if (Math.abs(x) < 15) continue;
-
-      const width = 2 + Math.random() * 4;
-      const depth = 2 + Math.random() * 4;
-      const height = 5 + Math.random() * 20;
-      const hue = 0.55 + Math.random() * 0.15;
-      const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
-
-      const building = createBuilding(x, z, width, depth, height, color);
-      scene.add(building);
-    }
-
-    // سمت راست خیابان
-    for (let i = 0; i < buildingCount / 2; i++) {
-      const x = (Math.random() - 0.5) * 350;
-      const z = 10 + Math.random() * 20;
-      if (Math.abs(x) < 15) continue;
-
-      const width = 2 + Math.random() * 4;
-      const depth = 2 + Math.random() * 4;
-      const height = 5 + Math.random() * 20;
-      const hue = 0.55 + Math.random() * 0.15;
-      const color = new THREE.Color().setHSL(hue, 0.3, 0.4 + Math.random() * 0.3);
-
-      const building = createBuilding(x, z, width, depth, height, color);
-      scene.add(building);
-    }
-
-    // ساختمان‌های بلندتر در انتهای خیابان
-    for (let i = 0; i < 6; i++) {
-      const angle = (i / 6) * Math.PI * 2 + Math.random() * 0.3;
-      const dist = 80 + Math.random() * 40;
-      const x = Math.cos(angle) * dist;
-      const z = Math.sin(angle) * dist;
-
-      const width = 4 + Math.random() * 6;
-      const depth = 4 + Math.random() * 6;
-      const height = 15 + Math.random() * 25;
-      const color = new THREE.Color().setHSL(0.58, 0.2, 0.5 + Math.random() * 0.3);
-
-      const building = createBuilding(x, z, width, depth, height, color);
-      scene.add(building);
-    }
-
-    // ============================================
-    // چراغ‌های خیابان
-    // ============================================
-    updateLoading(40, 'نورپردازی خیابان...');
-
-    function createStreetLight(x, z) {
-      const group = new THREE.Group();
-
-      const poleMat = new THREE.MeshStandardMaterial({
-        color: 0x555555,
-        roughness: 0.5,
-        metalness: 0.3,
-      });
-      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.15, 4, 6), poleMat);
-      pole.position.y = 2;
-      pole.castShadow = true;
-      group.add(pole);
-
-      const armMat = new THREE.MeshStandardMaterial({
-        color: 0x555555,
-        roughness: 0.5,
-        metalness: 0.3,
-      });
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.05, 0.05), armMat);
-      arm.position.set(0, 4.05, 0);
-      group.add(arm);
-
-      const lightMat = new THREE.MeshStandardMaterial({
-        color: 0xffee88,
-        emissive: 0xffaa33,
-        emissiveIntensity: 0.5,
-        roughness: 0.3,
-      });
-      const light = new THREE.Mesh(new THREE.SphereGeometry(0.15, 6, 6), lightMat);
-      light.position.set(0, 4.1, 0);
-      group.add(light);
-
-      const pointLight = new THREE.PointLight(0xffaa33, 0.3, 15);
-      pointLight.position.set(0, 4, 0);
-      group.add(pointLight);
-
-      group.position.set(x, 0, z);
-      return group;
-    }
-
-    // چراغ‌ها در دو طرف خیابان
-    for (let i = -180; i < 180; i += 20) {
-      for (let side = -1; side <= 1; side += 2) {
-        const z = side * (roadWidth / 2 + 2);
-        scene.add(createStreetLight(i, z));
-      }
-    }
-
-    // ============================================
-    // NPC Cars (ماشین‌های ترافیک)
-    // ============================================
-    const npcCars = [];
-
-    function createNPCCar(x, z, color, speed) {
-      const group = new THREE.Group();
-
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: color,
-        roughness: 0.3,
-        metalness: 0.5,
-      });
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.25, 1.6), bodyMat);
-      body.position.y = 0.2;
-      body.castShadow = true;
-      group.add(body);
-
-      const cabinMat = new THREE.MeshStandardMaterial({
-        color: 0x222244,
-        roughness: 0.1,
-        metalness: 0.8,
-        transparent: true,
-        opacity: 0.5,
-      });
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.9), cabinMat);
-      cabin.position.set(0, 0.4, -0.05);
-      group.add(cabin);
-
-      const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
-      const wPos = [
-        [-0.4, 0.1, 0.55],
-        [0.4, 0.1, 0.55],
-        [-0.4, 0.1, -0.55],
-        [0.4, 0.1, -0.55]
-      ];
-      for (const p of wPos) {
-        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.1, 6), wheelMat);
-        w.rotation.x = Math.PI / 2;
-        w.position.set(p[0], p[1], p[2]);
-        group.add(w);
-      }
-
-      group.position.set(x, 0.1, z);
-      group.rotation.y = Math.random() * 0.5 - 0.25;
-
-      scene.add(group);
-
-      npcCars.push({
-        mesh: group,
-        speed: speed || (0.5 + Math.random() * 1.5),
-        direction: Math.random() > 0.5 ? 1 : -1,
-        x: x,
-        z: z,
-        minX: -180,
-        maxX: 180
-      });
-
-      return group;
-    }
-
-    // تولید ماشین‌های NPC
-    const npcColors = [0xff0000, 0x0000ff, 0x00ff00, 0xffff00, 0xff00ff, 0x00ffff, 0xffffff, 0x888888];
-
-    for (let i = 0; i < 8; i++) {
-      const x = (Math.random() - 0.5) * 300;
-      const z = (Math.random() - 0.5) * (roadWidth / 2 - 2);
-      const color = npcColors[Math.floor(Math.random() * npcColors.length)];
-      const speed = 0.5 + Math.random() * 2;
-
-      if (Math.abs(x) < 20) continue;
-      createNPCCar(x, z, color, speed);
-    }
-
-    // ============================================
-    // CAR
-    // ============================================
-    updateLoading(50, 'ساخت ماشین شما...');
-
-    const carGroup = new THREE.Group();
-    scene.add(carGroup);
-
-    const bodyMat = new THREE.MeshStandardMaterial({
-      color: 0xff2200,
-      roughness: 0.2,
-      metalness: 0.6,
-    });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2.2), bodyMat);
-    body.position.y = 0.3;
-    body.castShadow = true;
-    carGroup.add(body);
-
-    const cabinMat = new THREE.MeshStandardMaterial({
-      color: 0x222244,
-      roughness: 0.1,
-      metalness: 0.8,
-      transparent: true,
-      opacity: 0.7,
-    });
-    const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 1.2), cabinMat);
-    cabin.position.set(0, 0.55, -0.1);
-    cabin.castShadow = true;
-    carGroup.add(cabin);
-
-    const wheelMat = new THREE.MeshStandardMaterial({
-      color: 0x111111,
-      roughness: 0.9,
-      metalness: 0.1,
-    });
-    const wheelPositions = [
-      [-0.6, 0.15, 0.8],
-      [0.6, 0.15, 0.8],
-      [-0.6, 0.15, -0.8],
-      [0.6, 0.15, -0.8]
-    ];
-    const wheels = [];
-    for (const pos of wheelPositions) {
-      const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.15, 8), wheelMat);
-      wheel.rotation.x = Math.PI / 2;
-      wheel.position.set(pos[0], pos[1], pos[2]);
-      wheel.castShadow = true;
-      carGroup.add(wheel);
-      wheels.push(wheel);
-    }
-
-    // چراغ‌ها
-    const headlightMat = new THREE.MeshStandardMaterial({
-      color: 0xffff00,
-      roughness: 0.1,
-      metalness: 0.8,
-      emissive: 0xffff00,
-      emissiveIntensity: 0.3,
-    });
-    for (let side = -1; side <= 1; side += 2) {
-      const light = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), headlightMat);
-      light.position.set(side * 0.4, 0.3, 1.15);
-      carGroup.add(light);
-    }
-
-    const tailMat = new THREE.MeshStandardMaterial({
-      color: 0xff0000,
-      roughness: 0.1,
-      metalness: 0.8,
-      emissive: 0xff0000,
-      emissiveIntensity: 0.2,
-    });
-    for (let side = -1; side <= 1; side += 2) {
-      const tail = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), tailMat);
-      tail.position.set(side * 0.4, 0.3, -1.15);
-      carGroup.add(tail);
-    }
-
-    const labelDiv = document.createElement('div');
-    labelDiv.className = 'player-label own';
-    labelDiv.textContent = playerName || 'شما';
-    const label = new CSS2DObject(labelDiv);
-    label.position.set(0, 1.5, 0);
-    carGroup.add(label);
-
-    carGroup.position.set(0, 0.1, 0);
-    carGroup.rotation.y = 0;
-
-    // ============================================
-    // CAR PHYSICS
-    // ============================================
-    let carSpeed = 0;
-    let carAngle = 0;
-    let maxSpeed = 15;
-    let acceleration = 8;
-    let braking = 12;
-    let friction = 2;
-    let turnSpeed = 3.5;
-    let isReversing = false;
-    let isHandBrake = false;
-    let bestSpeed = 0;
-    let cameraMode = 0;
-    const cameraModes = ['follow', 'top', 'front', 'far'];
-
-    // ============================================
-    // NETWORK
-    // ============================================
-    function createRemoteCar(clientId, data) {
-      if (clientId === currentUserId) return;
-      if (players.has(clientId)) return;
-
-      const group = new THREE.Group();
-      const carColor = new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.7, 0.5);
-      const mat = new THREE.MeshStandardMaterial({
-        color: carColor,
-        roughness: 0.3,
-        metalness: 0.5,
-      });
-
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.35, 1.8), mat);
-      body.position.y = 0.25;
-      body.castShadow = true;
-      group.add(body);
-
-      const cabinMat2 = new THREE.MeshStandardMaterial({
-        color: 0x222244,
-        roughness: 0.1,
-        metalness: 0.8,
-        transparent: true,
-        opacity: 0.5,
-      });
-      const cabin2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.25, 1.0), cabinMat2);
-      cabin2.position.set(0, 0.45, -0.1);
-      group.add(cabin2);
-
-      const wheelMat2 = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
-      const wPos = [
-        [-0.5, 0.12, 0.65],
-        [0.5, 0.12, 0.65],
-        [-0.5, 0.12, -0.65],
-        [0.5, 0.12, -0.65]
-      ];
-      for (const p of wPos) {
-        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 8), wheelMat2);
-        w.rotation.x = Math.PI / 2;
-        w.position.set(p[0], p[1], p[2]);
-        group.add(w);
-      }
-
-      const labelDiv2 = document.createElement('div');
-      labelDiv2.className = 'player-label';
-      labelDiv2.textContent = data.name || 'کاربر';
-      const label2 = new CSS2DObject(labelDiv2);
-      label2.position.set(0, 1.3, 0);
-      group.add(label2);
-
-      group.position.set(data.x || 0, 0.1, data.z || 0);
-      group.rotation.y = data.rotation || 0;
-
-      scene.add(group);
-
-      players.set(clientId, {
-        mesh: group,
-        label: label2,
-        data: data,
-        name: data.name || 'کاربر',
-        lastUpdate: Date.now()
-      });
-
-      updateOnlineCount();
-    }
-
-    function updateRemoteCar(clientId, data) {
-      if (clientId === currentUserId) return;
-      const player = players.get(clientId);
-      if (!player) {
-        createRemoteCar(clientId, data);
-        return;
-      }
-
-      player.mesh.position.x = data.x || 0;
-      player.mesh.position.z = data.z || 0;
-      player.mesh.rotation.y = data.rotation || 0;
-
-      if (player.label) {
-        player.label.element.textContent = data.name || 'کاربر';
-      }
-
-      player.data = data;
-      player.lastUpdate = Date.now();
-    }
-
-    function removeRemoteCar(clientId) {
-      if (clientId === currentUserId) return;
-      const player = players.get(clientId);
-      if (player) {
-        scene.remove(player.mesh);
-        players.delete(clientId);
-        updateOnlineCount();
-      }
-    }
-
-    function updateOnlineCount() {
-      const count = players.size + 1;
-      onlineCountDisplay.textContent = `👥 ${count} آنلاین`;
-    }
-
-    // ============================================
-    // NETWORK SEND/RECEIVE
-    // ============================================
-    let sendInterval = null;
-
-    function startSendingPosition() {
-      if (sendInterval) clearInterval(sendInterval);
-
-      sendInterval = setInterval(() => {
-        if (!isConnected || !channel) return;
-
-        const pos = carGroup.position;
-        const data = {
-          x: pos.x,
-          z: pos.z,
-          rotation: carAngle,
-          name: playerName,
-          timestamp: Date.now()
-        };
-
-        try {
-          channel.publish('car-update', {
-            clientId: currentUserId,
-            ...data
-          });
-        } catch (e) {}
-      }, SEND_INTERVAL);
-    }
-
-    function setupChannelListener() {
-      if (!channel) return;
-
-      channel.subscribe('car-update', (message) => {
-        const data = message.data;
-        if (data.clientId === currentUserId) return;
-        updateRemoteCar(data.clientId, data);
-      });
-
-      channel.presence.subscribe('enter', (presence) => {
-        if (presence.clientId === currentUserId) return;
-        if (presence.data) {
-          createRemoteCar(presence.clientId, presence.data);
-        }
-      });
-
-      channel.presence.subscribe('leave', (presence) => {
-        removeRemoteCar(presence.clientId);
-      });
-
-      channel.presence.get((err, members) => {
-        if (err) {
-          console.error('خطا در دریافت اعضا:', err);
-          return;
-        }
-        members.forEach((member) => {
-          if (member.clientId !== currentUserId && member.data) {
-            createRemoteCar(member.clientId, member.data);
-          }
+        window.addEventListener('mousemove', (e) => {
+            if (!isMouseDragging) return;
+            const deltaX = e.clientX - lastMouseX;
+            const deltaY = e.clientY - lastMouseY;
+            targetCameraTheta -= deltaX * 0.006;
+            targetCameraPhi += deltaY * 0.006;
+            targetCameraPhi = Math.max(PHI_MIN, Math.min(PHI_MAX, targetCameraPhi));
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
         });
-        updateOnlineCount();
-      });
 
-      setTimeout(() => {
-        if (channel) {
-          channel.presence.enter({
-            x: carGroup.position.x,
-            z: carGroup.position.z,
-            rotation: carAngle,
-            name: playerName
-          });
+        window.addEventListener('mouseup', () => {
+            isMouseDragging = false;
+            cameraControlArea.style.cursor = 'grab';
+        });
+
+        // ============================================================
+        // LIGHTING
+        // ============================================================
+        const ambient = new THREE.AmbientLight(0x445577, 0.5);
+        scene.add(ambient);
+
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x3a3a5e, 0.6);
+        scene.add(hemiLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.8);
+        sunLight.position.set(6, 10, 5);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 512;
+        sunLight.shadow.mapSize.height = 512;
+        sunLight.shadow.bias = -0.001;
+        const d2 = 12;
+        sunLight.shadow.camera.left = -d2;
+        sunLight.shadow.camera.right = d2;
+        sunLight.shadow.camera.top = d2;
+        sunLight.shadow.camera.bottom = -d2;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 20;
+        scene.add(sunLight);
+
+        const fillLight = new THREE.DirectionalLight(0x88bbff, 0.4);
+        fillLight.position.set(-3, 2, -3);
+        scene.add(fillLight);
+
+        // ============================================================
+        // GROUND
+        // ============================================================
+        const textureLoader = new THREE.TextureLoader();
+        const groundTexture = textureLoader.load(
+            "https://imglink.cc/cdn/synMTvB3HA.jpeg",
+            () => console.log('✅ Ground loaded'),
+            undefined,
+            () => createFallbackGround()
+        );
+
+        groundTexture.wrapS = THREE.RepeatWrapping;
+        groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(20, 20);
+
+        const groundMat = new THREE.MeshStandardMaterial({
+            map: groundTexture,
+            roughness: 0.8,
+            metalness: 0.1,
+            side: THREE.DoubleSide,
+        });
+
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.01;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        function createFallbackGround() {
+            const fallbackMat = new THREE.MeshStandardMaterial({
+                color: 0x2a2a3e,
+                roughness: 0.8,
+                metalness: 0.1,
+            });
+            const fallback = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), fallbackMat);
+            fallback.rotation.x = -Math.PI / 2;
+            fallback.position.y = -0.01;
+            fallback.receiveShadow = true;
+            scene.add(fallback);
         }
-      }, 500);
-    }
 
-    // ============================================
-    // CONTROLS
-    // ============================================
-    let steerInput = 0;
-    let gasInput = 0;
-    let brakeInput = 0;
-    let isBoosting = false;
-    let isReversingBtn = false;
-    let isHandBrakeBtn = false;
-
-    // ---------- فرمان ----------
-    const steerLeftBtn = document.getElementById('steer-left-btn');
-    const steerRightBtn = document.getElementById('steer-right-btn');
-
-    function setSteer(value) {
-      steerInput = value;
-      if (value === -1) {
-        steerLeftBtn.classList.add('active');
-        steerRightBtn.classList.remove('active');
-      } else if (value === 1) {
-        steerRightBtn.classList.add('active');
-        steerLeftBtn.classList.remove('active');
-      } else {
-        steerLeftBtn.classList.remove('active');
-        steerRightBtn.classList.remove('active');
-      }
-    }
-
-    steerLeftBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      setSteer(-1);
-    }, { passive: false });
-
-    steerLeftBtn.addEventListener('touchend', () => setSteer(0), { passive: true });
-    steerLeftBtn.addEventListener('touchcancel', () => setSteer(0), { passive: true });
-    steerLeftBtn.addEventListener('mousedown', () => setSteer(-1));
-    steerLeftBtn.addEventListener('mouseup', () => setSteer(0));
-    steerLeftBtn.addEventListener('mouseleave', () => setSteer(0));
-
-    steerRightBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      setSteer(1);
-    }, { passive: false });
-
-    steerRightBtn.addEventListener('touchend', () => setSteer(0), { passive: true });
-    steerRightBtn.addEventListener('touchcancel', () => setSteer(0), { passive: true });
-    steerRightBtn.addEventListener('mousedown', () => setSteer(1));
-    steerRightBtn.addEventListener('mouseup', () => setSteer(0));
-    steerRightBtn.addEventListener('mouseleave', () => setSteer(0));
-
-    // ---------- گاز ----------
-    const gasPedal = document.getElementById('gas-pedal');
-    let gasTouchId = null;
-
-    gasPedal.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touch = e.changedTouches[0];
-      gasTouchId = touch.identifier;
-      gasInput = 1;
-      gasPedal.classList.add('active');
-    }, { passive: false });
-
-    document.addEventListener('touchend', (e) => {
-      for (const touch of e.changedTouches) {
-        if (touch.identifier === gasTouchId) {
-          gasInput = 0;
-          gasPedal.classList.remove('active');
-          gasTouchId = null;
+        // ============================================================
+        // OBSTACLES
+        // ============================================================
+        const obstacles = [];
+        const wallMat = new THREE.MeshStandardMaterial({
+            color: 0x334466,
+            roughness: 0.5,
+            metalness: 0.2,
+            transparent: true,
+            opacity: 0.1,
+        });
+        const wallPositions = [
+            { x: 0, z: -11, w: 22, h: 3, d: 0.3 },
+            { x: 0, z: 11, w: 22, h: 3, d: 0.3 },
+            { x: -11, z: 0, w: 0.3, h: 3, d: 22 },
+            { x: 11, z: 0, w: 0.3, h: 3, d: 22 },
+        ];
+        for (const w of wallPositions) {
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(w.w, w.h, w.d), wallMat);
+            wall.position.set(w.x, w.h / 2, w.z);
+            wall.castShadow = true;
+            wall.receiveShadow = true;
+            scene.add(wall);
+            obstacles.push({
+                type: 'box',
+                pos: new THREE.Vector3(w.x, 0, w.z),
+                size: new THREE.Vector3(w.w, w.h, w.d),
+                rotY: 0,
+            });
         }
-      }
-    }, { passive: true });
 
-    document.addEventListener('touchcancel', () => {
-      gasInput = 0;
-      gasPedal.classList.remove('active');
-      gasTouchId = null;
-    }, { passive: true });
-
-    gasPedal.addEventListener('mousedown', () => {
-      gasInput = 1;
-      gasPedal.classList.add('active');
-    });
-
-    document.addEventListener('mouseup', () => {
-      gasInput = 0;
-      gasPedal.classList.remove('active');
-    });
-
-    // ---------- ترمز ----------
-    const brakePedal = document.getElementById('brake-pedal');
-    let brakeTouchId = null;
-
-    brakePedal.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touch = e.changedTouches[0];
-      brakeTouchId = touch.identifier;
-      brakeInput = 1;
-      brakePedal.classList.add('active');
-    }, { passive: false });
-
-    document.addEventListener('touchend', (e) => {
-      for (const touch of e.changedTouches) {
-        if (touch.identifier === brakeTouchId) {
-          brakeInput = 0;
-          brakePedal.classList.remove('active');
-          brakeTouchId = null;
-        }
-      }
-    }, { passive: true });
-
-    document.addEventListener('touchcancel', () => {
-      brakeInput = 0;
-      brakePedal.classList.remove('active');
-      brakeTouchId = null;
-    }, { passive: true });
-
-    brakePedal.addEventListener('mousedown', () => {
-      brakeInput = 1;
-      brakePedal.classList.add('active');
-    });
-
-    document.addEventListener('mouseup', () => {
-      brakeInput = 0;
-      brakePedal.classList.remove('active');
-    });
-
-    // ---------- دکمه‌ها ----------
-    const reverseBtn = document.getElementById('reverse-btn');
-    const handbrakeBtn = document.getElementById('handbrake-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const cameraBtn = document.getElementById('camera-btn');
-
-    reverseBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      isReversingBtn = !isReversingBtn;
-      reverseBtn.classList.toggle('active');
-      isReversing = isReversingBtn;
-      if (isReversingBtn) {
-        carSpeed = -3;
-      } else {
-        if (carSpeed < 0) carSpeed = 0;
-      }
-    }, { passive: false });
-
-    reverseBtn.addEventListener('click', () => {
-      isReversingBtn = !isReversingBtn;
-      reverseBtn.classList.toggle('active');
-      isReversing = isReversingBtn;
-      if (isReversingBtn) {
-        carSpeed = -3;
-      } else {
-        if (carSpeed < 0) carSpeed = 0;
-      }
-    });
-
-    handbrakeBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      isHandBrakeBtn = !isHandBrakeBtn;
-      handbrakeBtn.classList.toggle('active');
-      isHandBrake = isHandBrakeBtn;
-    }, { passive: false });
-
-    handbrakeBtn.addEventListener('click', () => {
-      isHandBrakeBtn = !isHandBrakeBtn;
-      handbrakeBtn.classList.toggle('active');
-      isHandBrake = isHandBrakeBtn;
-    });
-
-    resetBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      carGroup.position.set(0, 0.1, 0);
-      carGroup.rotation.y = 0;
-      carSpeed = 0;
-      carAngle = 0;
-      resetBtn.style.transform = 'scale(0.85)';
-      setTimeout(() => { resetBtn.style.transform = ''; }, 200);
-    }, { passive: false });
-
-    resetBtn.addEventListener('click', () => {
-      carGroup.position.set(0, 0.1, 0);
-      carGroup.rotation.y = 0;
-      carSpeed = 0;
-      carAngle = 0;
-      resetBtn.style.transform = 'scale(0.85)';
-      setTimeout(() => { resetBtn.style.transform = ''; }, 200);
-    });
-
-    cameraBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      cameraMode = (cameraMode + 1) % cameraModes.length;
-      cameraBtn.style.transform = 'scale(0.85)';
-      setTimeout(() => { cameraBtn.style.transform = ''; }, 200);
-    }, { passive: false });
-
-    cameraBtn.addEventListener('click', () => {
-      cameraMode = (cameraMode + 1) % cameraModes.length;
-      cameraBtn.style.transform = 'scale(0.85)';
-      setTimeout(() => { cameraBtn.style.transform = ''; }, 200);
-    });
-
-    // ============================================
-    // KEYBOARD
-    // ============================================
-    const keys = { w: false, a: false, s: false, d: false };
-
-    document.addEventListener('keydown', (e) => {
-      const key = e.key.toLowerCase();
-      if (key === 'w') { keys.w = true;
-        gasInput = 1; }
-      if (key === 's') { keys.s = true;
-        brakeInput = 1; }
-      if (key === 'a') { keys.a = true;
-        setSteer(-1); }
-      if (key === 'd') { keys.d = true;
-        setSteer(1); }
-      if (key === ' ') { e.preventDefault();
-        isHandBrake = !isHandBrake;
-        handbrakeBtn.classList.toggle('active'); }
-    });
-
-    document.addEventListener('keyup', (e) => {
-      const key = e.key.toLowerCase();
-      if (key === 'w') { keys.w = false;
-        gasInput = 0; }
-      if (key === 's') { keys.s = false;
-        brakeInput = 0; }
-      if (key === 'a' && !keys.a) { setSteer(0); }
-      if (key === 'd' && !keys.d) { setSteer(0); }
-    });
-
-    // ============================================
-    // CAMERA
-    // ============================================
-    let cameraAngle = 0;
-    let cameraDistance = 10;
-    let cameraHeight = 6;
-    let targetCameraAngle = 0;
-    let targetCameraHeight = 6;
-    let cameraShake = 0;
-    let fovTarget = 50;
-
-    let isMouseDown = false;
-    let lastMouseX = 0;
-    let lastMouseY = 0;
-
-    renderer.domElement.addEventListener('mousedown', (e) => {
-      if (e.button === 0) {
-        isMouseDown = true;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-      }
-    });
-
-    document.addEventListener('mouseup', () => { isMouseDown = false; });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isMouseDown) return;
-      const dx = e.clientX - lastMouseX;
-      const dy = e.clientY - lastMouseY;
-      targetCameraAngle -= dx * 0.015;
-      targetCameraHeight += dy * 0.08;
-      targetCameraHeight = Math.max(3, Math.min(9, targetCameraHeight));
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
-    });
-
-    // Touch camera
-    let touchCamId = null;
-    let touchCamStartX = 0;
-    let touchCamStartY = 0;
-
-    renderer.domElement.addEventListener('touchstart', (e) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const touch = e.changedTouches[0];
-      const x = touch.clientX - rect.left;
-      const isRightSide = x > rect.width * 0.3 && x < rect.width * 0.7;
-
-      if (e.touches.length === 1 && isRightSide) {
-        touchCamId = touch.identifier;
-        touchCamStartX = touch.clientX;
-        touchCamStartY = touch.clientY;
-      }
-    }, { passive: true });
-
-    renderer.domElement.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1) {
-        for (const touch of e.changedTouches) {
-          if (touch.identifier === touchCamId) {
-            const dx = touch.clientX - touchCamStartX;
-            const dy = touch.clientY - touchCamStartY;
-            targetCameraAngle -= dx * 0.015;
-            targetCameraHeight += dy * 0.08;
-            targetCameraHeight = Math.max(3, Math.min(9, targetCameraHeight));
-            touchCamStartX = touch.clientX;
-            touchCamStartY = touch.clientY;
-          }
-        }
-      }
-    }, { passive: true });
-
-    renderer.domElement.addEventListener('touchend', () => {
-      touchCamId = null;
-    }, { passive: true });
-
-    // ============================================
-    // GAME LOOP
-    // ============================================
-    const clock = new THREE.Clock();
-
-    setInterval(() => {
-      const now = Date.now();
-      for (const [id, player] of players) {
-        if (now - player.lastUpdate > 5000) {
-          removeRemoteCar(id);
-        }
-      }
-    }, 3000);
-
-    function updateCar(delta) {
-      let gas = gasInput;
-      let brake = brakeInput;
-      let steer = steerInput;
-
-      if (isReversing) {
-        gas = -0.5;
-      }
-
-      const currentMaxSpeed = isBoosting ? maxSpeed * 1.3 : maxSpeed;
-
-      if (Math.abs(gas) > 0.05) {
-        const accel = isBoosting ? acceleration * 1.3 : acceleration;
-        carSpeed += gas * accel * delta;
-        if (carSpeed > currentMaxSpeed) carSpeed = currentMaxSpeed;
-        if (carSpeed < -currentMaxSpeed * 0.4) carSpeed = -currentMaxSpeed * 0.4;
-      } else if (brake > 0.1) {
-        carSpeed -= Math.sign(carSpeed) * braking * delta * 1.5;
-        if (Math.abs(carSpeed) < 0.1) carSpeed = 0;
-      } else if (isHandBrake) {
-        carSpeed *= 0.95;
-        if (Math.abs(carSpeed) < 0.1) carSpeed = 0;
-      } else {
-        if (Math.abs(carSpeed) > 0.1) {
-          carSpeed -= Math.sign(carSpeed) * friction * delta;
-        } else {
-          carSpeed = 0;
-        }
-      }
-
-      if (Math.abs(carSpeed) > 0.2 || isHandBrake) {
-        const turnFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
-        const handBrakeMultiplier = isHandBrake ? 1.8 : 1;
-        carAngle += steer * turnSpeed * turnFactor * delta * handBrakeMultiplier;
-      }
-
-      const moveX = Math.sin(carAngle) * carSpeed * delta;
-      const moveZ = Math.cos(carAngle) * carSpeed * delta;
-
-      let newX = carGroup.position.x + moveX;
-      let newZ = carGroup.position.z + moveZ;
-
-      const boundary = 280;
-      if (Math.abs(newX) > boundary) newX = Math.sign(newX) * boundary;
-      if (Math.abs(newZ) > boundary) newZ = Math.sign(newZ) * boundary;
-
-      carGroup.position.x = newX;
-      carGroup.position.z = newZ;
-      carGroup.rotation.y = carAngle;
-
-      const speedKmh = Math.round(Math.abs(carSpeed) * 8);
-      speedDisplay.innerHTML = `${speedKmh} <span>km/h</span>`;
-
-      if (speedKmh > bestSpeed) {
-        bestSpeed = speedKmh;
-        bestSpeedDisplay.textContent = `🏆 بهترین سرعت: ${bestSpeed} km/h`;
-      }
-
-      if (speedKmh > 80) {
-        speedDisplay.classList.add('boost');
-      } else {
-        speedDisplay.classList.remove('boost');
-      }
-
-      if (speedKmh > 60) {
-        cameraShake = (speedKmh / 200) * 0.03;
-      } else {
-        cameraShake *= 0.9;
-      }
-
-      fovTarget = 50 + speedKmh * 0.08;
-      fovTarget = Math.min(fovTarget, 70);
-
-      const wheelRot = carSpeed * delta * 10;
-      for (const wheel of wheels) {
-        wheel.rotation.z += wheelRot;
-      }
-
-      label.position.set(0, 1.5, 0);
-
-      // ===== NPC Cars =====
-      for (const npc of npcCars) {
-        npc.x += npc.speed * npc.direction * delta * 2;
-        if (npc.x > npc.maxX) { npc.x = npc.maxX;
-          npc.direction = -1; }
-        if (npc.x < npc.minX) { npc.x = npc.minX;
-          npc.direction = 1; }
-        npc.mesh.position.x = npc.x;
-        npc.mesh.position.z = npc.z;
-        npc.mesh.rotation.y = npc.direction > 0 ? 0 : Math.PI;
-      }
-    }
-
-    function updateCamera() {
-      cameraAngle += (targetCameraAngle - cameraAngle) * 0.18;
-      cameraHeight += (targetCameraHeight - cameraHeight) * 0.18;
-
-      camera.fov += (fovTarget - camera.fov) * 0.05;
-      camera.updateProjectionMatrix();
-
-      const speedFactor = Math.min(Math.abs(carSpeed) / maxSpeed, 1);
-
-      let dist = cameraDistance;
-      let height = cameraHeight;
-      let offset = new THREE.Vector3(0, 0, 0);
-
-      const targetPos = carGroup.position.clone();
-      targetPos.y += 0.5;
-
-      switch (cameraModes[cameraMode]) {
-        case 'follow':
-          dist = 10 + speedFactor * 2;
-          height = 5 + speedFactor * 1;
-          const offsetX = Math.sin(cameraAngle) * dist;
-          const offsetZ = Math.cos(cameraAngle) * dist;
-          offset.set(offsetX, height, offsetZ);
-          break;
-        case 'top':
-          offset.set(0, 15, 0.1);
-          break;
-        case 'front':
-          const frontX = Math.sin(carAngle) * -5;
-          const frontZ = Math.cos(carAngle) * -5;
-          offset.set(frontX, 2, frontZ);
-          break;
-        case 'far':
-          const farX = Math.sin(cameraAngle) * 20;
-          const farZ = Math.cos(cameraAngle) * 20;
-          offset.set(farX, 8, farZ);
-          break;
-        default:
-          offset.set(0, 5, 10);
-      }
-
-      const shakeX = (Math.random() - 0.5) * cameraShake;
-      const shakeY = (Math.random() - 0.5) * cameraShake;
-      offset.x += shakeX;
-      offset.y += shakeY;
-
-      let camPos = new THREE.Vector3(
-        targetPos.x + offset.x,
-        targetPos.y + offset.y,
-        targetPos.z + offset.z
-      );
-
-      camera.position.lerp(camPos, 0.18);
-      camera.lookAt(targetPos);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const delta = Math.min(clock.getDelta(), 0.05);
-      updateCar(delta);
-      updateCamera();
-
-      renderer.render(scene, camera);
-      labelRenderer.render(scene, camera);
-    }
-
-    // ============================================
-    // START GAME
-    // ============================================
-    function startGame() {
-      updateLoading(60, 'نهایی‌سازی شهر...');
-      setTimeout(() => {
-        updateLoading(100, '✅ شهر آماده!');
-        setTimeout(hideLoading, 400);
-      }, 500);
-
-      setTimeout(() => {
-        setupChannelListener();
-      }, 1000);
-
-      startSendingPosition();
-      animate();
-
-      setInterval(() => {
-        if (!isConnected && ablyClient) {
-          try {
-            if (typeof ablyClient.connection.recover === 'function') {
-              ablyClient.connection.recover();
-            } else {
-              ablyClient.connection.connect();
+        // ============================================================
+        // PLAYER CREATION
+        // ============================================================
+        const characterLoader = new GLTFLoader();
+        let myPlayer = null;
+        let myMixer = null;
+        let myIdleAction = null;
+        let myWalkAction = null;
+        let myRunAction = null;
+        let myLoaded = false;
+        let walkCycle = 0;
+        let isMoving = false;
+        let myHealth = MAX_HEALTH;
+        let myScore = 0;
+        let myKills = 0;
+        let isRespawning = false;
+        let respawnTimer = null;
+
+        const moveState = { forward: false, back: false, left: false, right: false };
+        const SPAWN_POINT = new THREE.Vector3(0, 0, 0);
+
+        function findRightHandBone(model) {
+            const possibleNames = [
+                'RightHand', 'Hand_R', 'mixamorigRightHand', 'Bip01_R_Hand',
+                'Right_Hand', 'hand_R', 'r_hand', 'right_hand'
+            ];
+
+            for (const name of possibleNames) {
+                const bone = model.getObjectByName(name);
+                if (bone && bone.isBone) return bone;
             }
-          } catch (e) {
+
+            let found = null;
+            model.traverse((child) => {
+                if (child.isBone) {
+                    const nameLower = child.name.toLowerCase();
+                    if ((nameLower.includes('right') || nameLower.includes('r_')) && 
+                        (nameLower.includes('hand') || nameLower.includes('wrist'))) {
+                        if (!found) found = child;
+                    }
+                }
+            });
+            return found;
+        }
+
+        function findAnimation(animations, names) {
+            for (const name of names) {
+                for (const anim of animations) {
+                    if (anim.name.toLowerCase().includes(name.toLowerCase())) {
+                        return anim;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function createPlayer(team, position) {
+            return new Promise((resolve, reject) => {
+                characterLoader.load(
+                    "https://rawcdn.githack.com/mrdoob/three.js/r170/examples/models/gltf/Soldier.glb",
+                    function(gltf) {
+                        const player = gltf.scene;
+                        player.scale.set(1, 1, 1);
+                        player.position.copy(position || SPAWN_POINT);
+                        player.castShadow = true;
+                        player.receiveShadow = true;
+
+                        // Only change the color slightly - keep soldier look
+                        const color = team === 'red' ? 0xcc3333 : 0x3333cc;
+                        player.traverse((child) => {
+                            if (child.isMesh && child.material) {
+                                if (Array.isArray(child.material)) {
+                                    child.material.forEach(m => {
+                                        // Slight color tint, not full color change
+                                        const origColor = m.color.clone();
+                                        m.color.setHex(color);
+                                        // Mix with original to keep detail
+                                        m.color.lerp(origColor, 0.3);
+                                    });
+                                } else {
+                                    const origColor = child.material.color.clone();
+                                    child.material.color.setHex(color);
+                                    child.material.color.lerp(origColor, 0.3);
+                                }
+                            }
+                        });
+
+                        const mixer = new THREE.AnimationMixer(player);
+                        let idleAction, walkAction, runAction, currentAction;
+
+                        if (gltf.animations && gltf.animations.length > 0) {
+                            const animations = gltf.animations;
+                            const idleAnim = findAnimation(animations, ['idle', 'stand', 'wait']);
+                            const walkAnim = findAnimation(animations, ['walk', 'forward']);
+                            const runAnim = findAnimation(animations, ['run', 'sprint']);
+
+                            if (idleAnim) {
+                                idleAction = mixer.clipAction(idleAnim);
+                                idleAction.play();
+                                currentAction = idleAction;
+                            } else if (animations.length > 0) {
+                                idleAction = mixer.clipAction(animations[0]);
+                                idleAction.play();
+                                currentAction = idleAction;
+                            }
+
+                            if (walkAnim) walkAction = mixer.clipAction(walkAnim);
+                            if (runAnim) runAction = mixer.clipAction(runAnim);
+                            if (!walkAnim && runAnim) walkAction = mixer.clipAction(runAnim);
+                        }
+
+                        resolve({ player, mixer, idleAction, walkAction, runAction, currentAction });
+                    },
+                    undefined,
+                    (error) => reject(error)
+                );
+            });
+        }
+
+        // ============================================================
+        // ABLY MULTIPLAYER SYNC
+        // ============================================================
+        function connectToAbly() {
+            ably.connection.on('connected', () => {
+                console.log('✅ Connected to Ably');
+                isConnected = true;
+                channel = ably.channels.get('fist-fight-game');
+                
+                // Join the game
+                channel.presence.enter({
+                    clientId: playerId,
+                    team: myTeam,
+                    position: { x: 0, y: 0, z: 0 },
+                    health: MAX_HEALTH,
+                    score: 0,
+                    kills: 0
+                });
+
+                // Listen for presence updates
+                channel.presence.subscribe('enter', (presence) => {
+                    const data = presence.data;
+                    if (data.clientId !== playerId) {
+                        console.log('👤 Player joined:', data.clientId);
+                        spawnRemotePlayer(data.clientId, data.team, data.position);
+                    }
+                });
+
+                channel.presence.subscribe('leave', (presence) => {
+                    const data = presence.data;
+                    if (data && data.clientId !== playerId) {
+                        console.log('👋 Player left:', data.clientId);
+                        removeRemotePlayer(data.clientId);
+                    }
+                });
+
+                channel.presence.subscribe('update', (presence) => {
+                    const data = presence.data;
+                    if (data && data.clientId !== playerId) {
+                        updateRemotePlayer(data.clientId, data);
+                    }
+                });
+
+                // Listen for game events
+                channel.subscribe('punch', (message) => {
+                    const data = message.data;
+                    if (data.playerId !== playerId) {
+                        handleRemotePunch(data);
+                    }
+                });
+
+                channel.subscribe('damage', (message) => {
+                    const data = message.data;
+                    if (data.targetId === playerId) {
+                        handleRemoteDamage(data);
+                    }
+                });
+
+                channel.subscribe('respawn', (message) => {
+                    const data = message.data;
+                    if (data.playerId === playerId) {
+                        respawnMyPlayer();
+                    }
+                });
+
+                channel.subscribe('score', (message) => {
+                    const data = message.data;
+                    updateScoreboard(data);
+                });
+
+                // Get initial presence
+                channel.presence.get((err, members) => {
+                    if (!err) {
+                        members.forEach(member => {
+                            if (member.data && member.data.clientId !== playerId) {
+                                spawnRemotePlayer(member.data.clientId, member.data.team, member.data.position);
+                            }
+                        });
+                    }
+                });
+
+                document.getElementById('status').innerHTML = '🥊 <span>Online</span> | Team ' + 
+                    (myTeam === 'red' ? '🔴 Red' : '🔵 Blue');
+            });
+
+            ably.connection.on('disconnected', () => {
+                console.warn('⚠️ Disconnected from Ably');
+                isConnected = false;
+                document.getElementById('status').innerHTML = '⚠️ <span>Disconnected</span>';
+            });
+        }
+
+        // ============================================================
+        // REMOTE PLAYER MANAGEMENT
+        // ============================================================
+        let remotePlayers = {};
+
+        async function spawnRemotePlayer(id, team, position) {
+            if (remotePlayers[id] || id === playerId) return;
+
             try {
-              ablyClient.connection.connect();
-            } catch (e2) {}
-          }
+                const result = await createPlayer(team, new THREE.Vector3(position.x, 0, position.z));
+                scene.add(result.player);
+                
+                // Create health bar
+                const healthBar = createHealthBar();
+                result.player.add(healthBar);
+                
+                // Create name tag
+                const nameTag = createNameTag(id, team);
+                result.player.add(nameTag);
+
+                remotePlayers[id] = {
+                    player: result.player,
+                    mixer: result.mixer,
+                    idleAction: result.idleAction,
+                    walkAction: result.walkAction,
+                    runAction: result.runAction,
+                    currentAction: result.currentAction,
+                    health: MAX_HEALTH,
+                    team: team,
+                    healthBar: healthBar,
+                    nameTag: nameTag,
+                    lastPosition: position,
+                    isPunching: false,
+                    punchTimer: null
+                };
+
+                console.log('✅ Remote player spawned:', id);
+            } catch (error) {
+                console.error('❌ Failed to spawn remote player:', error);
+            }
         }
-      }, 3000);
-    }
 
-    // ============================================
-    // RESIZE
-    // ============================================
-    window.addEventListener('resize', () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
-      labelRenderer.setSize(innerWidth, innerHeight);
-    });
+        function removeRemotePlayer(id) {
+            if (remotePlayers[id]) {
+                scene.remove(remotePlayers[id].player);
+                delete remotePlayers[id];
+                console.log('🗑️ Remote player removed:', id);
+            }
+        }
 
-    document.addEventListener('keydown', (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
-        e.preventDefault();
-      }
-    });
+        function updateRemotePlayer(id, data) {
+            if (remotePlayers[id] && data.position) {
+                const targetPos = new THREE.Vector3(data.position.x, 0, data.position.z);
+                remotePlayers[id].player.position.lerp(targetPos, 0.3);
+                remotePlayers[id].lastPosition = data.position;
+                
+                if (data.health !== undefined) {
+                    remotePlayers[id].health = data.health;
+                    updateHealthBar(remotePlayers[id].healthBar, data.health);
+                }
+            }
+        }
 
-    console.log('🏙️ مسابقه شهری - نسل جدید!');
-    console.log(`📊 کیفیت: ${quality}`);
-    console.log('✅ ساختمان‌های شیشه‌ای مدرن');
-    console.log('✅ خیابان با نورپردازی');
-    console.log('✅ ترافیک NPC');
-    console.log('✅ دوربین حرفه‌ای');
-  </script>
+        function createHealthBar() {
+            const group = new THREE.Group();
+            
+            const bg = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.6, 0.08),
+                new THREE.MeshBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.5 })
+            );
+            bg.position.y = 0.5;
+            group.add(bg);
+            
+            const fill = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.58, 0.06),
+                new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+            );
+            fill.position.y = 0.5;
+            fill.position.x = -0.01;
+            group.add(fill);
+            
+            group.userData.healthFill = fill;
+            group.userData.maxWidth = 0.58;
+            
+            return group;
+        }
+
+        function updateHealthBar(healthBar, health) {
+            if (healthBar && healthBar.userData.healthFill) {
+                const ratio = Math.max(0, health / MAX_HEALTH);
+                const width = healthBar.userData.maxWidth * ratio;
+                healthBar.userData.healthFill.scale.x = ratio;
+                healthBar.userData.healthFill.position.x = -healthBar.userData.maxWidth / 2 + width / 2;
+                
+                const color = new THREE.Color();
+                if (ratio > 0.6) color.setHex(0x00ff00);
+                else if (ratio > 0.3) color.setHex(0xffff00);
+                else color.setHex(0xff0000);
+                healthBar.userData.healthFill.material.color.copy(color);
+            }
+        }
+
+        function createNameTag(id, team) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            // Round rect function
+            ctx.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                this.closePath();
+                return this;
+            };
+            
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.roundRect(0, 0, 256, 64, 10);
+            ctx.fill();
+            
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = team === 'red' ? '#ff4444' : '#4444ff';
+            ctx.fillText(id.substring(0, 10), 128, 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ 
+                map: texture,
+                transparent: true,
+                depthTest: false
+            });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.y = 0.8;
+            sprite.scale.set(0.8, 0.2, 1);
+            
+            return sprite;
+        }
+
+        // ============================================================
+        // PUNCH SYSTEM - IMPROVED
+        // ============================================================
+        function performPunch() {
+            console.log('👊 Punch triggered!');
+            
+            if (!myPlayer || !myLoaded) {
+                console.warn('⚠️ Player not ready!');
+                return;
+            }
+            
+            if (isRespawning) {
+                console.warn('⚠️ Respawning!');
+                return;
+            }
+            
+            const now = Date.now();
+            if (now - lastPunchTime < PUNCH_COOLDOWN) {
+                console.log('⏳ Cooldown...');
+                return;
+            }
+            
+            console.log('💥 PUNCH!');
+            lastPunchTime = now;
+            isPunching = true;
+            punchSide = punchSide === 'right' ? 'left' : 'right';
+            
+            // Play punch animation on arms
+            animatePunch(myPlayer, punchSide);
+            
+            // Flash effect
+            const flash = document.getElementById('punch-flash');
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 100);
+            
+            // Send punch event to server
+            if (channel && isConnected) {
+                channel.publish('punch', {
+                    playerId: playerId,
+                    position: myPlayer.position,
+                    direction: getForwardDirection(),
+                    side: punchSide,
+                    timestamp: now
+                });
+            }
+            
+            // Check for nearby enemies
+            checkPunchHit();
+            
+            // Reset punch state after animation
+            setTimeout(() => {
+                isPunching = false;
+                resetArms(myPlayer);
+            }, 250);
+        }
+
+        function animatePunch(player, side) {
+            let armBone = null;
+            let handBone = null;
+            let forearmBone = null;
+            
+            player.traverse((child) => {
+                if (child.isBone) {
+                    const name = child.name.toLowerCase();
+                    if (side === 'right') {
+                        if (name.includes('rightarm') || name.includes('upperarm_r')) {
+                            armBone = child;
+                        }
+                        if (name.includes('rightforearm') || name.includes('forearm_r')) {
+                            forearmBone = child;
+                        }
+                        if (name.includes('righthand') || name.includes('hand_r')) {
+                            handBone = child;
+                        }
+                    } else {
+                        if (name.includes('leftarm') || name.includes('upperarm_l')) {
+                            armBone = child;
+                        }
+                        if (name.includes('leftforearm') || name.includes('forearm_l')) {
+                            forearmBone = child;
+                        }
+                        if (name.includes('lefthand') || name.includes('hand_l')) {
+                            handBone = child;
+                        }
+                    }
+                }
+            });
+            
+            // Animate arm - punch forward
+            if (armBone) {
+                const origRot = armBone.rotation.x;
+                const origZ = armBone.rotation.z;
+                // Punch motion - arm goes forward and slightly up
+                armBone.rotation.x = -1.5;
+                armBone.rotation.z = side === 'right' ? -0.3 : 0.3;
+                setTimeout(() => {
+                    armBone.rotation.x = origRot;
+                    armBone.rotation.z = origZ;
+                }, 250);
+            }
+            
+            if (forearmBone) {
+                const origRot = forearmBone.rotation.x;
+                forearmBone.rotation.x = -1.8;
+                setTimeout(() => {
+                    forearmBone.rotation.x = origRot;
+                }, 250);
+            }
+            
+            if (handBone) {
+                const origPos = handBone.position.clone();
+                handBone.position.x += 0.2;
+                handBone.position.y += 0.05;
+                setTimeout(() => {
+                    handBone.position.copy(origPos);
+                }, 250);
+            }
+        }
+
+        function resetArms(player) {
+            player.traverse((child) => {
+                if (child.isBone) {
+                    const name = child.name.toLowerCase();
+                    if (name.includes('upperarm')) {
+                        child.rotation.x = -0.8;
+                        child.rotation.z = 0;
+                    }
+                    if (name.includes('forearm')) {
+                        child.rotation.x = -0.3;
+                    }
+                    if (name.includes('hand')) {
+                        child.position.x = 0;
+                        child.position.y = 0;
+                    }
+                }
+            });
+        }
+
+        function getForwardDirection() {
+            const dir = new THREE.Vector3(0, 0, -1);
+            if (myPlayer) {
+                dir.applyQuaternion(myPlayer.quaternion);
+            }
+            return dir;
+        }
+
+        function checkPunchHit() {
+            if (!myPlayer) return;
+            
+            const punchPos = myPlayer.position.clone();
+            punchPos.y += 0.8; // Punch at chest height
+            
+            // Check all remote players
+            for (const [id, remote] of Object.entries(remotePlayers)) {
+                if (!remote.player) continue;
+                
+                const dist = punchPos.distanceTo(remote.player.position);
+                if (dist < PUNCH_RANGE) {
+                    // Hit!
+                    console.log('🎯 Hit player:', id);
+                    dealDamage(id);
+                }
+            }
+        }
+
+        function dealDamage(targetId) {
+            if (remotePlayers[targetId]) {
+                const target = remotePlayers[targetId];
+                target.health -= PUNCH_DAMAGE;
+                
+                // Create hit effect
+                createHitEffect(target.player.position.clone());
+                
+                // Update health bar
+                updateHealthBar(target.healthBar, target.health);
+                
+                // Send damage to server
+                if (channel && isConnected) {
+                    channel.publish('damage', {
+                        targetId: targetId,
+                        damage: PUNCH_DAMAGE,
+                        health: target.health,
+                        attackerId: playerId
+                    });
+                }
+                
+                // Check if defeated
+                if (target.health <= 0) {
+                    target.health = 0;
+                    myScore += 10;
+                    myKills += 1;
+                    
+                    // Update scoreboard
+                    updateScoreboard({
+                        playerId: playerId,
+                        score: myScore,
+                        kills: myKills
+                    });
+                    
+                    // Respawn target
+                    setTimeout(() => {
+                        if (channel && isConnected) {
+                            channel.publish('respawn', {
+                                playerId: targetId
+                            });
+                        }
+                    }, RESPAWN_DELAY);
+                }
+            }
+        }
+
+        function handleRemotePunch(data) {
+            if (remotePlayers[data.playerId]) {
+                const remote = remotePlayers[data.playerId];
+                animatePunch(remote.player, data.side || 'right');
+                setTimeout(() => resetArms(remote.player), 250);
+            }
+        }
+
+        function handleRemoteDamage(data) {
+            if (data.targetId === playerId) {
+                myHealth -= data.damage;
+                updateMyHealthBar();
+                
+                // Screen flash when hit
+                const flash = document.getElementById('punch-flash');
+                flash.style.background = 'radial-gradient(circle, rgba(255,0,0,0.3), transparent 70%)';
+                flash.classList.add('active');
+                setTimeout(() => {
+                    flash.classList.remove('active');
+                    flash.style.background = 'radial-gradient(circle, rgba(255,200,50,0.1), transparent 70%)';
+                }, 200);
+                
+                if (myHealth <= 0) {
+                    myHealth = 0;
+                    isRespawning = true;
+                    document.getElementById('status').innerHTML = '💀 <span>DEAD</span> | Respawning...';
+                    
+                    // Hide player
+                    if (myPlayer) {
+                        myPlayer.visible = false;
+                    }
+                    
+                    setTimeout(() => {
+                        if (channel && isConnected) {
+                            channel.publish('respawn', {
+                                playerId: playerId
+                            });
+                        }
+                    }, RESPAWN_DELAY);
+                }
+            }
+        }
+
+        function respawnMyPlayer() {
+            if (myPlayer) {
+                myHealth = MAX_HEALTH;
+                isRespawning = false;
+                myPlayer.visible = true;
+                myPlayer.position.set(
+                    (Math.random() - 0.5) * 5,
+                    0,
+                    (Math.random() - 0.5) * 5
+                );
+                updateMyHealthBar();
+                
+                document.getElementById('status').innerHTML = '🥊 <span>Alive</span> | Team ' + 
+                    (myTeam === 'red' ? '🔴 Red' : '🔵 Blue');
+                console.log('✅ Respawned!');
+            }
+        }
+
+        function createHitEffect(position) {
+            const particles = new THREE.BufferGeometry();
+            const count = 25;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const velocities = [];
+            
+            for (let i = 0; i < count; i++) {
+                positions[i*3] = position.x + (Math.random() - 0.5) * 0.4;
+                positions[i*3+1] = position.y + (Math.random() - 0.5) * 0.4;
+                positions[i*3+2] = position.z + (Math.random() - 0.5) * 0.4;
+                
+                colors[i*3] = 1;
+                colors[i*3+1] = 0.8 + Math.random() * 0.2;
+                colors[i*3+2] = 0;
+                
+                velocities.push({
+                    x: (Math.random() - 0.5) * 3,
+                    y: Math.random() * 3 + 1,
+                    z: (Math.random() - 0.5) * 3
+                });
+            }
+            
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.12,
+                vertexColors: true,
+                transparent: true,
+                opacity: 1,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const particleSystem = new THREE.Points(particles, material);
+            scene.add(particleSystem);
+            
+            let life = 1;
+            const interval = setInterval(() => {
+                life -= 0.025;
+                const pos = particleSystem.geometry.attributes.position.array;
+                for (let i = 0; i < count; i++) {
+                    pos[i*3] += velocities[i].x * 0.025;
+                    pos[i*3+1] += velocities[i].y * 0.025;
+                    pos[i*3+2] += velocities[i].z * 0.025;
+                    velocities[i].y -= 0.08;
+                }
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+                particleSystem.material.opacity = life;
+                
+                if (life <= 0) {
+                    clearInterval(interval);
+                    scene.remove(particleSystem);
+                }
+            }, 16);
+        }
+
+        // ============================================================
+        // SCOREBOARD
+        // ============================================================
+        function updateScoreboard(data) {
+            const scoreList = document.getElementById('score-list');
+            
+            if (data.playerId === playerId) {
+                myScore = data.score;
+                myKills = data.kills;
+            }
+            
+            let html = '';
+            html += `<div class="player-score ${myTeam === 'red' ? 'red-team' : 'blue-team'}">
+                <span>👤 You (${myTeam})</span>
+                <span>💀 ${myKills} | ⭐ ${myScore}</span>
+            </div>`;
+            
+            for (const [id, remote] of Object.entries(remotePlayers)) {
+                const teamClass = remote.team === 'red' ? 'red-team' : 'blue-team';
+                html += `<div class="player-score ${teamClass}">
+                    <span>👤 ${id.substring(0, 6)}</span>
+                    <span>❤️ ${Math.round(remote.health)}</span>
+                </div>`;
+            }
+            
+            scoreList.innerHTML = html;
+        }
+
+        // ============================================================
+        // UI CONTROLS
+        // ============================================================
+        document.getElementById('team-red').addEventListener('click', () => {
+            myTeam = 'red';
+            startGame();
+        });
+        
+        document.getElementById('team-blue').addEventListener('click', () => {
+            myTeam = 'blue';
+            startGame();
+        });
+
+        async function startGame() {
+            document.getElementById('team-select').style.display = 'none';
+            document.getElementById('status').innerHTML = '🥊 <span>Connecting...</span>';
+            
+            connectToAbly();
+            
+            try {
+                const result = await createPlayer(myTeam, SPAWN_POINT);
+                myPlayer = result.player;
+                myMixer = result.mixer;
+                myIdleAction = result.idleAction;
+                myWalkAction = result.walkAction;
+                myRunAction = result.runAction;
+                myLoaded = true;
+                
+                scene.add(myPlayer);
+                
+                const healthBar = createHealthBar();
+                myPlayer.add(healthBar);
+                myPlayer.userData.healthBar = healthBar;
+                
+                const nameTag = createNameTag('You', myTeam);
+                myPlayer.add(nameTag);
+                
+                console.log('✅ My player created!');
+                console.log('👊 Press SPACE or click PUNCH to fight!');
+            } catch (error) {
+                console.error('❌ Failed to create player:', error);
+            }
+        }
+
+        // Movement controls
+        function setupButton(id, moveKey) {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+
+            const start = (e) => {
+                e.preventDefault();
+                moveState[moveKey] = true;
+                btn.classList.add('active');
+            };
+
+            const end = (e) => {
+                e.preventDefault();
+                moveState[moveKey] = false;
+                btn.classList.remove('active');
+            };
+
+            btn.addEventListener('touchstart', start, { passive: false });
+            btn.addEventListener('touchend', end, { passive: false });
+            btn.addEventListener('touchcancel', end, { passive: false });
+            btn.addEventListener('mousedown', start);
+            btn.addEventListener('mouseup', end);
+            btn.addEventListener('mouseleave', end);
+        }
+
+        setupButton('btnForward', 'forward');
+        setupButton('btnBack', 'back');
+        setupButton('btnLeft', 'left');
+        setupButton('btnRight', 'right');
+
+        // Punch button - Multiple event listeners for reliability
+        const punchBtn = document.getElementById('punch-btn');
+        punchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            performPunch();
+        });
+        punchBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            performPunch();
+        });
+        punchBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            performPunch();
+        });
+
+        // Keyboard support - SPACE and F
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                performPunch();
+            }
+        });
+
+        // ============================================================
+        // MOVEMENT SYSTEM
+        // ============================================================
+        let velocity = new THREE.Vector3(0, 0, 0);
+        const maxSpeed = 4.0;
+        const acceleration = 10;
+        const deceleration = 8;
+
+        function updateMovement(delta) {
+            if (!myPlayer || !myLoaded || isRespawning) return;
+
+            const rotSpeed = 3.0;
+            let moving = false;
+            let isRunning = false;
+
+            if (moveState.left || moveState.right || moveState.forward || moveState.back) {
+                moving = true;
+            }
+            if (moveState.forward && (moveState.left || moveState.right)) {
+                isRunning = true;
+            }
+
+            if (moveState.left) {
+                myPlayer.rotation.y += delta * rotSpeed;
+            }
+            if (moveState.right) {
+                myPlayer.rotation.y -= delta * rotSpeed;
+            }
+
+            const dir = new THREE.Vector3(0, 0, -1);
+            dir.applyQuaternion(myPlayer.quaternion);
+
+            const targetSpeed = moving ? (isRunning ? maxSpeed * 1.4 : maxSpeed) : 0;
+            const currentSpeed = velocity.length();
+            
+            if (moving) {
+                const accel = acceleration * delta;
+                velocity.x += dir.x * accel;
+                velocity.z += dir.z * accel;
+                const newSpeed = Math.min(velocity.length(), targetSpeed);
+                velocity.normalize().multiplyScalar(newSpeed);
+            } else {
+                const decel = deceleration * delta;
+                const newSpeed = Math.max(0, currentSpeed - decel);
+                if (newSpeed < 0.01) {
+                    velocity.set(0, 0, 0);
+                } else {
+                    velocity.normalize().multiplyScalar(newSpeed);
+                }
+            }
+
+            const newPos = myPlayer.position.clone();
+            newPos.x += velocity.x * delta;
+            newPos.z += velocity.z * delta;
+
+            if (!checkCollision(newPos)) {
+                myPlayer.position.x = newPos.x;
+                myPlayer.position.z = newPos.z;
+            } else {
+                velocity.set(0, 0, 0);
+            }
+
+            // Update animation
+            if (myMixer) {
+                myMixer.update(delta);
+
+                let action = myIdleAction;
+                if (moving) {
+                    action = isRunning && myRunAction ? myRunAction : 
+                            myWalkAction ? myWalkAction : myRunAction;
+                }
+                
+                if (myIdleAction && !moving) {
+                    action = myIdleAction;
+                }
+                
+                if (action && myMixer) {
+                    if (myMixer.currentAction !== action) {
+                        if (myMixer.currentAction) myMixer.currentAction.fadeOut(0.1);
+                        action.reset().fadeIn(0.1).play();
+                        myMixer.currentAction = action;
+                    }
+                }
+            }
+
+            if (moving && velocity.length() > 0.5) {
+                walkCycle += delta * 5;
+                const swing = Math.sin(walkCycle) * 0.015;
+                myPlayer.rotation.z = swing;
+                myPlayer.position.y = Math.abs(Math.sin(walkCycle * 0.5)) * 0.005;
+                isMoving = true;
+            } else {
+                if (isMoving) {
+                    myPlayer.rotation.z = 0;
+                    myPlayer.position.y = 0;
+                    isMoving = false;
+                }
+            }
+
+            if (myPlayer) {
+                playerTarget.copy(myPlayer.position);
+                playerTarget.y += 1.0;
+            }
+
+            // Send position update to server
+            if (channel && isConnected && myPlayer && !isRespawning) {
+                channel.presence.update({
+                    clientId: playerId,
+                    team: myTeam,
+                    position: myPlayer.position,
+                    health: myHealth,
+                    score: myScore,
+                    kills: myKills
+                });
+            }
+        }
+
+        function checkCollision(newPos) {
+            const playerPos = new THREE.Vector3(newPos.x, 0, newPos.z);
+            const PLAYER_RADIUS = 0.35;
+
+            for (const obs of obstacles) {
+                if (obs.type === 'box') {
+                    const half = obs.size.clone().multiplyScalar(0.5);
+                    const obsPos = obs.pos.clone();
+                    const dx = Math.abs(playerPos.x - obsPos.x);
+                    const dz = Math.abs(playerPos.z - obsPos.z);
+                    if (dx < half.x + PLAYER_RADIUS && dz < half.z + PLAYER_RADIUS) {
+                        return true;
+                    }
+                }
+            }
+
+            const limit = 10.5;
+            if (Math.abs(newPos.x) > limit || Math.abs(newPos.z) > limit) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // ============================================================
+        // HEALTH BAR UPDATE
+        // ============================================================
+        function updateMyHealthBar() {
+            if (myPlayer && myPlayer.userData.healthBar) {
+                const ratio = Math.max(0, myHealth / MAX_HEALTH);
+                const fill = myPlayer.userData.healthBar.userData.healthFill;
+                if (fill) {
+                    const maxWidth = myPlayer.userData.healthBar.userData.maxWidth;
+                    fill.scale.x = ratio;
+                    fill.position.x = -maxWidth / 2 + (maxWidth * ratio) / 2;
+                    
+                    const color = new THREE.Color();
+                    if (ratio > 0.6) color.setHex(0x00ff00);
+                    else if (ratio > 0.3) color.setHex(0xffff00);
+                    else color.setHex(0xff0000);
+                    fill.material.color.copy(color);
+                }
+            }
+        }
+
+        // ============================================================
+        // GAME LOOP
+        // ============================================================
+        let clock = new THREE.Clock();
+
+        function animate() {
+            const delta = Math.min(clock.getDelta(), 0.05);
+            updateMovement(delta);
+            updateCamera();
+
+            for (const [id, remote] of Object.entries(remotePlayers)) {
+                if (remote.mixer) {
+                    remote.mixer.update(delta);
+                }
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // ============================================================
+        // WINDOW RESIZE
+        // ============================================================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('#controls') || e.target.closest('#punch-btn')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        console.log('🥊 Online Fist Fighting Game Started!');
+        console.log(`👤 Player ID: ${playerId}`);
+        console.log('📡 Waiting for team selection...');
+        console.log('💡 Press SPACE or click PUNCH to fight!');
+    </script>
 </body>
-
 </html>
