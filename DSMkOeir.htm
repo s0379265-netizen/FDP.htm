@@ -1,68 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>🥊 Online Fist Fighting</title>
+    <title>نقشه جنگی صنعتی - آنلاین</title>
     <style>
-        * { margin: 0; padding: 0; user-select: none; -webkit-touch-callout: none; }
+        * { margin: 0; padding: 0; user-select: none; -webkit-touch-callout: none; box-sizing: border-box; }
         body {
             overflow: hidden;
             background: #0a0a12;
             font-family: 'Segoe UI', Arial, sans-serif;
             touch-action: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
-        #team-select {
+        /* ===== LOGIN ===== */
+        #login-screen {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: radial-gradient(ellipse at center, #1a1a3e, #0a0a1a);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            gap: 30px;
+            z-index: 2000;
+            transition: opacity 0.8s ease;
         }
-        #team-select h1 {
-            color: white;
-            font-size: 42px;
-            font-weight: 300;
-            letter-spacing: 3px;
+        #login-screen.hidden { opacity: 0; pointer-events: none; }
+        #login-title { color: white; font-size: 32px; font-weight: 300; letter-spacing: 4px; margin-bottom: 8px; }
+        #login-title span { color: #ff6b35; font-weight: 600; }
+        #login-sub { color: rgba(255,255,255,0.4); font-size: 14px; letter-spacing: 2px; margin-bottom: 30px; }
+        #login-box {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px 50px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
         }
-        #team-select h1 span { color: #ffaa00; }
-        .team-buttons {
-            display: flex;
-            gap: 50px;
-        }
-        .team-btn {
-            width: 200px;
-            height: 200px;
-            border-radius: 30px;
-            border: 4px solid rgba(255,255,255,0.2);
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        #login-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
             background: rgba(255,255,255,0.05);
             color: white;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 16px;
         }
-        .team-btn:hover {
-            transform: scale(1.05);
-            border-color: rgba(255,255,255,0.5);
+        #login-box input:focus { border-color: #ff6b35; }
+        #login-box input::placeholder { color: rgba(255,255,255,0.3); }
+        #login-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #ff6b35, #ff4500);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        .team-btn:active { transform: scale(0.95); }
-        .team-btn.red { border-color: #ff3333; }
-        .team-btn.red:hover { background: rgba(255,50,50,0.3); }
-        .team-btn.blue { border-color: #3333ff; }
-        .team-btn.blue:hover { background: rgba(50,50,255,0.3); }
-        .team-btn .emoji { font-size: 60px; }
+        #login-btn:hover { transform: scale(1.02); }
+        #login-btn:active { transform: scale(0.95); }
+        #login-error { color: #ff6b6b; font-size: 13px; margin-top: 12px; min-height: 20px; }
+        #online-count { color: rgba(255,255,255,0.3); font-size: 12px; margin-top: 16px; }
 
         #status {
             position: absolute;
@@ -83,29 +93,33 @@
         }
         #status span { color: #6af; font-weight: bold; }
 
-        #scoreboard {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            color: white;
-            background: rgba(0,0,0,0.8);
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            z-index: 20;
-            min-width: 150px;
-            border: 1px solid rgba(255,255,255,0.1);
-            pointer-events: none;
-        }
-        #scoreboard .player-score {
+        #loading {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            align-items: center;
+            justify-content: center;
+            background: #0a0a1a;
+            color: #6af;
+            font-size: 20px;
+            z-index: 100;
+            font-weight: 300;
+            letter-spacing: 2px;
+            transition: opacity 0.8s;
+            flex-direction: column;
+            gap: 20px;
         }
-        #scoreboard .player-score:last-child { border-bottom: none; }
-        #scoreboard .red-team { color: #ff4444; }
-        #scoreboard .blue-team { color: #4444ff; }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(102,170,255,0.1);
+            border-top: 3px solid #6af;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         #controls {
             position: absolute;
@@ -119,11 +133,7 @@
             z-index: 30;
             pointer-events: none;
         }
-        .ctrl-group {
-            display: flex;
-            gap: 20px;
-            pointer-events: auto;
-        }
+        .ctrl-group { display: flex; gap: 20px; pointer-events: auto; }
         .ctrl-btn {
             width: 75px;
             height: 75px;
@@ -143,49 +153,15 @@
             -webkit-tap-highlight-color: transparent;
         }
         .ctrl-btn:active, .ctrl-btn.active {
-            background: rgba(102, 126, 234, 0.5);
-            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(102,126,234,0.5);
+            border-color: rgba(102,126,234,0.8);
             transform: scale(0.90);
-            box-shadow: 0 0 50px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 0 50px rgba(102,126,234,0.4);
         }
-
-        #punch-btn {
-            position: absolute;
-            bottom: 160px;
-            right: 30px;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid rgba(255,200,50,0.6);
-            background: rgba(255,200,50,0.2);
-            backdrop-filter: blur(12px);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 35;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 0 60px rgba(255,200,50,0.2);
-            transition: all 0.1s;
-            letter-spacing: 1px;
-            gap: 4px;
-        }
-        #punch-btn:active {
-            transform: scale(0.85);
-            background: rgba(255,200,50,0.5);
-            border-color: rgba(255,200,50,0.9);
-            box-shadow: 0 0 80px rgba(255,200,50,0.5);
-        }
-        #punch-btn .icon { font-size: 32px; }
 
         #info-hint {
             position: absolute;
-            bottom: 280px;
+            bottom: 140px;
             left: 50%;
             transform: translateX(-50%);
             color: rgba(255,255,255,0.3);
@@ -200,6 +176,44 @@
             white-space: nowrap;
         }
 
+        #action-buttons {
+            position: absolute;
+            bottom: 160px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 35;
+            pointer-events: none;
+        }
+        .action-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,50,50,0.5);
+            background: rgba(255,50,50,0.2);
+            backdrop-filter: blur(12px);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 35;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 40px rgba(255,50,50,0.2);
+            transition: all 0.1s;
+            pointer-events: auto;
+        }
+        .action-btn:active {
+            transform: scale(0.85);
+            background: rgba(255,50,50,0.5);
+            border-color: rgba(255,50,50,0.9);
+            box-shadow: 0 0 60px rgba(255,50,50,0.5);
+        }
+        #punch-btn { font-size: 32px; }
+
         #camera-control-area {
             position: fixed;
             top: 0;
@@ -212,84 +226,215 @@
         }
         #camera-control-area:active { cursor: grabbing; }
 
-        /* Punch flash effect */
-        #punch-flash {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+        #debug-info {
+            position: absolute;
+            bottom: 220px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffaa00;
+            background: rgba(0,0,0,0.9);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 25;
+            text-align: center;
+            border: 2px solid #ffaa00;
             pointer-events: none;
-            z-index: 5;
-            background: radial-gradient(circle, rgba(255,200,50,0.1), transparent 70%);
-            opacity: 0;
-            transition: opacity 0.05s;
+            max-width: 90%;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        #punch-flash.active {
-            opacity: 1;
+        #debug-info.success { border-color: #00ff00; color: #00ff00; }
+        #debug-info.error { border-color: #ff0000; color: #ff0000; }
+
+        #player-name-display {
+            position: absolute;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+            pointer-events: none;
+            z-index: 15;
         }
 
-        @media (max-width: 500px) {
+        #online-count-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        /* ===== PING DISPLAY ===== */
+        #ping-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            pointer-events: none;
+            z-index: 15;
+        }
+        #ping-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        #ping-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+        #ping-label {
+            color: rgba(255,255,255,0.3);
+            font-size: 10px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* ===== STATS DISPLAY ===== */
+        #stats-display {
+            position: absolute;
+            top: 75px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            font-family: monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 14px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            pointer-events: none;
+            z-index: 15;
+            line-height: 1.8;
+        }
+        #stats-display .stat { display: flex; justify-content: space-between; gap: 15px; }
+        #stats-display .stat-label { color: rgba(255,255,255,0.3); }
+        #stats-display .stat-value { color: #64ffda; font-weight: 600; }
+        #stats-display .stat-value.kills { color: #ff6b35; }
+        #stats-display .stat-value.deaths { color: #ff4444; }
+        #stats-display .stat-value.kd { color: #ffd700; }
+
+        .player-label {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.6);
+            padding: 2px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+            white-space: nowrap;
+            transform: translateY(-35px);
+        }
+        .player-label.own {
+            border-color: rgba(255,107,53,0.4);
+            color: #ff6b35;
+        }
+
+        @media (max-width: 600px) {
             .ctrl-btn { width: 60px; height: 60px; font-size: 24px; }
             #controls { padding: 0 15px; bottom: 25px; }
             .ctrl-group { gap: 12px; }
             #status { font-size: 12px; padding: 6px 16px; top: 12px; white-space: normal; }
-            #info-hint { bottom: 230px; font-size: 11px; }
-            #punch-btn { width: 75px; height: 75px; bottom: 130px; right: 20px; font-size: 12px; }
-            #punch-btn .icon { font-size: 24px; }
-            #team-select h1 { font-size: 28px; }
-            .team-btn { width: 140px; height: 140px; font-size: 20px; }
-            .team-btn .emoji { font-size: 40px; }
-            .team-buttons { gap: 20px; }
-            #scoreboard { font-size: 12px; padding: 10px 15px; top: 70px; right: 10px; min-width: 120px; }
+            #info-hint { bottom: 110px; font-size: 11px; }
+            #action-buttons { bottom: 130px; right: 20px; gap: 10px; }
+            .action-btn { width: 65px; height: 65px; font-size: 26px; }
+            #punch-btn { font-size: 26px; }
+            #debug-info { font-size: 12px; padding: 8px 16px; bottom: 190px; }
+            #login-box { padding: 30px 25px; }
+            #login-title { font-size: 24px; }
+            #ping-display { top: 12px; left: 12px; padding: 3px 10px; }
+            #ping-text { font-size: 11px; }
+            #ping-dot { width: 8px; height: 8px; }
+            #stats-display { top: 60px; left: 12px; font-size: 10px; padding: 6px 10px; }
+            #player-name-display { top: 55px; font-size: 10px; padding: 3px 12px; }
+            #online-count-display { top: 12px; right: 12px; font-size: 10px; padding: 3px 10px; }
+            .player-label { font-size: 10px; padding: 2px 8px; transform: translateY(-25px); }
         }
     </style>
 </head>
 <body>
-    <!-- Team Selection -->
-    <div id="team-select">
-        <h1>⚔️ <span>CHOOSE</span> YOUR TEAM</h1>
-        <div class="team-buttons">
-            <button class="team-btn red" id="team-red">
-                <span class="emoji">🔴</span>
-                RED TEAM
-                <span style="font-size:14px;opacity:0.6;">🔥 Attackers</span>
-            </button>
-            <button class="team-btn blue" id="team-blue">
-                <span class="emoji">🔵</span>
-                BLUE TEAM
-                <span style="font-size:14px;opacity:0.6;">💪 Defenders</span>
-            </button>
-        </div>
-        <div style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:10px;">
-            👥 Choose your side and fight!
+
+    <!-- ===== LOGIN ===== -->
+    <div id="login-screen">
+        <div id="login-title">🥊 <span>مبارزه</span> آنلاین</div>
+        <div id="login-sub">به نقشه جنگی خوش آمدید</div>
+        <div id="login-box">
+            <input type="text" id="name-input" placeholder="نام خود را وارد کنید..." maxlength="20" autofocus>
+            <button id="login-btn">🔥 وارد مبارزه شو</button>
+            <div id="login-error"></div>
+            <div id="online-count">🔗 در حال اتصال به سرور...</div>
         </div>
     </div>
 
-    <div id="punch-flash"></div>
-
-    <div id="status">🥊 <span>Waiting</span> | Online Fist Fight</div>
-    <div id="scoreboard">
-        <div style="font-weight:bold;margin-bottom:8px;color:#ffaa00;">🏆 SCOREBOARD</div>
-        <div id="score-list"></div>
+    <div id="loading">
+        <div class="loader-spinner"></div>
+        <span>⏳ بارگذاری نقشه...</span>
     </div>
-    <div id="info-hint">⬆️⬇️⬅️➡️ Move | 👆 Rotate Camera | 👊 Punch!</div>
+
+    <div id="status">🎮 <span>آماده</span> | نقشه جنگی</div>
+    <div id="player-name-display">👤 شما</div>
+    <div id="online-count-display">👥 ۰ آنلاین</div>
+    
+    <!-- PING DISPLAY -->
+    <div id="ping-display">
+        <div id="ping-dot" style="background-color: #4caf50;"></div>
+        <span id="ping-label">PING</span>
+        <span id="ping-text">0ms</span>
+    </div>
+
+    <!-- STATS DISPLAY -->
+    <div id="stats-display">
+        <div class="stat"><span class="stat-label">Kills</span><span class="stat-value kills" id="kills-display">0</span></div>
+        <div class="stat"><span class="stat-label">Deaths</span><span class="stat-value deaths" id="deaths-display">0</span></div>
+        <div class="stat"><span class="stat-label">K/D</span><span class="stat-value kd" id="kd-display">0.00</span></div>
+        <div class="stat"><span class="stat-label">Hits</span><span class="stat-value" id="hits-display" style="color:#64ffda;">0</span></div>
+    </div>
+
+    <div id="info-hint">⬆️⬇️⬅️➡️ حرکت | 👆 چرخش دوربین | 👊 مشت</div>
+    <div id="debug-info">⏳ در حال بارگذاری...</div>
 
     <div id="camera-control-area"></div>
 
     <div id="controls">
         <div class="ctrl-group">
-            <button class="ctrl-btn" id="btnLeft" aria-label="چپ">◀</button>
-            <button class="ctrl-btn" id="btnRight" aria-label="راست">▶</button>
+            <button class="ctrl-btn" id="btnLeft">◀</button>
+            <button class="ctrl-btn" id="btnRight">▶</button>
         </div>
         <div class="ctrl-group">
-            <button class="ctrl-btn" id="btnForward" aria-label="جلو">▲</button>
-            <button class="ctrl-btn" id="btnBack" aria-label="عقب">▼</button>
+            <button class="ctrl-btn" id="btnForward">▲</button>
+            <button class="ctrl-btn" id="btnBack">▼</button>
         </div>
     </div>
 
-    <button id="punch-btn">
-        <span class="icon">👊</span>
-        PUNCH!
-    </button>
+    <div id="action-buttons">
+        <button class="action-btn" id="punch-btn">👊</button>
+    </div>
 
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
     <script type="importmap">
@@ -304,35 +449,247 @@
     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
         // ============================================================
-        // ABLY CONNECTION
+        // 1. DOM ELEMENTS
         // ============================================================
-        const ably = new Ably.Realtime({
-            key: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
-            clientId: 'player_' + Math.random().toString(36).substr(2, 6)
+        const loginScreen = document.getElementById('login-screen');
+        const loginBtn = document.getElementById('login-btn');
+        const nameInput = document.getElementById('name-input');
+        const loginError = document.getElementById('login-error');
+        const onlineCountEl = document.getElementById('online-count');
+        const onlineCountDisplay = document.getElementById('online-count-display');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const debugEl = document.getElementById('debug-info');
+        const pingText = document.getElementById('ping-text');
+        const pingDot = document.getElementById('ping-dot');
+        const killsDisplay = document.getElementById('kills-display');
+        const deathsDisplay = document.getElementById('deaths-display');
+        const kdDisplay = document.getElementById('kd-display');
+        const hitsDisplay = document.getElementById('hits-display');
+
+        // ============================================================
+        // 2. STATS
+        // ============================================================
+        let stats = {
+            kills: 0,
+            deaths: 0,
+            hits: 0,
+            get kd() { return this.deaths === 0 ? this.kills : (this.kills / this.deaths); }
+        };
+
+        function updateStats() {
+            killsDisplay.textContent = stats.kills;
+            deathsDisplay.textContent = stats.deaths;
+            kdDisplay.textContent = stats.kd.toFixed(2);
+            hitsDisplay.textContent = stats.hits;
+        }
+
+        // ============================================================
+        // 3. ABLY SETUP
+        // ============================================================
+        let ablyClient = null;
+        let channel = null;
+        let currentUserId = '';
+        let playerName = '';
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT = 20;
+        const SEND_INTERVAL = 30;
+        let pingHistory = [];
+        let lastPingTime = 0;
+        let isFirstPing = true;
+
+        const players = new Map();
+
+        function connectToAbly(name) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const clientId = 'user_' + Math.random().toString(36).substr(2, 8);
+                    currentUserId = clientId;
+
+                    ablyClient = new Ably.Realtime({
+                        key: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
+                        clientId: clientId,
+                        echoMessages: false,
+                        autoConnect: true
+                    });
+
+                    ablyClient.connection.on('connected', () => {
+                        console.log('✅ متصل به Ably!');
+                        isConnected = true;
+                        reconnectAttempts = 0;
+                        onlineCountEl.textContent = '🔗 متصل به سرور';
+                        resolve();
+                    });
+
+                    ablyClient.connection.on('disconnected', () => {
+                        console.log('⚠️ قطع موقت');
+                        isConnected = false;
+                        onlineCountEl.textContent = '🔄 تلاش برای اتصال مجدد...';
+                        setTimeout(() => {
+                            if (ablyClient) {
+                                try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection
+                                        .connect(); }
+                            }
+                        }, 1000);
+                    });
+
+                    ablyClient.connection.on('failed', () => {
+                        console.log('❌ اتصال ناموفق');
+                        isConnected = false;
+                        if (reconnectAttempts < MAX_RECONNECT) {
+                            reconnectAttempts++;
+                            onlineCountEl.textContent = `🔄 تلاش مجدد ${reconnectAttempts}/${MAX_RECONNECT}...`;
+                            setTimeout(() => {
+                                if (ablyClient) {
+                                    try { ablyClient.connection.recover(); } catch (e) { ablyClient.connection
+                                            .connect(); }
+                                }
+                            }, 2000);
+                        } else {
+                            reject(new Error('اتصال به سرور ناموفق'));
+                        }
+                    });
+
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        // ============================================================
+        // 4. PING SYSTEM
+        // ============================================================
+        function updatePing(pingMs) {
+            pingHistory.push(pingMs);
+            if (pingHistory.length > 10) pingHistory.shift();
+
+            const avgPing = pingHistory.reduce((a, b) => a + b, 0) / pingHistory.length;
+            const displayPing = Math.round(avgPing);
+
+            pingText.textContent = displayPing + 'ms';
+
+            // رنگ‌بندی مثل کالاف
+            if (displayPing < 40) {
+                pingDot.style.backgroundColor = '#4caf50'; // سبز - عالی
+            } else if (displayPing < 80) {
+                pingDot.style.backgroundColor = '#8bc34a'; // سبز روشن - خوب
+            } else if (displayPing < 120) {
+                pingDot.style.backgroundColor = '#ffeb3b'; // زرد - متوسط
+            } else if (displayPing < 180) {
+                pingDot.style.backgroundColor = '#ff9800'; // نارنجی - ضعیف
+            } else {
+                pingDot.style.backgroundColor = '#f44336'; // قرمز - بد
+                debugEl.textContent = '⚠️ اتصال ضعیف!';
+                debugEl.className = 'error';
+                setTimeout(() => {
+                    debugEl.textContent = '✅ آماده مبارزه';
+                    debugEl.className = '';
+                }, 2000);
+            }
+        }
+
+        function measurePing() {
+            if (!isConnected || !channel) return;
+
+            const startTime = Date.now();
+            const pingId = 'ping_' + startTime;
+
+            try {
+                channel.publish('ping', {
+                    id: pingId,
+                    time: startTime,
+                    clientId: currentUserId
+                }, (err) => {
+                    if (err) return;
+                });
+
+                const handler = (message) => {
+                    if (message.data && message.data.id === pingId && message.data.clientId !== currentUserId) {
+                        const endTime = Date.now();
+                        const pingMs = endTime - startTime;
+                        updatePing(pingMs);
+                        channel.unsubscribe('pong', handler);
+                    }
+                };
+
+                channel.subscribe('pong', handler);
+
+                setTimeout(() => {
+                    channel.unsubscribe('pong', handler);
+                    if (isFirstPing) {
+                        isFirstPing = false;
+                        updatePing(30);
+                    }
+                }, 2000);
+
+            } catch (e) {
+                if (isFirstPing) {
+                    isFirstPing = false;
+                    updatePing(30);
+                }
+            }
+        }
+
+        function setupPingListener() {
+            if (!channel) return;
+
+            channel.subscribe('ping', (message) => {
+                if (message.data.clientId === currentUserId) return;
+                channel.publish('pong', {
+                    id: message.data.id,
+                    clientId: currentUserId
+                });
+            });
+
+            setInterval(measurePing, 3000);
+            setTimeout(measurePing, 500);
+        }
+
+        // ============================================================
+        // 5. LOGIN
+        // ============================================================
+        async function handleLogin() {
+            const name = nameInput.value.trim();
+            if (!name) {
+                loginError.textContent = '⚠️ لطفاً نام خود را وارد کنید';
+                return;
+            }
+            if (name.length < 2) {
+                loginError.textContent = '⚠️ نام باید حداقل ۲ حرف باشد';
+                return;
+            }
+
+            loginBtn.textContent = '⏳ در حال اتصال...';
+            loginBtn.disabled = true;
+            loginError.textContent = '';
+
+            try {
+                await connectToAbly(name);
+                playerName = name;
+                channel = ablyClient.channels.get('fight-arena');
+
+                playerNameDisplay.textContent = `👤 ${playerName}`;
+                loginScreen.classList.add('hidden');
+
+                startGame();
+
+            } catch (error) {
+                loginError.textContent = '❌ ' + error.message;
+                loginBtn.textContent = '🔥 وارد مبارزه شو';
+                loginBtn.disabled = false;
+            }
+        }
+
+        loginBtn.addEventListener('click', handleLogin);
+        nameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
         });
 
-        let channel;
-        let playerId = ably.clientId;
-        let myTeam = null;
-        let isConnected = false;
-
         // ============================================================
-        // GAME STATE
-        // ============================================================
-        const MAX_HEALTH = 100;
-        const PUNCH_DAMAGE = 15;
-        const PUNCH_COOLDOWN = 300; // ms - faster for more action
-        const PUNCH_RANGE = 2.0;
-        const RESPAWN_DELAY = 2000;
-
-        let lastPunchTime = 0;
-        let isPunching = false;
-        let punchSide = 'right';
-
-        // ============================================================
-        // THREE.JS SETUP
+        // 6. THREE.JS SCENE
         // ============================================================
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x1a1a2e);
@@ -341,7 +698,7 @@
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 40);
         camera.position.set(0, 1.6, 3.0);
 
-        const renderer = new THREE.WebGLRenderer({ 
+        const renderer = new THREE.WebGLRenderer({
             antialias: true,
             powerPreference: "high-performance"
         });
@@ -353,8 +710,17 @@
         renderer.toneMappingExposure = 0.9;
         document.body.appendChild(renderer.domElement);
 
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0';
+        labelRenderer.domElement.style.left = '0';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        labelRenderer.domElement.style.zIndex = '5';
+        document.body.appendChild(labelRenderer.domElement);
+
         // ============================================================
-        // CAMERA CONTROL
+        // 7. CAMERA
         // ============================================================
         const cameraRadius = 3.0;
         const cameraHeight = 1.6;
@@ -371,21 +737,25 @@
             cameraTheta += (targetCameraTheta - cameraTheta) * 0.15;
             cameraPhi += (targetCameraPhi - cameraPhi) * 0.15;
             cameraPhi = Math.max(PHI_MIN, Math.min(PHI_MAX, cameraPhi));
-            
+
             const x = Math.sin(cameraTheta) * cameraRadius * Math.cos(cameraPhi);
             const y = Math.sin(cameraPhi) * cameraRadius + cameraHeight;
             const z = Math.cos(cameraTheta) * cameraRadius * Math.cos(cameraPhi);
-            
+
             const targetPos = playerTarget.clone().add(new THREE.Vector3(x, y, z));
-            
+
             camera.position.lerp(targetPos, 0.2);
             camera.lookAt(playerTarget);
         }
 
-        // Camera controls
+        // ============================================================
+        // 8. CAMERA CONTROLS
+        // ============================================================
         const cameraControlArea = document.getElementById('camera-control-area');
         let isCameraDragging = false;
-        let lastTouchX = 0, lastTouchY = 0, touchId = null;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let touchId = null;
 
         cameraControlArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -399,6 +769,7 @@
         cameraControlArea.addEventListener('touchmove', (e) => {
             e.preventDefault();
             if (!isCameraDragging) return;
+
             for (const touch of e.changedTouches) {
                 if (touch.identifier === touchId) {
                     const deltaX = touch.clientX - lastTouchX;
@@ -424,7 +795,8 @@
         }, { passive: true });
 
         let isMouseDragging = false;
-        let lastMouseX = 0, lastMouseY = 0;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
 
         cameraControlArea.addEventListener('mousedown', (e) => {
             isMouseDragging = true;
@@ -450,15 +822,15 @@
         });
 
         // ============================================================
-        // LIGHTING
+        // 9. LIGHTING
         // ============================================================
-        const ambient = new THREE.AmbientLight(0x445577, 0.5);
+        const ambient = new THREE.AmbientLight(0x445577, 0.4);
         scene.add(ambient);
 
-        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x3a3a5e, 0.6);
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x3a3a5e, 0.5);
         scene.add(hemiLight);
 
-        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.8);
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.5);
         sunLight.position.set(6, 10, 5);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 512;
@@ -478,19 +850,25 @@
         scene.add(fillLight);
 
         // ============================================================
-        // GROUND
+        // 10. GROUND
         // ============================================================
         const textureLoader = new THREE.TextureLoader();
         const groundTexture = textureLoader.load(
             "https://imglink.cc/cdn/synMTvB3HA.jpeg",
-            () => console.log('✅ Ground loaded'),
+            () => console.log('✅ تکسچر زمین بارگذاری شد'),
             undefined,
-            () => createFallbackGround()
+            () => {
+                console.warn('⚠️ بارگذاری تکسچر ناموفق');
+                createFallbackGround();
+            }
         );
 
         groundTexture.wrapS = THREE.RepeatWrapping;
         groundTexture.wrapT = THREE.RepeatWrapping;
         groundTexture.repeat.set(20, 20);
+        groundTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 2);
+        groundTexture.minFilter = THREE.LinearMipmapLinearFilter;
+        groundTexture.magFilter = THREE.LinearFilter;
 
         const groundMat = new THREE.MeshStandardMaterial({
             map: groundTexture,
@@ -519,9 +897,12 @@
         }
 
         // ============================================================
-        // OBSTACLES
+        // 11. WALLS
         // ============================================================
+        const mapGroup = new THREE.Group();
         const obstacles = [];
+        const mapObjects = [];
+
         const wallMat = new THREE.MeshStandardMaterial({
             color: 0x334466,
             roughness: 0.5,
@@ -540,7 +921,8 @@
             wall.position.set(w.x, w.h / 2, w.z);
             wall.castShadow = true;
             wall.receiveShadow = true;
-            scene.add(wall);
+            mapGroup.add(wall);
+            mapObjects.push(wall);
             obstacles.push({
                 type: 'box',
                 pos: new THREE.Vector3(w.x, 0, w.z),
@@ -549,50 +931,67 @@
             });
         }
 
+        scene.add(mapGroup);
+        document.getElementById('loading').classList.add('hidden');
+
         // ============================================================
-        // PLAYER CREATION
+        // 12. LOAD CHARACTER
         // ============================================================
         const characterLoader = new GLTFLoader();
-        let myPlayer = null;
-        let myMixer = null;
-        let myIdleAction = null;
-        let myWalkAction = null;
-        let myRunAction = null;
-        let myLoaded = false;
+        let player = null;
+        let mixer = null;
+        let currentAction = null;
+        let idleAction = null;
+        let walkAction = null;
+        let runAction = null;
+        let playerLoaded = false;
         let walkCycle = 0;
         let isMoving = false;
-        let myHealth = MAX_HEALTH;
-        let myScore = 0;
-        let myKills = 0;
-        let isRespawning = false;
-        let respawnTimer = null;
+        
+        // ===== استخوان‌های Mixamo =====
+        let rightShoulder = null;
+        let rightArm = null;
+        let rightForeArm = null;
+        let rightHand = null;
+        let leftShoulder = null;
+        let leftArm = null;
+        let leftForeArm = null;
+        let leftHand = null;
+        let spine1 = null;
+        let spine2 = null;
+        let hips = null;
+        let neck = null;
+        let head = null;
+        let leftUpLeg = null;
+        let leftLeg = null;
+        let rightUpLeg = null;
+        let rightLeg = null;
+        
+        // استخوان‌های انگشتان راست
+        let fingerBonesR = {};
+
+        // متغیرهای انیمیشن مشت
+        let punchAnimating = false;
+        let punchPhase = 0;
+        let punchProgress = 0;
+        const PUNCH_DURATION = 0.3;
+
+        // ذخیره موقعیت اولیه
+        let startRotations = {};
+        let startFingerRotations = {};
+
+        const localLabelDiv = document.createElement('div');
+        localLabelDiv.className = 'player-label own';
+        localLabelDiv.textContent = playerName || 'شما';
+        const localLabel = new CSS2DObject(localLabelDiv);
+        localLabel.position.set(0, 1.8, 0);
+
+        const characterGroup = new THREE.Group();
+        scene.add(characterGroup);
+        characterGroup.add(localLabel);
 
         const moveState = { forward: false, back: false, left: false, right: false };
         const SPAWN_POINT = new THREE.Vector3(0, 0, 0);
-
-        function findRightHandBone(model) {
-            const possibleNames = [
-                'RightHand', 'Hand_R', 'mixamorigRightHand', 'Bip01_R_Hand',
-                'Right_Hand', 'hand_R', 'r_hand', 'right_hand'
-            ];
-
-            for (const name of possibleNames) {
-                const bone = model.getObjectByName(name);
-                if (bone && bone.isBone) return bone;
-            }
-
-            let found = null;
-            model.traverse((child) => {
-                if (child.isBone) {
-                    const nameLower = child.name.toLowerCase();
-                    if ((nameLower.includes('right') || nameLower.includes('r_')) && 
-                        (nameLower.includes('hand') || nameLower.includes('wrist'))) {
-                        if (!found) found = child;
-                    }
-                }
-            });
-            return found;
-        }
 
         function findAnimation(animations, names) {
             for (const name of names) {
@@ -605,711 +1004,666 @@
             return null;
         }
 
-        function createPlayer(team, position) {
-            return new Promise((resolve, reject) => {
-                characterLoader.load(
-                    "https://rawcdn.githack.com/mrdoob/three.js/r170/examples/models/gltf/Soldier.glb",
-                    function(gltf) {
-                        const player = gltf.scene;
-                        player.scale.set(1, 1, 1);
-                        player.position.copy(position || SPAWN_POINT);
-                        player.castShadow = true;
-                        player.receiveShadow = true;
+        function switchAnimation(action) {
+            if (currentAction === action) return;
+            if (currentAction) {
+                currentAction.fadeOut(0.1);
+            }
+            if (action) {
+                action.reset().fadeIn(0.1).play();
+            }
+            currentAction = action;
+        }
 
-                        // Only change the color slightly - keep soldier look
-                        const color = team === 'red' ? 0xcc3333 : 0x3333cc;
-                        player.traverse((child) => {
-                            if (child.isMesh && child.material) {
-                                if (Array.isArray(child.material)) {
-                                    child.material.forEach(m => {
-                                        // Slight color tint, not full color change
-                                        const origColor = m.color.clone();
-                                        m.color.setHex(color);
-                                        // Mix with original to keep detail
-                                        m.color.lerp(origColor, 0.3);
-                                    });
-                                } else {
-                                    const origColor = child.material.color.clone();
-                                    child.material.color.setHex(color);
-                                    child.material.color.lerp(origColor, 0.3);
-                                }
-                            }
-                        });
+        // ============================================================
+        // 13. MELEE PUNCH SYSTEM - حرفه‌ای
+        // ============================================================
+        let punchCooldown = 0;
+        const ACTION_COOLDOWN = 0.5;
+        let cameraShake = 0;
 
-                        const mixer = new THREE.AnimationMixer(player);
-                        let idleAction, walkAction, runAction, currentAction;
-
-                        if (gltf.animations && gltf.animations.length > 0) {
-                            const animations = gltf.animations;
-                            const idleAnim = findAnimation(animations, ['idle', 'stand', 'wait']);
-                            const walkAnim = findAnimation(animations, ['walk', 'forward']);
-                            const runAnim = findAnimation(animations, ['run', 'sprint']);
-
-                            if (idleAnim) {
-                                idleAction = mixer.clipAction(idleAnim);
-                                idleAction.play();
-                                currentAction = idleAction;
-                            } else if (animations.length > 0) {
-                                idleAction = mixer.clipAction(animations[0]);
-                                idleAction.play();
-                                currentAction = idleAction;
-                            }
-
-                            if (walkAnim) walkAction = mixer.clipAction(walkAnim);
-                            if (runAnim) runAction = mixer.clipAction(runAnim);
-                            if (!walkAnim && runAnim) walkAction = mixer.clipAction(runAnim);
+        function closeFingers(fingers) {
+            const fingerGroups = [
+                ['Thumb1', 'Thumb2', 'Thumb3'],
+                ['Index1', 'Index2', 'Index3'],
+                ['Middle1', 'Middle2', 'Middle3'],
+                ['Ring1', 'Ring2', 'Ring3'],
+                ['Pinky1', 'Pinky2', 'Pinky3']
+            ];
+            
+            for (const group of fingerGroups) {
+                for (let i = 0; i < group.length; i++) {
+                    const name = `mixamorigRightHand${group[i]}`;
+                    if (fingers[name]) {
+                        let bendAmount = -0.6 - (i * 0.2);
+                        if (group[0].includes('Thumb')) {
+                            bendAmount = -0.3;
+                            fingers[name].rotation.z = 0.2;
                         }
-
-                        resolve({ player, mixer, idleAction, walkAction, runAction, currentAction });
-                    },
-                    undefined,
-                    (error) => reject(error)
-                );
-            });
-        }
-
-        // ============================================================
-        // ABLY MULTIPLAYER SYNC
-        // ============================================================
-        function connectToAbly() {
-            ably.connection.on('connected', () => {
-                console.log('✅ Connected to Ably');
-                isConnected = true;
-                channel = ably.channels.get('fist-fight-game');
-                
-                // Join the game
-                channel.presence.enter({
-                    clientId: playerId,
-                    team: myTeam,
-                    position: { x: 0, y: 0, z: 0 },
-                    health: MAX_HEALTH,
-                    score: 0,
-                    kills: 0
-                });
-
-                // Listen for presence updates
-                channel.presence.subscribe('enter', (presence) => {
-                    const data = presence.data;
-                    if (data.clientId !== playerId) {
-                        console.log('👤 Player joined:', data.clientId);
-                        spawnRemotePlayer(data.clientId, data.team, data.position);
+                        fingers[name].rotation.x = bendAmount;
                     }
-                });
-
-                channel.presence.subscribe('leave', (presence) => {
-                    const data = presence.data;
-                    if (data && data.clientId !== playerId) {
-                        console.log('👋 Player left:', data.clientId);
-                        removeRemotePlayer(data.clientId);
-                    }
-                });
-
-                channel.presence.subscribe('update', (presence) => {
-                    const data = presence.data;
-                    if (data && data.clientId !== playerId) {
-                        updateRemotePlayer(data.clientId, data);
-                    }
-                });
-
-                // Listen for game events
-                channel.subscribe('punch', (message) => {
-                    const data = message.data;
-                    if (data.playerId !== playerId) {
-                        handleRemotePunch(data);
-                    }
-                });
-
-                channel.subscribe('damage', (message) => {
-                    const data = message.data;
-                    if (data.targetId === playerId) {
-                        handleRemoteDamage(data);
-                    }
-                });
-
-                channel.subscribe('respawn', (message) => {
-                    const data = message.data;
-                    if (data.playerId === playerId) {
-                        respawnMyPlayer();
-                    }
-                });
-
-                channel.subscribe('score', (message) => {
-                    const data = message.data;
-                    updateScoreboard(data);
-                });
-
-                // Get initial presence
-                channel.presence.get((err, members) => {
-                    if (!err) {
-                        members.forEach(member => {
-                            if (member.data && member.data.clientId !== playerId) {
-                                spawnRemotePlayer(member.data.clientId, member.data.team, member.data.position);
-                            }
-                        });
-                    }
-                });
-
-                document.getElementById('status').innerHTML = '🥊 <span>Online</span> | Team ' + 
-                    (myTeam === 'red' ? '🔴 Red' : '🔵 Blue');
-            });
-
-            ably.connection.on('disconnected', () => {
-                console.warn('⚠️ Disconnected from Ably');
-                isConnected = false;
-                document.getElementById('status').innerHTML = '⚠️ <span>Disconnected</span>';
-            });
-        }
-
-        // ============================================================
-        // REMOTE PLAYER MANAGEMENT
-        // ============================================================
-        let remotePlayers = {};
-
-        async function spawnRemotePlayer(id, team, position) {
-            if (remotePlayers[id] || id === playerId) return;
-
-            try {
-                const result = await createPlayer(team, new THREE.Vector3(position.x, 0, position.z));
-                scene.add(result.player);
-                
-                // Create health bar
-                const healthBar = createHealthBar();
-                result.player.add(healthBar);
-                
-                // Create name tag
-                const nameTag = createNameTag(id, team);
-                result.player.add(nameTag);
-
-                remotePlayers[id] = {
-                    player: result.player,
-                    mixer: result.mixer,
-                    idleAction: result.idleAction,
-                    walkAction: result.walkAction,
-                    runAction: result.runAction,
-                    currentAction: result.currentAction,
-                    health: MAX_HEALTH,
-                    team: team,
-                    healthBar: healthBar,
-                    nameTag: nameTag,
-                    lastPosition: position,
-                    isPunching: false,
-                    punchTimer: null
-                };
-
-                console.log('✅ Remote player spawned:', id);
-            } catch (error) {
-                console.error('❌ Failed to spawn remote player:', error);
-            }
-        }
-
-        function removeRemotePlayer(id) {
-            if (remotePlayers[id]) {
-                scene.remove(remotePlayers[id].player);
-                delete remotePlayers[id];
-                console.log('🗑️ Remote player removed:', id);
-            }
-        }
-
-        function updateRemotePlayer(id, data) {
-            if (remotePlayers[id] && data.position) {
-                const targetPos = new THREE.Vector3(data.position.x, 0, data.position.z);
-                remotePlayers[id].player.position.lerp(targetPos, 0.3);
-                remotePlayers[id].lastPosition = data.position;
-                
-                if (data.health !== undefined) {
-                    remotePlayers[id].health = data.health;
-                    updateHealthBar(remotePlayers[id].healthBar, data.health);
                 }
             }
         }
 
-        function createHealthBar() {
-            const group = new THREE.Group();
+        function openFingers(fingers) {
+            const fingerNames = [
+                'mixamorigRightHandThumb1', 'mixamorigRightHandThumb2', 'mixamorigRightHandThumb3',
+                'mixamorigRightHandIndex1', 'mixamorigRightHandIndex2', 'mixamorigRightHandIndex3',
+                'mixamorigRightHandMiddle1', 'mixamorigRightHandMiddle2', 'mixamorigRightHandMiddle3',
+                'mixamorigRightHandRing1', 'mixamorigRightHandRing2', 'mixamorigRightHandRing3',
+                'mixamorigRightHandPinky1', 'mixamorigRightHandPinky2'
+            ];
             
-            const bg = new THREE.Mesh(
-                new THREE.PlaneGeometry(0.6, 0.08),
-                new THREE.MeshBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.5 })
-            );
-            bg.position.y = 0.5;
-            group.add(bg);
-            
-            const fill = new THREE.Mesh(
-                new THREE.PlaneGeometry(0.58, 0.06),
-                new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-            );
-            fill.position.y = 0.5;
-            fill.position.x = -0.01;
-            group.add(fill);
-            
-            group.userData.healthFill = fill;
-            group.userData.maxWidth = 0.58;
-            
-            return group;
-        }
-
-        function updateHealthBar(healthBar, health) {
-            if (healthBar && healthBar.userData.healthFill) {
-                const ratio = Math.max(0, health / MAX_HEALTH);
-                const width = healthBar.userData.maxWidth * ratio;
-                healthBar.userData.healthFill.scale.x = ratio;
-                healthBar.userData.healthFill.position.x = -healthBar.userData.maxWidth / 2 + width / 2;
-                
-                const color = new THREE.Color();
-                if (ratio > 0.6) color.setHex(0x00ff00);
-                else if (ratio > 0.3) color.setHex(0xffff00);
-                else color.setHex(0xff0000);
-                healthBar.userData.healthFill.material.color.copy(color);
+            for (const name of fingerNames) {
+                if (fingers[name] && startFingerRotations[name]) {
+                    fingers[name].rotation.x = startFingerRotations[name].x || 0;
+                    fingers[name].rotation.y = startFingerRotations[name].y || 0;
+                    fingers[name].rotation.z = startFingerRotations[name].z || 0;
+                }
             }
         }
 
-        function createNameTag(id, team) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 64;
-            const ctx = canvas.getContext('2d');
+        function startMeleePunch() {
+            console.log('👊 Melee Punch!');
             
-            // Round rect function
-            ctx.roundRect = function(x, y, w, h, r) {
-                if (w < 2 * r) r = w / 2;
-                if (h < 2 * r) r = h / 2;
-                this.moveTo(x + r, y);
-                this.lineTo(x + w - r, y);
-                this.quadraticCurveTo(x + w, y, x + w, y + r);
-                this.lineTo(x + w, y + h - r);
-                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-                this.lineTo(x + r, y + h);
-                this.quadraticCurveTo(x, y + h, x, y + h - r);
-                this.lineTo(x, y + r);
-                this.quadraticCurveTo(x, y, x + r, y);
-                this.closePath();
-                return this;
+            if (!playerLoaded || !player) {
+                debugEl.textContent = '⏳ منتظر بارگذاری کاراکتر...';
+                return;
+            }
+            
+            if (punchCooldown > 0 || punchAnimating) {
+                return;
+            }
+
+            if (!rightArm || !rightForeArm || !rightShoulder) {
+                console.error('❌ استخوان‌های دست راست پیدا نشد!');
+                return;
+            }
+
+            debugEl.textContent = '👊 مشت!';
+            debugEl.className = 'success';
+            
+            punchAnimating = true;
+            punchPhase = 0;
+            punchProgress = 0;
+            
+            // ذخیره موقعیت اولیه
+            const bones = {
+                rightShoulder, rightArm, rightForeArm, rightHand,
+                spine1, spine2
             };
             
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.roundRect(0, 0, 256, 64, 10);
-            ctx.fill();
+            startRotations = {};
+            for (const [key, bone] of Object.entries(bones)) {
+                if (bone) {
+                    startRotations[key] = {
+                        x: bone.rotation.x,
+                        y: bone.rotation.y,
+                        z: bone.rotation.z
+                    };
+                }
+            }
             
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = team === 'red' ? '#ff4444' : '#4444ff';
-            ctx.fillText(id.substring(0, 10), 128, 32);
+            startFingerRotations = {};
+            for (const [name, bone] of Object.entries(fingerBonesR)) {
+                if (bone) {
+                    startFingerRotations[name] = {
+                        x: bone.rotation.x,
+                        y: bone.rotation.y,
+                        z: bone.rotation.z
+                    };
+                }
+            }
             
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ 
-                map: texture,
-                transparent: true,
-                depthTest: false
-            });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.y = 0.8;
-            sprite.scale.set(0.8, 0.2, 1);
+            closeFingers(fingerBonesR);
+            punchCooldown = ACTION_COOLDOWN;
             
-            return sprite;
+            // Hit Detection
+            const hitResult = checkMeleeHit();
+            if (hitResult) {
+                stats.hits++;
+                stats.kills++;
+                updateStats();
+                createHitEffect(hitResult.point);
+                debugEl.textContent = `💥 ${playerName} به ${hitResult.name} مشت زد! (Kill ${stats.kills})`;
+                debugEl.className = 'success';
+                
+                if (channel) {
+                    channel.publish('melee', {
+                        from: currentUserId,
+                        fromName: playerName,
+                        target: hitResult.id,
+                        time: Date.now()
+                    });
+                }
+                
+                setTimeout(() => {
+                    debugEl.textContent = '✅ آماده مبارزه';
+                    debugEl.className = '';
+                }, 2000);
+            }
+            
+            cameraShake = 0.15;
         }
 
-        // ============================================================
-        // PUNCH SYSTEM - IMPROVED
-        // ============================================================
-        function performPunch() {
-            console.log('👊 Punch triggered!');
-            
-            if (!myPlayer || !myLoaded) {
-                console.warn('⚠️ Player not ready!');
+        function updateMeleeAnimation(delta) {
+            if (!punchAnimating) return;
+            if (!rightArm || !rightForeArm) {
+                punchAnimating = false;
                 return;
             }
-            
-            if (isRespawning) {
-                console.warn('⚠️ Respawning!');
-                return;
+
+            punchProgress += delta / PUNCH_DURATION;
+
+            // فاز 0: کشیدن به عقب (0 تا 0.25)
+            if (punchPhase === 0) {
+                if (punchProgress >= 0.25) {
+                    punchPhase = 1;
+                    punchProgress = 0;
+                } else {
+                    const t = punchProgress / 0.25;
+                    const easeOut = 1 - Math.pow(1 - t, 2);
+                    
+                    if (rightShoulder) {
+                        rightShoulder.rotation.x = startRotations.rightShoulder.x - 0.3 * easeOut;
+                        rightShoulder.rotation.z = startRotations.rightShoulder.z + 0.15 * easeOut;
+                    }
+                    rightArm.rotation.x = startRotations.rightArm.x - 0.4 * easeOut;
+                    if (spine1) {
+                        spine1.rotation.x = startRotations.spine1.x + 0.1 * easeOut;
+                    }
+                }
             }
-            
-            const now = Date.now();
-            if (now - lastPunchTime < PUNCH_COOLDOWN) {
-                console.log('⏳ Cooldown...');
-                return;
+            // فاز 1: پرتاب به جلو - ضربه (0.25 تا 0.7)
+            else if (punchPhase === 1) {
+                if (punchProgress >= 0.45) {
+                    punchPhase = 2;
+                    punchProgress = 0;
+                } else {
+                    const t = punchProgress / 0.45;
+                    const easeOut = 1 - Math.pow(1 - t, 3);
+                    
+                    if (rightShoulder) {
+                        rightShoulder.rotation.x = startRotations.rightShoulder.x - 0.9 * easeOut;
+                        rightShoulder.rotation.z = startRotations.rightShoulder.z - 0.2 * easeOut;
+                    }
+                    rightArm.rotation.x = startRotations.rightArm.x - 1.7 * easeOut;
+                    rightArm.rotation.z = startRotations.rightArm.z - 0.2 * easeOut;
+                    rightForeArm.rotation.x = startRotations.rightForeArm.x - 1.2 * easeOut;
+                    
+                    if (spine1) {
+                        spine1.rotation.x = startRotations.spine1.x - 0.25 * easeOut;
+                    }
+                    if (spine2) {
+                        spine2.rotation.x = startRotations.spine2.x - 0.2 * easeOut;
+                    }
+                }
             }
+            // فاز 2: بازگشت (0.7 تا 1.0)
+            else if (punchPhase === 2) {
+                if (punchProgress >= 0.3) {
+                    punchAnimating = false;
+                    // بازگشت کامل
+                    const bones = {
+                        rightShoulder, rightArm, rightForeArm, rightHand,
+                        spine1, spine2
+                    };
+                    for (const [key, bone] of Object.entries(bones)) {
+                        if (bone && startRotations[key]) {
+                            bone.rotation.x = startRotations[key].x;
+                            bone.rotation.y = startRotations[key].y;
+                            bone.rotation.z = startRotations[key].z;
+                        }
+                    }
+                    openFingers(fingerBonesR);
+                    if (idleAction && !isMoving) {
+                        switchAnimation(idleAction);
+                    }
+                } else {
+                    const t = punchProgress / 0.3;
+                    const easeIn = t * t;
+                    
+                    if (rightShoulder) {
+                        rightShoulder.rotation.x = startRotations.rightShoulder.x - 0.9 * (1 - easeIn);
+                        rightShoulder.rotation.z = startRotations.rightShoulder.z - 0.2 * (1 - easeIn);
+                    }
+                    rightArm.rotation.x = startRotations.rightArm.x - 1.7 * (1 - easeIn);
+                    rightArm.rotation.z = startRotations.rightArm.z - 0.2 * (1 - easeIn);
+                    rightForeArm.rotation.x = startRotations.rightForeArm.x - 1.2 * (1 - easeIn);
+                    if (spine1) {
+                        spine1.rotation.x = startRotations.spine1.x - 0.25 * (1 - easeIn);
+                    }
+                    if (spine2) {
+                        spine2.rotation.x = startRotations.spine2.x - 0.2 * (1 - easeIn);
+                    }
+                }
+            }
+        }
+
+        function checkMeleeHit() {
+            const forward = new THREE.Vector3(0, 0, -1);
+            forward.applyQuaternion(characterGroup.quaternion);
             
-            console.log('💥 PUNCH!');
-            lastPunchTime = now;
-            isPunching = true;
-            punchSide = punchSide === 'right' ? 'left' : 'right';
+            const punchOrigin = characterGroup.position.clone();
+            punchOrigin.y += 1.2;
+            punchOrigin.add(forward.clone().multiplyScalar(0.3));
             
-            // Play punch animation on arms
-            animatePunch(myPlayer, punchSide);
+            const raycaster = new THREE.Raycaster(punchOrigin, forward, 0.2, 2.0);
             
-            // Flash effect
-            const flash = document.getElementById('punch-flash');
-            flash.classList.add('active');
-            setTimeout(() => flash.classList.remove('active'), 100);
-            
-            // Send punch event to server
-            if (channel && isConnected) {
-                channel.publish('punch', {
-                    playerId: playerId,
-                    position: myPlayer.position,
-                    direction: getForwardDirection(),
-                    side: punchSide,
-                    timestamp: now
+            const remoteMeshes = [];
+            const meshToPlayer = {};
+            for (const [id, remotePlayer] of players) {
+                if (id === currentUserId) continue;
+                remotePlayer.mesh.traverse((child) => {
+                    if (child.isMesh) {
+                        remoteMeshes.push(child);
+                        meshToPlayer[child.uuid] = { id, name: remotePlayer.name };
+                    }
                 });
             }
             
-            // Check for nearby enemies
-            checkPunchHit();
+            const intersects = raycaster.intersectObjects(remoteMeshes, false);
             
-            // Reset punch state after animation
-            setTimeout(() => {
-                isPunching = false;
-                resetArms(myPlayer);
-            }, 250);
-        }
-
-        function animatePunch(player, side) {
-            let armBone = null;
-            let handBone = null;
-            let forearmBone = null;
-            
-            player.traverse((child) => {
-                if (child.isBone) {
-                    const name = child.name.toLowerCase();
-                    if (side === 'right') {
-                        if (name.includes('rightarm') || name.includes('upperarm_r')) {
-                            armBone = child;
-                        }
-                        if (name.includes('rightforearm') || name.includes('forearm_r')) {
-                            forearmBone = child;
-                        }
-                        if (name.includes('righthand') || name.includes('hand_r')) {
-                            handBone = child;
-                        }
-                    } else {
-                        if (name.includes('leftarm') || name.includes('upperarm_l')) {
-                            armBone = child;
-                        }
-                        if (name.includes('leftforearm') || name.includes('forearm_l')) {
-                            forearmBone = child;
-                        }
-                        if (name.includes('lefthand') || name.includes('hand_l')) {
-                            handBone = child;
-                        }
+            if (intersects.length > 0) {
+                const hitInfo = meshToPlayer[intersects[0].object.uuid];
+                if (hitInfo) {
+                    // Knock Back
+                    const knockDir = new THREE.Vector3(0, 0, 1);
+                    knockDir.applyQuaternion(characterGroup.quaternion);
+                    const targetPlayer = players.get(hitInfo.id);
+                    if (targetPlayer) {
+                        targetPlayer.mesh.position.add(knockDir.multiplyScalar(0.5));
                     }
-                }
-            });
-            
-            // Animate arm - punch forward
-            if (armBone) {
-                const origRot = armBone.rotation.x;
-                const origZ = armBone.rotation.z;
-                // Punch motion - arm goes forward and slightly up
-                armBone.rotation.x = -1.5;
-                armBone.rotation.z = side === 'right' ? -0.3 : 0.3;
-                setTimeout(() => {
-                    armBone.rotation.x = origRot;
-                    armBone.rotation.z = origZ;
-                }, 250);
-            }
-            
-            if (forearmBone) {
-                const origRot = forearmBone.rotation.x;
-                forearmBone.rotation.x = -1.8;
-                setTimeout(() => {
-                    forearmBone.rotation.x = origRot;
-                }, 250);
-            }
-            
-            if (handBone) {
-                const origPos = handBone.position.clone();
-                handBone.position.x += 0.2;
-                handBone.position.y += 0.05;
-                setTimeout(() => {
-                    handBone.position.copy(origPos);
-                }, 250);
-            }
-        }
-
-        function resetArms(player) {
-            player.traverse((child) => {
-                if (child.isBone) {
-                    const name = child.name.toLowerCase();
-                    if (name.includes('upperarm')) {
-                        child.rotation.x = -0.8;
-                        child.rotation.z = 0;
-                    }
-                    if (name.includes('forearm')) {
-                        child.rotation.x = -0.3;
-                    }
-                    if (name.includes('hand')) {
-                        child.position.x = 0;
-                        child.position.y = 0;
-                    }
-                }
-            });
-        }
-
-        function getForwardDirection() {
-            const dir = new THREE.Vector3(0, 0, -1);
-            if (myPlayer) {
-                dir.applyQuaternion(myPlayer.quaternion);
-            }
-            return dir;
-        }
-
-        function checkPunchHit() {
-            if (!myPlayer) return;
-            
-            const punchPos = myPlayer.position.clone();
-            punchPos.y += 0.8; // Punch at chest height
-            
-            // Check all remote players
-            for (const [id, remote] of Object.entries(remotePlayers)) {
-                if (!remote.player) continue;
-                
-                const dist = punchPos.distanceTo(remote.player.position);
-                if (dist < PUNCH_RANGE) {
-                    // Hit!
-                    console.log('🎯 Hit player:', id);
-                    dealDamage(id);
+                    return {
+                        id: hitInfo.id,
+                        name: hitInfo.name,
+                        point: intersects[0].point
+                    };
                 }
             }
-        }
-
-        function dealDamage(targetId) {
-            if (remotePlayers[targetId]) {
-                const target = remotePlayers[targetId];
-                target.health -= PUNCH_DAMAGE;
-                
-                // Create hit effect
-                createHitEffect(target.player.position.clone());
-                
-                // Update health bar
-                updateHealthBar(target.healthBar, target.health);
-                
-                // Send damage to server
-                if (channel && isConnected) {
-                    channel.publish('damage', {
-                        targetId: targetId,
-                        damage: PUNCH_DAMAGE,
-                        health: target.health,
-                        attackerId: playerId
-                    });
-                }
-                
-                // Check if defeated
-                if (target.health <= 0) {
-                    target.health = 0;
-                    myScore += 10;
-                    myKills += 1;
-                    
-                    // Update scoreboard
-                    updateScoreboard({
-                        playerId: playerId,
-                        score: myScore,
-                        kills: myKills
-                    });
-                    
-                    // Respawn target
-                    setTimeout(() => {
-                        if (channel && isConnected) {
-                            channel.publish('respawn', {
-                                playerId: targetId
-                            });
-                        }
-                    }, RESPAWN_DELAY);
-                }
-            }
-        }
-
-        function handleRemotePunch(data) {
-            if (remotePlayers[data.playerId]) {
-                const remote = remotePlayers[data.playerId];
-                animatePunch(remote.player, data.side || 'right');
-                setTimeout(() => resetArms(remote.player), 250);
-            }
-        }
-
-        function handleRemoteDamage(data) {
-            if (data.targetId === playerId) {
-                myHealth -= data.damage;
-                updateMyHealthBar();
-                
-                // Screen flash when hit
-                const flash = document.getElementById('punch-flash');
-                flash.style.background = 'radial-gradient(circle, rgba(255,0,0,0.3), transparent 70%)';
-                flash.classList.add('active');
-                setTimeout(() => {
-                    flash.classList.remove('active');
-                    flash.style.background = 'radial-gradient(circle, rgba(255,200,50,0.1), transparent 70%)';
-                }, 200);
-                
-                if (myHealth <= 0) {
-                    myHealth = 0;
-                    isRespawning = true;
-                    document.getElementById('status').innerHTML = '💀 <span>DEAD</span> | Respawning...';
-                    
-                    // Hide player
-                    if (myPlayer) {
-                        myPlayer.visible = false;
-                    }
-                    
-                    setTimeout(() => {
-                        if (channel && isConnected) {
-                            channel.publish('respawn', {
-                                playerId: playerId
-                            });
-                        }
-                    }, RESPAWN_DELAY);
-                }
-            }
-        }
-
-        function respawnMyPlayer() {
-            if (myPlayer) {
-                myHealth = MAX_HEALTH;
-                isRespawning = false;
-                myPlayer.visible = true;
-                myPlayer.position.set(
-                    (Math.random() - 0.5) * 5,
-                    0,
-                    (Math.random() - 0.5) * 5
-                );
-                updateMyHealthBar();
-                
-                document.getElementById('status').innerHTML = '🥊 <span>Alive</span> | Team ' + 
-                    (myTeam === 'red' ? '🔴 Red' : '🔵 Blue');
-                console.log('✅ Respawned!');
-            }
+            return null;
         }
 
         function createHitEffect(position) {
-            const particles = new THREE.BufferGeometry();
-            const count = 25;
-            const positions = new Float32Array(count * 3);
-            const colors = new Float32Array(count * 3);
-            const velocities = [];
-            
-            for (let i = 0; i < count; i++) {
-                positions[i*3] = position.x + (Math.random() - 0.5) * 0.4;
-                positions[i*3+1] = position.y + (Math.random() - 0.5) * 0.4;
-                positions[i*3+2] = position.z + (Math.random() - 0.5) * 0.4;
-                
-                colors[i*3] = 1;
-                colors[i*3+1] = 0.8 + Math.random() * 0.2;
-                colors[i*3+2] = 0;
-                
-                velocities.push({
-                    x: (Math.random() - 0.5) * 3,
-                    y: Math.random() * 3 + 1,
-                    z: (Math.random() - 0.5) * 3
-                });
-            }
-            
-            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            
-            const material = new THREE.PointsMaterial({
-                size: 0.12,
-                vertexColors: true,
+            const hitMat = new THREE.MeshBasicMaterial({
+                color: 0xffaa44,
                 transparent: true,
-                opacity: 1,
-                blending: THREE.AdditiveBlending
+                opacity: 0.8,
             });
             
-            const particleSystem = new THREE.Points(particles, material);
-            scene.add(particleSystem);
-            
-            let life = 1;
-            const interval = setInterval(() => {
-                life -= 0.025;
-                const pos = particleSystem.geometry.attributes.position.array;
-                for (let i = 0; i < count; i++) {
-                    pos[i*3] += velocities[i].x * 0.025;
-                    pos[i*3+1] += velocities[i].y * 0.025;
-                    pos[i*3+2] += velocities[i].z * 0.025;
-                    velocities[i].y -= 0.08;
+            for (let i = 0; i < 16; i++) {
+                const particle = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.02 + Math.random() * 0.04, 4, 4),
+                    hitMat
+                );
+                particle.position.copy(position);
+                particle.position.x += (Math.random() - 0.5) * 0.1;
+                particle.position.y += (Math.random() - 0.5) * 0.1;
+                particle.position.z += (Math.random() - 0.5) * 0.1;
+                scene.add(particle);
+                
+                const dir = new THREE.Vector3(
+                    (Math.random() - 0.5),
+                    (Math.random() - 0.5),
+                    (Math.random() - 0.5)
+                ).normalize().multiplyScalar(0.5 + Math.random() * 1.0);
+                
+                const life = 300 + Math.random() * 400;
+                const startTime = Date.now();
+                
+                const animateParticle = () => {
+                    const elapsed = Date.now() - startTime;
+                    if (elapsed > life) {
+                        scene.remove(particle);
+                        return;
+                    }
+                    const progress = elapsed / life;
+                    particle.position.add(dir.clone().multiplyScalar(0.04));
+                    particle.scale.setScalar(1 + progress * 2);
+                    particle.material.opacity = 0.8 * (1 - progress);
+                    requestAnimationFrame(animateParticle);
+                };
+                animateParticle();
+            }
+        }
+
+        // ============================================================
+        // 14. LOAD CHARACTER
+        // ============================================================
+        characterLoader.load(
+            "https://rawcdn.githack.com/mrdoob/three.js/r170/examples/models/gltf/Soldier.glb",
+            function(gltf) {
+                console.log('✅ مدل سرباز بارگذاری شد!');
+                player = gltf.scene;
+                player.scale.set(1, 1, 1);
+                player.position.copy(SPAWN_POINT);
+                player.castShadow = true;
+                player.receiveShadow = true;
+
+                console.log('🔍 جستجوی استخوان‌های Mixamo...');
+                
+                player.traverse((child) => {
+                    if (child.isBone) {
+                        const name = child.name;
+                        console.log('🦴', name);
+                        
+                        if (name === 'mixamorigRightShoulder') rightShoulder = child;
+                        if (name === 'mixamorigRightArm') rightArm = child;
+                        if (name === 'mixamorigRightForeArm') rightForeArm = child;
+                        if (name === 'mixamorigRightHand') rightHand = child;
+                        if (name === 'mixamorigLeftShoulder') leftShoulder = child;
+                        if (name === 'mixamorigLeftArm') leftArm = child;
+                        if (name === 'mixamorigLeftForeArm') leftForeArm = child;
+                        if (name === 'mixamorigLeftHand') leftHand = child;
+                        if (name === 'mixamorigSpine1') spine1 = child;
+                        if (name === 'mixamorigSpine2') spine2 = child;
+                        if (name === 'mixamorigHips') hips = child;
+                        if (name === 'mixamorigNeck') neck = child;
+                        if (name === 'mixamorigHead') head = child;
+                        if (name === 'mixamorigLeftUpLeg') leftUpLeg = child;
+                        if (name === 'mixamorigLeftLeg') leftLeg = child;
+                        if (name === 'mixamorigRightUpLeg') rightUpLeg = child;
+                        if (name === 'mixamorigRightLeg') rightLeg = child;
+                        
+                        if (name.startsWith('mixamorigRightHand')) {
+                            fingerBonesR[name] = child;
+                        }
+                    }
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                console.log('✅ استخوان‌های پیدا شده:');
+                console.log('  mixamorigRightShoulder:', rightShoulder ? '✅' : '❌');
+                console.log('  mixamorigRightArm:', rightArm ? '✅' : '❌');
+                console.log('  mixamorigRightForeArm:', rightForeArm ? '✅' : '❌');
+                console.log('  انگشتان راست:', Object.keys(fingerBonesR).length, 'عدد');
+
+                characterGroup.add(player);
+                playerLoaded = true;
+                localLabelDiv.textContent = playerName;
+
+                debugEl.textContent = '✅ کاراکتر بارگذاری شد!';
+                debugEl.className = 'success';
+
+                // انیمیشن‌ها
+                if (gltf.animations && gltf.animations.length > 0) {
+                    mixer = new THREE.AnimationMixer(player);
+                    const animations = gltf.animations;
+
+                    const idleAnim = findAnimation(animations, ['idle', 'stand', 'wait']);
+                    const walkAnim = findAnimation(animations, ['walk', 'forward']);
+                    const runAnim = findAnimation(animations, ['run', 'sprint']);
+
+                    if (idleAnim) {
+                        idleAction = mixer.clipAction(idleAnim);
+                        idleAction.play();
+                        currentAction = idleAction;
+                    } else if (animations.length > 0) {
+                        idleAction = mixer.clipAction(animations[0]);
+                        idleAction.play();
+                        currentAction = idleAction;
+                    }
+
+                    if (walkAnim) walkAction = mixer.clipAction(walkAnim);
+                    if (runAnim) runAction = mixer.clipAction(runAnim);
+                    if (!walkAnim && runAnim) walkAction = mixer.clipAction(runAnim);
                 }
-                particleSystem.geometry.attributes.position.needsUpdate = true;
-                particleSystem.material.opacity = life;
-                
-                if (life <= 0) {
-                    clearInterval(interval);
-                    scene.remove(particleSystem);
+
+                setTimeout(() => {
+                    if (channel) {
+                        channel.presence.enter({
+                            x: characterGroup.position.x,
+                            z: characterGroup.position.z,
+                            rotation: characterGroup.rotation.y,
+                            name: playerName
+                        });
+                    }
+                }, 500);
+
+                startSendingPosition();
+                setupPingListener();
+            },
+            undefined,
+            function(error) {
+                console.error('❌ خطا:', error);
+                debugEl.textContent = `❌ خطا: ${error.message}`;
+                debugEl.className = 'error';
+            }
+        );
+
+        // ============================================================
+        // 15. NETWORK
+        // ============================================================
+        function createRemotePlayer(clientId, data) {
+            if (clientId === currentUserId) return;
+            if (players.has(clientId)) return;
+
+            const group = new THREE.Group();
+
+            characterLoader.load(
+                "https://rawcdn.githack.com/mrdoob/three.js/r170/examples/models/gltf/Soldier.glb",
+                (gltf) => {
+                    const model = gltf.scene;
+                    model.scale.set(1, 1, 1);
+                    model.traverse((child) => {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            if (child.material) {
+                                const hue = (parseInt(clientId.substr(-4), 36) % 360) / 360;
+                                child.material.color.setHSL(hue, 0.4, 0.5);
+                            }
+                        }
+                    });
+
+                    group.add(model);
+
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'player-label';
+                    labelDiv.textContent = data.name || 'کاربر';
+                    const label = new CSS2DObject(labelDiv);
+                    label.position.set(0, 1.8, 0);
+                    group.add(label);
+
+                    group.position.set(data.x || 0, 0.1, data.z || 0);
+                    group.rotation.y = data.rotation || 0;
+
+                    scene.add(group);
+
+                    players.set(clientId, {
+                        mesh: group,
+                        label: label,
+                        data: data,
+                        name: data.name || 'کاربر',
+                        lastUpdate: Date.now(),
+                        hit: false,
+                        hitTime: 0
+                    });
+
+                    updateOnlineCount();
+                },
+                undefined,
+                () => {
+                    createSimpleRemotePlayer(clientId, data);
                 }
-            }, 16);
+            );
+        }
+
+        function createSimpleRemotePlayer(clientId, data) {
+            const group = new THREE.Group();
+
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: new THREE.Color().setHSL((parseInt(clientId.substr(-4), 36) % 360) / 360, 0.4, 0.5),
+                roughness: 0.3,
+                metalness: 0.1,
+            });
+            const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1.0, 8, 12), bodyMat);
+            body.position.y = 0.5;
+            body.castShadow = true;
+            group.add(body);
+
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa, roughness: 0.4 });
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), headMat);
+            head.position.y = 1.3;
+            head.castShadow = true;
+            group.add(head);
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'player-label';
+            labelDiv.textContent = data.name || 'کاربر';
+            const label = new CSS2DObject(labelDiv);
+            label.position.set(0, 1.8, 0);
+            group.add(label);
+
+            group.position.set(data.x || 0, 0.1, data.z || 0);
+            group.rotation.y = data.rotation || 0;
+
+            scene.add(group);
+
+            players.set(clientId, {
+                mesh: group,
+                label: label,
+                data: data,
+                name: data.name || 'کاربر',
+                lastUpdate: Date.now(),
+                hit: false,
+                hitTime: 0
+            });
+
+            updateOnlineCount();
+        }
+
+        function updateRemotePlayer(clientId, data) {
+            if (clientId === currentUserId) return;
+            const player = players.get(clientId);
+            if (!player) {
+                createRemotePlayer(clientId, data);
+                return;
+            }
+
+            player.mesh.position.x = data.x || 0;
+            player.mesh.position.z = data.z || 0;
+            player.mesh.rotation.y = data.rotation || 0;
+
+            if (player.label) {
+                player.label.element.textContent = data.name || 'کاربر';
+            }
+
+            player.data = data;
+            player.lastUpdate = Date.now();
+        }
+
+        function removeRemotePlayer(clientId) {
+            if (clientId === currentUserId) return;
+            const player = players.get(clientId);
+            if (player) {
+                scene.remove(player.mesh);
+                players.delete(clientId);
+                updateOnlineCount();
+            }
+        }
+
+        function updateOnlineCount() {
+            const count = players.size + 1;
+            onlineCountDisplay.textContent = `👥 ${count} آنلاین`;
         }
 
         // ============================================================
-        // SCOREBOARD
+        // 16. NETWORK SEND/RECEIVE
         // ============================================================
-        function updateScoreboard(data) {
-            const scoreList = document.getElementById('score-list');
-            
-            if (data.playerId === playerId) {
-                myScore = data.score;
-                myKills = data.kills;
-            }
-            
-            let html = '';
-            html += `<div class="player-score ${myTeam === 'red' ? 'red-team' : 'blue-team'}">
-                <span>👤 You (${myTeam})</span>
-                <span>💀 ${myKills} | ⭐ ${myScore}</span>
-            </div>`;
-            
-            for (const [id, remote] of Object.entries(remotePlayers)) {
-                const teamClass = remote.team === 'red' ? 'red-team' : 'blue-team';
-                html += `<div class="player-score ${teamClass}">
-                    <span>👤 ${id.substring(0, 6)}</span>
-                    <span>❤️ ${Math.round(remote.health)}</span>
-                </div>`;
-            }
-            
-            scoreList.innerHTML = html;
+        let sendInterval = null;
+
+        function startSendingPosition() {
+            if (sendInterval) clearInterval(sendInterval);
+
+            sendInterval = setInterval(() => {
+                if (!isConnected || !channel || !player) return;
+
+                const pos = characterGroup.position;
+                const data = {
+                    x: pos.x,
+                    z: pos.z,
+                    rotation: characterGroup.rotation.y,
+                    name: playerName,
+                    timestamp: Date.now()
+                };
+
+                try {
+                    channel.publish('player-update', {
+                        clientId: currentUserId,
+                        ...data
+                    });
+                } catch (e) {}
+            }, SEND_INTERVAL);
+        }
+
+        function setupChannelListener() {
+            if (!channel) return;
+
+            channel.subscribe('player-update', (message) => {
+                const data = message.data;
+                if (data.clientId === currentUserId) return;
+                updateRemotePlayer(data.clientId, data);
+            });
+
+            channel.subscribe('melee', (message) => {
+                const data = message.data;
+                if (data.target === currentUserId) {
+                    stats.deaths++;
+                    updateStats();
+                    debugEl.textContent = `💀 ${data.fromName} شما را کشت!`;
+                    debugEl.className = 'error';
+                    setTimeout(() => {
+                        debugEl.textContent = '✅ آماده مبارزه';
+                        debugEl.className = '';
+                    }, 2000);
+                    cameraShake = 0.15;
+                }
+            });
+
+            channel.presence.subscribe('enter', (presence) => {
+                if (presence.clientId === currentUserId) return;
+                if (presence.data) {
+                    createRemotePlayer(presence.clientId, presence.data);
+                }
+            });
+
+            channel.presence.subscribe('leave', (presence) => {
+                removeRemotePlayer(presence.clientId);
+            });
+
+            channel.presence.get((err, members) => {
+                if (err) {
+                    console.error('خطا در دریافت اعضا:', err);
+                    return;
+                }
+                members.forEach((member) => {
+                    if (member.clientId !== currentUserId && member.data) {
+                        createRemotePlayer(member.clientId, member.data);
+                    }
+                });
+                updateOnlineCount();
+            });
+
+            setTimeout(() => {
+                if (channel && player) {
+                    channel.presence.enter({
+                        x: characterGroup.position.x,
+                        z: characterGroup.position.z,
+                        rotation: characterGroup.rotation.y,
+                        name: playerName
+                    });
+                }
+            }, 1000);
         }
 
         // ============================================================
-        // UI CONTROLS
+        // 17. CONTROLS
         // ============================================================
-        document.getElementById('team-red').addEventListener('click', () => {
-            myTeam = 'red';
-            startGame();
-        });
-        
-        document.getElementById('team-blue').addEventListener('click', () => {
-            myTeam = 'blue';
-            startGame();
-        });
-
-        async function startGame() {
-            document.getElementById('team-select').style.display = 'none';
-            document.getElementById('status').innerHTML = '🥊 <span>Connecting...</span>';
-            
-            connectToAbly();
-            
-            try {
-                const result = await createPlayer(myTeam, SPAWN_POINT);
-                myPlayer = result.player;
-                myMixer = result.mixer;
-                myIdleAction = result.idleAction;
-                myWalkAction = result.walkAction;
-                myRunAction = result.runAction;
-                myLoaded = true;
-                
-                scene.add(myPlayer);
-                
-                const healthBar = createHealthBar();
-                myPlayer.add(healthBar);
-                myPlayer.userData.healthBar = healthBar;
-                
-                const nameTag = createNameTag('You', myTeam);
-                myPlayer.add(nameTag);
-                
-                console.log('✅ My player created!');
-                console.log('👊 Press SPACE or click PUNCH to fight!');
-            } catch (error) {
-                console.error('❌ Failed to create player:', error);
-            }
-        }
-
-        // Movement controls
         function setupButton(id, moveKey) {
             const btn = document.getElementById(id);
             if (!btn) return;
@@ -1339,41 +1693,34 @@
         setupButton('btnLeft', 'left');
         setupButton('btnRight', 'right');
 
-        // Punch button - Multiple event listeners for reliability
+        // ============================================================
+        // 18. PUNCH BUTTON
+        // ============================================================
         const punchBtn = document.getElementById('punch-btn');
-        punchBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            performPunch();
-        });
+
         punchBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            performPunch();
-        });
-        punchBtn.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            performPunch();
+            startMeleePunch();
+        }, { passive: false });
+
+        punchBtn.addEventListener('click', () => {
+            startMeleePunch();
         });
 
-        // Keyboard support - SPACE and F
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'f' || e.key === 'F') {
-                e.preventDefault();
-                performPunch();
-            }
-        });
+        window.startMeleePunch = startMeleePunch;
 
         // ============================================================
-        // MOVEMENT SYSTEM
+        // 19. MOVEMENT
         // ============================================================
         let velocity = new THREE.Vector3(0, 0, 0);
-        const maxSpeed = 4.0;
-        const acceleration = 10;
-        const deceleration = 8;
+        const maxSpeed = 3.5;
+        const acceleration = 8;
+        const deceleration = 6;
 
         function updateMovement(delta) {
-            if (!myPlayer || !myLoaded || isRespawning) return;
+            if (!player || !playerLoaded) return;
 
-            const rotSpeed = 3.0;
+            const rotSpeed = 2.5;
             let moving = false;
             let isRunning = false;
 
@@ -1385,18 +1732,18 @@
             }
 
             if (moveState.left) {
-                myPlayer.rotation.y += delta * rotSpeed;
+                characterGroup.rotation.y += delta * rotSpeed;
             }
             if (moveState.right) {
-                myPlayer.rotation.y -= delta * rotSpeed;
+                characterGroup.rotation.y -= delta * rotSpeed;
             }
 
             const dir = new THREE.Vector3(0, 0, -1);
-            dir.applyQuaternion(myPlayer.quaternion);
+            dir.applyQuaternion(characterGroup.quaternion);
 
-            const targetSpeed = moving ? (isRunning ? maxSpeed * 1.4 : maxSpeed) : 0;
+            const targetSpeed = moving ? (isRunning ? maxSpeed * 1.3 : maxSpeed) : 0;
             const currentSpeed = velocity.length();
-            
+
             if (moving) {
                 const accel = acceleration * delta;
                 velocity.x += dir.x * accel;
@@ -1413,36 +1760,31 @@
                 }
             }
 
-            const newPos = myPlayer.position.clone();
+            const newPos = characterGroup.position.clone();
             newPos.x += velocity.x * delta;
             newPos.z += velocity.z * delta;
 
             if (!checkCollision(newPos)) {
-                myPlayer.position.x = newPos.x;
-                myPlayer.position.z = newPos.z;
+                characterGroup.position.x = newPos.x;
+                characterGroup.position.z = newPos.z;
             } else {
                 velocity.set(0, 0, 0);
             }
 
-            // Update animation
-            if (myMixer) {
-                myMixer.update(delta);
+            if (mixer) {
+                mixer.update(delta);
 
-                let action = myIdleAction;
                 if (moving) {
-                    action = isRunning && myRunAction ? myRunAction : 
-                            myWalkAction ? myWalkAction : myRunAction;
-                }
-                
-                if (myIdleAction && !moving) {
-                    action = myIdleAction;
-                }
-                
-                if (action && myMixer) {
-                    if (myMixer.currentAction !== action) {
-                        if (myMixer.currentAction) myMixer.currentAction.fadeOut(0.1);
-                        action.reset().fadeIn(0.1).play();
-                        myMixer.currentAction = action;
+                    if (isRunning && runAction) {
+                        switchAnimation(runAction);
+                    } else if (walkAction) {
+                        switchAnimation(walkAction);
+                    } else if (runAction) {
+                        switchAnimation(runAction);
+                    }
+                } else {
+                    if (idleAction && !punchAnimating) {
+                        switchAnimation(idleAction);
                     }
                 }
             }
@@ -1450,45 +1792,58 @@
             if (moving && velocity.length() > 0.5) {
                 walkCycle += delta * 5;
                 const swing = Math.sin(walkCycle) * 0.015;
-                myPlayer.rotation.z = swing;
-                myPlayer.position.y = Math.abs(Math.sin(walkCycle * 0.5)) * 0.005;
+                characterGroup.rotation.z = swing;
+                characterGroup.position.y = Math.abs(Math.sin(walkCycle * 0.5)) * 0.005;
+
                 isMoving = true;
+                const statusText = isRunning ? '🏃 <span>دویدن</span>' : '🚶 <span>راه رفتن</span>';
+                document.getElementById('status').innerHTML = statusText + ' | ' +
+                    (moveState.forward ? 'جلو ' : '') +
+                    (moveState.back ? 'عقب ' : '') +
+                    (moveState.left ? 'چپ ' : '') +
+                    (moveState.right ? 'راست' : '');
             } else {
                 if (isMoving) {
-                    myPlayer.rotation.z = 0;
-                    myPlayer.position.y = 0;
+                    characterGroup.rotation.z = 0;
+                    characterGroup.position.y = 0;
                     isMoving = false;
+                    document.getElementById('status').innerHTML = '🎮 <span>نقشه جنگی</span> | آماده ✅';
                 }
             }
 
-            if (myPlayer) {
-                playerTarget.copy(myPlayer.position);
+            localLabel.position.set(0, 1.8, 0);
+
+            if (player) {
+                playerTarget.copy(characterGroup.position);
                 playerTarget.y += 1.0;
             }
 
-            // Send position update to server
-            if (channel && isConnected && myPlayer && !isRespawning) {
-                channel.presence.update({
-                    clientId: playerId,
-                    team: myTeam,
-                    position: myPlayer.position,
-                    health: myHealth,
-                    score: myScore,
-                    kills: myKills
-                });
+            if (punchCooldown > 0) punchCooldown -= delta;
+
+            if (cameraShake > 0) {
+                cameraShake *= 0.9;
+                if (cameraShake < 0.001) cameraShake = 0;
             }
+
+            updateMeleeAnimation(delta);
         }
+
+        // ============================================================
+        // 20. COLLISION
+        // ============================================================
+        const PLAYER_RADIUS = 0.35;
 
         function checkCollision(newPos) {
             const playerPos = new THREE.Vector3(newPos.x, 0, newPos.z);
-            const PLAYER_RADIUS = 0.35;
 
             for (const obs of obstacles) {
                 if (obs.type === 'box') {
                     const half = obs.size.clone().multiplyScalar(0.5);
                     const obsPos = obs.pos.clone();
+
                     const dx = Math.abs(playerPos.x - obsPos.x);
                     const dz = Math.abs(playerPos.z - obsPos.z);
+
                     if (dx < half.x + PLAYER_RADIUS && dz < half.z + PLAYER_RADIUS) {
                         return true;
                     }
@@ -1504,67 +1859,76 @@
         }
 
         // ============================================================
-        // HEALTH BAR UPDATE
-        // ============================================================
-        function updateMyHealthBar() {
-            if (myPlayer && myPlayer.userData.healthBar) {
-                const ratio = Math.max(0, myHealth / MAX_HEALTH);
-                const fill = myPlayer.userData.healthBar.userData.healthFill;
-                if (fill) {
-                    const maxWidth = myPlayer.userData.healthBar.userData.maxWidth;
-                    fill.scale.x = ratio;
-                    fill.position.x = -maxWidth / 2 + (maxWidth * ratio) / 2;
-                    
-                    const color = new THREE.Color();
-                    if (ratio > 0.6) color.setHex(0x00ff00);
-                    else if (ratio > 0.3) color.setHex(0xffff00);
-                    else color.setHex(0xff0000);
-                    fill.material.color.copy(color);
-                }
-            }
-        }
-
-        // ============================================================
-        // GAME LOOP
+        // 21. GAME LOOP
         // ============================================================
         let clock = new THREE.Clock();
 
         function animate() {
+            requestAnimationFrame(animate);
             const delta = Math.min(clock.getDelta(), 0.05);
             updateMovement(delta);
             updateCamera();
 
-            for (const [id, remote] of Object.entries(remotePlayers)) {
-                if (remote.mixer) {
-                    remote.mixer.update(delta);
-                }
-            }
-
             renderer.render(scene, camera);
-            requestAnimationFrame(animate);
+            labelRenderer.render(scene, camera);
         }
 
-        animate();
+        // ============================================================
+        // 22. START GAME
+        // ============================================================
+        function startGame() {
+            animate();
+
+            setTimeout(() => {
+                setupChannelListener();
+            }, 1000);
+
+            setInterval(() => {
+                if (!isConnected && ablyClient) {
+                    try {
+                        if (typeof ablyClient.connection.recover === 'function') {
+                            ablyClient.connection.recover();
+                        } else {
+                            ablyClient.connection.connect();
+                        }
+                    } catch (e) {
+                        try {
+                            ablyClient.connection.connect();
+                        } catch (e2) {}
+                    }
+                }
+            }, 3000);
+
+            setInterval(() => {
+                const now = Date.now();
+                for (const [id, player] of players) {
+                    if (now - player.lastUpdate > 5000) {
+                        removeRemotePlayer(id);
+                    }
+                }
+            }, 3000);
+        }
 
         // ============================================================
-        // WINDOW RESIZE
+        // 23. RESIZE
         // ============================================================
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
         });
 
         document.addEventListener('touchmove', (e) => {
-            if (e.target.closest('#controls') || e.target.closest('#punch-btn')) {
+            if (e.target.closest('#controls') || e.target.closest('#action-buttons')) {
                 e.preventDefault();
             }
         }, { passive: false });
 
-        console.log('🥊 Online Fist Fighting Game Started!');
-        console.log(`👤 Player ID: ${playerId}`);
-        console.log('📡 Waiting for team selection...');
-        console.log('💡 Press SPACE or click PUNCH to fight!');
+        console.log('✅ بازی با سیستم Melee حرفه‌ای، Ping و Stats آماده است!');
+        console.log('👊 مشت با بستن انگشتان و پرتاب به جلو');
+        console.log('📡 Ping به صورت زنده نمایش داده میشود');
+        console.log('🏆 آمار Kills, Deaths, K/D و Hits ثبت میشود');
     </script>
 </body>
 </html>
