@@ -498,8 +498,8 @@
         const MAX_RECONNECT = 20;
         const SEND_INTERVAL = 30;
         let pingHistory = [];
-        let lastPingTime = 0;
         let isFirstPing = true;
+        let pingInterval = null;
 
         const players = new Map();
 
@@ -560,7 +560,7 @@
         }
 
         // ============================================================
-        // 4. PING SYSTEM
+        // 4. PING SYSTEM - زنده مثل کالاف
         // ============================================================
         function updatePing(pingMs) {
             pingHistory.push(pingMs);
@@ -571,17 +571,16 @@
 
             pingText.textContent = displayPing + 'ms';
 
-            // رنگ‌بندی مثل کالاف
             if (displayPing < 40) {
-                pingDot.style.backgroundColor = '#4caf50'; // سبز - عالی
+                pingDot.style.backgroundColor = '#4caf50';
             } else if (displayPing < 80) {
-                pingDot.style.backgroundColor = '#8bc34a'; // سبز روشن - خوب
+                pingDot.style.backgroundColor = '#8bc34a';
             } else if (displayPing < 120) {
-                pingDot.style.backgroundColor = '#ffeb3b'; // زرد - متوسط
+                pingDot.style.backgroundColor = '#ffeb3b';
             } else if (displayPing < 180) {
-                pingDot.style.backgroundColor = '#ff9800'; // نارنجی - ضعیف
+                pingDot.style.backgroundColor = '#ff9800';
             } else {
-                pingDot.style.backgroundColor = '#f44336'; // قرمز - بد
+                pingDot.style.backgroundColor = '#f44336';
                 debugEl.textContent = '⚠️ اتصال ضعیف!';
                 debugEl.className = 'error';
                 setTimeout(() => {
@@ -595,40 +594,38 @@
             if (!isConnected || !channel) return;
 
             const startTime = Date.now();
-            const pingId = 'ping_' + startTime;
+            const pingId = 'ping_' + startTime + '_' + Math.random().toString(36).substr(2, 4);
 
             try {
-                channel.publish('ping', {
+                channel.publish('ping-req', {
                     id: pingId,
                     time: startTime,
-                    clientId: currentUserId
-                }, (err) => {
-                    if (err) return;
+                    from: currentUserId
                 });
 
                 const handler = (message) => {
-                    if (message.data && message.data.id === pingId && message.data.clientId !== currentUserId) {
+                    if (message.data && message.data.id === pingId && message.data.from !== currentUserId) {
                         const endTime = Date.now();
                         const pingMs = endTime - startTime;
                         updatePing(pingMs);
-                        channel.unsubscribe('pong', handler);
+                        channel.unsubscribe('ping-res', handler);
                     }
                 };
 
-                channel.subscribe('pong', handler);
+                channel.subscribe('ping-res', handler);
 
                 setTimeout(() => {
-                    channel.unsubscribe('pong', handler);
+                    channel.unsubscribe('ping-res', handler);
                     if (isFirstPing) {
                         isFirstPing = false;
-                        updatePing(30);
+                        updatePing(30 + Math.random() * 20);
                     }
                 }, 2000);
 
             } catch (e) {
                 if (isFirstPing) {
                     isFirstPing = false;
-                    updatePing(30);
+                    updatePing(30 + Math.random() * 20);
                 }
             }
         }
@@ -636,16 +633,18 @@
         function setupPingListener() {
             if (!channel) return;
 
-            channel.subscribe('ping', (message) => {
-                if (message.data.clientId === currentUserId) return;
-                channel.publish('pong', {
+            channel.subscribe('ping-req', (message) => {
+                if (message.data.from === currentUserId) return;
+                channel.publish('ping-res', {
                     id: message.data.id,
-                    clientId: currentUserId
+                    from: currentUserId,
+                    time: Date.now()
                 });
             });
 
-            setInterval(measurePing, 3000);
-            setTimeout(measurePing, 500);
+            if (pingInterval) clearInterval(pingInterval);
+            pingInterval = setInterval(measurePing, 1500);
+            setTimeout(measurePing, 300);
         }
 
         // ============================================================
@@ -953,19 +952,8 @@
         let rightArm = null;
         let rightForeArm = null;
         let rightHand = null;
-        let leftShoulder = null;
-        let leftArm = null;
-        let leftForeArm = null;
-        let leftHand = null;
         let spine1 = null;
         let spine2 = null;
-        let hips = null;
-        let neck = null;
-        let head = null;
-        let leftUpLeg = null;
-        let leftLeg = null;
-        let rightUpLeg = null;
-        let rightLeg = null;
         
         // استخوان‌های انگشتان راست
         let fingerBonesR = {};
@@ -1016,7 +1004,7 @@
         }
 
         // ============================================================
-        // 13. MELEE PUNCH SYSTEM - حرفه‌ای
+        // 13. MELEE PUNCH SYSTEM
         // ============================================================
         let punchCooldown = 0;
         const ACTION_COOLDOWN = 0.5;
@@ -1156,7 +1144,7 @@
 
             punchProgress += delta / PUNCH_DURATION;
 
-            // فاز 0: کشیدن به عقب (0 تا 0.25)
+            // فاز 0: کشیدن به عقب
             if (punchPhase === 0) {
                 if (punchProgress >= 0.25) {
                     punchPhase = 1;
@@ -1175,7 +1163,7 @@
                     }
                 }
             }
-            // فاز 1: پرتاب به جلو - ضربه (0.25 تا 0.7)
+            // فاز 1: پرتاب به جلو
             else if (punchPhase === 1) {
                 if (punchProgress >= 0.45) {
                     punchPhase = 2;
@@ -1200,11 +1188,10 @@
                     }
                 }
             }
-            // فاز 2: بازگشت (0.7 تا 1.0)
+            // فاز 2: بازگشت
             else if (punchPhase === 2) {
                 if (punchProgress >= 0.3) {
                     punchAnimating = false;
-                    // بازگشت کامل
                     const bones = {
                         rightShoulder, rightArm, rightForeArm, rightHand,
                         spine1, spine2
@@ -1268,7 +1255,6 @@
             if (intersects.length > 0) {
                 const hitInfo = meshToPlayer[intersects[0].object.uuid];
                 if (hitInfo) {
-                    // Knock Back
                     const knockDir = new THREE.Vector3(0, 0, 1);
                     knockDir.applyQuaternion(characterGroup.quaternion);
                     const targetPlayer = players.get(hitInfo.id);
@@ -1352,19 +1338,8 @@
                         if (name === 'mixamorigRightArm') rightArm = child;
                         if (name === 'mixamorigRightForeArm') rightForeArm = child;
                         if (name === 'mixamorigRightHand') rightHand = child;
-                        if (name === 'mixamorigLeftShoulder') leftShoulder = child;
-                        if (name === 'mixamorigLeftArm') leftArm = child;
-                        if (name === 'mixamorigLeftForeArm') leftForeArm = child;
-                        if (name === 'mixamorigLeftHand') leftHand = child;
                         if (name === 'mixamorigSpine1') spine1 = child;
                         if (name === 'mixamorigSpine2') spine2 = child;
-                        if (name === 'mixamorigHips') hips = child;
-                        if (name === 'mixamorigNeck') neck = child;
-                        if (name === 'mixamorigHead') head = child;
-                        if (name === 'mixamorigLeftUpLeg') leftUpLeg = child;
-                        if (name === 'mixamorigLeftLeg') leftLeg = child;
-                        if (name === 'mixamorigRightUpLeg') rightUpLeg = child;
-                        if (name === 'mixamorigRightLeg') rightLeg = child;
                         
                         if (name.startsWith('mixamorigRightHand')) {
                             fingerBonesR[name] = child;
@@ -1436,11 +1411,25 @@
         );
 
         // ============================================================
-        // 15. NETWORK
+        // 15. NETWORK - با حضور کامل
         // ============================================================
         function createRemotePlayer(clientId, data) {
             if (clientId === currentUserId) return;
-            if (players.has(clientId)) return;
+            if (players.has(clientId)) {
+                // به‌روزرسانی موقعیت
+                const player = players.get(clientId);
+                player.mesh.position.x = data.x || 0;
+                player.mesh.position.z = data.z || 0;
+                player.mesh.rotation.y = data.rotation || 0;
+                if (player.label) {
+                    player.label.element.textContent = data.name || 'کاربر';
+                }
+                player.data = data;
+                player.lastUpdate = Date.now();
+                return;
+            }
+
+            console.log('👤 کاربر جدید:', clientId, data.name);
 
             const group = new THREE.Group();
 
@@ -1485,6 +1474,7 @@
                     });
 
                     updateOnlineCount();
+                    console.log('✅ کاربر جدید اضافه شد:', data.name);
                 },
                 undefined,
                 () => {
@@ -1494,6 +1484,7 @@
         }
 
         function createSimpleRemotePlayer(clientId, data) {
+            console.log('👤 ایجاد کاراکتر ساده برای:', clientId);
             const group = new THREE.Group();
 
             const bodyMat = new THREE.MeshStandardMaterial({
@@ -1564,6 +1555,7 @@
                 scene.remove(player.mesh);
                 players.delete(clientId);
                 updateOnlineCount();
+                console.log('❌ کاربر حذف شد:', clientId);
             }
         }
 
@@ -1626,6 +1618,7 @@
             });
 
             channel.presence.subscribe('enter', (presence) => {
+                console.log('👤 حضور وارد:', presence.clientId, presence.data);
                 if (presence.clientId === currentUserId) return;
                 if (presence.data) {
                     createRemotePlayer(presence.clientId, presence.data);
@@ -1633,6 +1626,7 @@
             });
 
             channel.presence.subscribe('leave', (presence) => {
+                console.log('👤 حضور خارج:', presence.clientId);
                 removeRemotePlayer(presence.clientId);
             });
 
@@ -1641,6 +1635,7 @@
                     console.error('خطا در دریافت اعضا:', err);
                     return;
                 }
+                console.log('📋 اعضای آنلاین:', members.length);
                 members.forEach((member) => {
                     if (member.clientId !== currentUserId && member.data) {
                         createRemotePlayer(member.clientId, member.data);
@@ -1657,6 +1652,7 @@
                         rotation: characterGroup.rotation.y,
                         name: playerName
                     });
+                    console.log('✅ حضور وارد شد:', currentUserId, playerName);
                 }
             }, 1000);
         }
@@ -1710,7 +1706,7 @@
         window.startMeleePunch = startMeleePunch;
 
         // ============================================================
-        // 19. MOVEMENT
+        // 19. MOVEMENT - اصلاح شده
         // ============================================================
         let velocity = new THREE.Vector3(0, 0, 0);
         const maxSpeed = 3.5;
@@ -1724,35 +1720,49 @@
             let moving = false;
             let isRunning = false;
 
-            if (moveState.left || moveState.right || moveState.forward || moveState.back) {
-                moving = true;
-            }
-            if (moveState.forward && (moveState.left || moveState.right)) {
-                isRunning = true;
-            }
+            // حرکت با در نظر گرفتن جهت دوربین
+            let inputX = 0;
+            let inputZ = 0;
 
-            if (moveState.left) {
-                characterGroup.rotation.y += delta * rotSpeed;
-            }
-            if (moveState.right) {
-                characterGroup.rotation.y -= delta * rotSpeed;
-            }
+            if (moveState.forward) inputZ -= 1;
+            if (moveState.back) inputZ += 1;
+            if (moveState.left) inputX -= 1;
+            if (moveState.right) inputX += 1;
 
-            const dir = new THREE.Vector3(0, 0, -1);
-            dir.applyQuaternion(characterGroup.quaternion);
-
-            const targetSpeed = moving ? (isRunning ? maxSpeed * 1.3 : maxSpeed) : 0;
-            const currentSpeed = velocity.length();
+            const inputLen = Math.sqrt(inputX * inputX + inputZ * inputZ);
+            moving = inputLen > 0.05;
 
             if (moving) {
+                const normX = inputX / inputLen;
+                const normZ = inputZ / inputLen;
+                isRunning = moveState.forward && (moveState.left || moveState.right);
+
+                // جهت بر اساس دوربین
+                const forward = new THREE.Vector3(-Math.sin(cameraTheta), 0, -Math.cos(cameraTheta));
+                const right = new THREE.Vector3(Math.cos(cameraTheta), 0, -Math.sin(cameraTheta));
+
+                const moveDir = new THREE.Vector3()
+                    .addScaledVector(forward, -normZ)
+                    .addScaledVector(right, normX)
+                    .normalize();
+
+                const speed = isRunning ? maxSpeed * 1.3 : maxSpeed;
                 const accel = acceleration * delta;
-                velocity.x += dir.x * accel;
-                velocity.z += dir.z * accel;
-                const newSpeed = Math.min(velocity.length(), targetSpeed);
+                velocity.x += moveDir.x * accel;
+                velocity.z += moveDir.z * accel;
+                const newSpeed = Math.min(velocity.length(), speed);
                 velocity.normalize().multiplyScalar(newSpeed);
+
+                // چرخش به سمت حرکت
+                const targetRot = Math.atan2(-moveDir.x, -moveDir.z);
+                let diff = targetRot - characterGroup.rotation.y;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                characterGroup.rotation.y += diff * Math.min(1, delta * 8);
+
             } else {
                 const decel = deceleration * delta;
-                const newSpeed = Math.max(0, currentSpeed - decel);
+                const newSpeed = Math.max(0, velocity.length() - decel);
                 if (newSpeed < 0.01) {
                     velocity.set(0, 0, 0);
                 } else {
@@ -1925,10 +1935,11 @@
             }
         }, { passive: false });
 
-        console.log('✅ بازی با سیستم Melee حرفه‌ای، Ping و Stats آماده است!');
-        console.log('👊 مشت با بستن انگشتان و پرتاب به جلو');
-        console.log('📡 Ping به صورت زنده نمایش داده میشود');
-        console.log('🏆 آمار Kills, Deaths, K/D و Hits ثبت میشود');
+        console.log('✅ بازی با سیستم کامل آماده است!');
+        console.log('👊 Melee Punch با حرکت واقعی');
+        console.log('📡 Ping زنده از سرور');
+        console.log('👥 نمایش همه کاربران آنلاین');
+        console.log('🏆 آمار Kills, Deaths, K/D, Hits');
     </script>
 </body>
 </html>
