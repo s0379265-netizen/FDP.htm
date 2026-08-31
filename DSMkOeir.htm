@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -621,8 +620,6 @@
     let recTimer = null;
     let recordingStart = 0;
 
-    const msgSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5');
-
     // ===================== INIT BACKENDLESS =====================
     Backendless.serverURL = 'https://api.backendless.com';
     Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
@@ -662,9 +659,18 @@
       }
       return d.toLocaleDateString('fa-IR');
     }
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
     function playMsgSound() {
       if (!soundEnabled) return;
-      try { msgSound.currentTime = 0; msgSound.play().catch(()=>{}); } catch(e) {}
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5');
+        audio.volume = 0.3;
+        audio.play().catch(()=>{});
+      } catch(e) {}
     }
     function channelName(uid1, uid2) {
       return 'chat:' + [uid1, uid2].sort().join('_');
@@ -691,6 +697,7 @@
       el.classList.add('show');
     }
 
+    // Login
     document.getElementById('btnLogin').onclick = async () => {
       const email = normalizeEmail(document.getElementById('loginEmail').value);
       const pass = document.getElementById('loginPass').value;
@@ -706,6 +713,7 @@
       }
     };
 
+    // Register
     document.getElementById('btnRegister').onclick = async () => {
       const email = normalizeEmail(document.getElementById('regEmail').value);
       const pass = document.getElementById('regPass').value;
@@ -725,7 +733,7 @@
         user.avatarSeed = email;
         user.profileComplete = false;
         currentUser = await Backendless.UserService.register(user);
-        // auto login
+        // auto login after register
         currentUser = await Backendless.UserService.login(email, pass, true);
         await afterLogin();
       } catch (e) {
@@ -735,13 +743,33 @@
       }
     };
 
+    // After login - check profile completeness
     async function afterLogin() {
+      // Make sure we have the full user object with all properties
+      try {
+        currentUser = await Backendless.UserService.getCurrentUser();
+      } catch(e) {
+        // Try to get from cache or login again
+        try {
+          currentUser = await Backendless.UserService.login(currentUser.email, null, true);
+        } catch(e2) {}
+      }
+      
       soundEnabled = localStorage.getItem('neo_sound') !== '0';
-      if (!isProfileComplete(currentUser)) {
+      
+      // Check if profile needs completion - use a more reliable check
+      const needsCompletion = !isProfileComplete(currentUser);
+      
+      if (needsCompletion) {
         document.getElementById('cpName').value = currentUser.displayName || '';
+        document.getElementById('cpUsername').value = currentUser.username || '';
+        document.getElementById('cpBio').value = currentUser.bio || '';
+        document.getElementById('cpPhone').value = currentUser.phone || '';
         showScreen('completeScreen');
         return;
       }
+      
+      // Initialize realtime and load data
       await initRealtime();
       await loadUsers();
       await loadConversations();
@@ -749,6 +777,7 @@
       showScreen('mainScreen');
     }
 
+    // Complete profile form
     document.getElementById('btnComplete').onclick = async () => {
       const username = normalizeUsername(document.getElementById('cpUsername').value);
       const name = (document.getElementById('cpName').value || '').trim();
@@ -756,6 +785,7 @@
       const phone = (document.getElementById('cpPhone').value || '').trim();
       const err = document.getElementById('completeError');
       err.classList.remove('show');
+      
       if (!username || username.length < 3) {
         err.textContent = 'آیدی حداقل ۳ کاراکتر و بدون فاصله باشد';
         err.classList.add('show');
@@ -766,14 +796,27 @@
         err.classList.add('show');
         return;
       }
+      
       setLoading(true);
       try {
+        // Check if username is already taken
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause("username = '" + username + "' and objectId != '" + currentUser.objectId + "'");
+        const existing = await Backendless.Data.of(Backendless.User).find(query);
+        if (existing && existing.length > 0) {
+          err.textContent = 'این آیدی قبلاً استفاده شده است';
+          err.classList.add('show');
+          setLoading(false);
+          return;
+        }
+        
         currentUser.username = username;
         currentUser.displayName = name;
         currentUser.bio = bio;
         currentUser.phone = phone;
         currentUser.profileComplete = true;
         currentUser = await Backendless.UserService.update(currentUser);
+        
         await initRealtime();
         await loadUsers();
         await loadConversations();
@@ -790,38 +833,68 @@
 
     // ===================== ABLY REALTIME =====================
     async function initRealtime() {
-      if (ably) return;
-      ably = new Ably.Realtime({ key: CONFIG.ABLY_KEY, clientId: currentUser.objectId });
+      if (ably) {
+        try {
+          if (presenceChannel) await presenceChannel.presence.leave();
+          ably.close();
+        } catch(e) {}
+        ably = null;
+      }
+      
+      ably = new Ably.Realtime({ 
+        key: CONFIG.ABLY_KEY, 
+        clientId: currentUser.objectId,
+        echoMessages: false 
+      });
+      
       await new Promise((resolve, reject) => {
         ably.connection.once('connected', resolve);
         ably.connection.once('failed', reject);
-        setTimeout(() => resolve(), 4000);
+        setTimeout(() => resolve(), 5000);
       });
 
+      // Presence channel for online users
       presenceChannel = ably.channels.get('neo-presence');
+      
       presenceChannel.presence.subscribe('enter', (m) => {
-        onlineUsers.add(m.clientId);
-        refreshOnlineUI();
+        if (m.clientId && m.clientId !== currentUser.objectId) {
+          onlineUsers.add(m.clientId);
+          refreshOnlineUI();
+        }
       });
       presenceChannel.presence.subscribe('leave', (m) => {
-        onlineUsers.delete(m.clientId);
-        refreshOnlineUI();
+        if (m.clientId) {
+          onlineUsers.delete(m.clientId);
+          refreshOnlineUI();
+        }
       });
       presenceChannel.presence.subscribe('update', (m) => {
-        onlineUsers.add(m.clientId);
-        refreshOnlineUI();
+        if (m.clientId && m.clientId !== currentUser.objectId) {
+          onlineUsers.add(m.clientId);
+          refreshOnlineUI();
+        }
       });
+      
       try {
         const members = await presenceChannel.presence.get();
-        members.forEach(m => onlineUsers.add(m.clientId));
+        members.forEach(m => {
+          if (m.clientId && m.clientId !== currentUser.objectId) {
+            onlineUsers.add(m.clientId);
+          }
+        });
         await presenceChannel.presence.enter({ name: currentUser.displayName });
       } catch (e) { console.warn('presence', e); }
 
-      // global message notify channel for this user
-      const inbox = ably.channels.get('inbox:' + currentUser.objectId);
-      inbox.subscribe('message', (msg) => {
-        handleIncoming(msg.data);
-      });
+      // Global message notify channel for this user
+      try {
+        const inbox = ably.channels.get('inbox:' + currentUser.objectId);
+        inbox.unsubscribe();
+        inbox.subscribe('message', (msg) => {
+          if (msg.data) handleIncoming(msg.data);
+        });
+      } catch(e) { console.warn('inbox subscribe', e); }
+      
+      refreshOnlineUI();
     }
 
     function refreshOnlineUI() {
@@ -829,79 +902,105 @@
       renderUserList();
       if (currentPeer) {
         const on = onlineUsers.has(currentPeer.objectId);
-        document.getElementById('roomOnline').style.display = on ? 'block' : 'none';
-        document.getElementById('roomStatus').textContent = on ? 'آنلاین' : 'آفلاین';
-        document.getElementById('roomStatus').classList.toggle('off', !on);
+        const dot = document.getElementById('roomOnline');
+        const status = document.getElementById('roomStatus');
+        if (dot) dot.style.display = on ? 'block' : 'none';
+        if (status) {
+          status.textContent = on ? 'آنلاین' : 'آفلاین';
+          status.classList.toggle('off', !on);
+        }
       }
     }
 
     // ===================== USERS & CONVERSATIONS =====================
     async function loadUsers() {
       try {
+        // Get all users with profileComplete = true
         const query = Backendless.DataQueryBuilder.create()
-          .setWhereClause("profileComplete = true and objectId != '" + currentUser.objectId + "'")
-          .setPageSize(100);
-        allUsers = await Backendless.Data.of(Backendless.User).find(query);
+          .setWhereClause("profileComplete = true")
+          .setPageSize(200);
+        const users = await Backendless.Data.of(Backendless.User).find(query);
+        allUsers = (users || []).filter(u => u.objectId !== currentUser.objectId);
       } catch (e) {
-        // fallback: try without clause fields
+        console.warn('loadUsers error:', e);
+        // Fallback: get all users
         try {
-          const all = await Backendless.Data.of(Backendless.User).find();
-          allUsers = (all || []).filter(u => u.objectId !== currentUser.objectId && isProfileComplete(u));
+          const users = await Backendless.Data.of(Backendless.User).find();
+          allUsers = (users || []).filter(u => 
+            u.objectId !== currentUser.objectId && 
+            isProfileComplete(u)
+          );
         } catch (e2) {
           allUsers = [];
         }
       }
       renderUserList();
+      renderChatList();
     }
 
     async function loadConversations() {
       try {
         const uid = currentUser.objectId;
         const query = Backendless.DataQueryBuilder.create()
-          .setWhereClause("senderId = '" + uid + "' or receiverId = '" + uid + "'")
+          .setWhereClause("(senderId = '" + uid + "' or receiverId = '" + uid + "')")
           .setSortBy(['created DESC'])
-          .setPageSize(100);
+          .setPageSize(200);
         const messages = await Backendless.Data.of('Messages').find(query);
+        
         const map = new Map();
         (messages || []).forEach(m => {
           const peerId = m.senderId === uid ? m.receiverId : m.senderId;
-          if (!map.has(peerId)) {
+          if (peerId && !map.has(peerId)) {
+            const preview = m.type === 'voice' ? '🎤 پیام صوتی' : (m.text || 'پیام');
             map.set(peerId, {
               peerId,
-              lastMessage: m.type === 'voice' ? '🎤 پیام صوتی' : (m.text || ''),
-              lastTime: m.created,
+              lastMessage: preview,
+              lastTime: m.created || Date.now(),
               unread: 0
             });
           }
         });
         conversations = Array.from(map.values());
-        renderChatList();
       } catch (e) {
+        console.warn('loadConversations error:', e);
         conversations = [];
-        renderChatList();
       }
+      renderChatList();
     }
 
     function renderChatList() {
-      const q = (document.getElementById('searchInput').value || '').trim();
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
       const list = document.getElementById('chatList');
+      
       const items = conversations
         .map(c => {
-          const user = allUsers.find(u => u.objectId === c.peerId) || { objectId: c.peerId, displayName: 'کاربر', username: '', avatarSeed: c.peerId };
+          const user = allUsers.find(u => u.objectId === c.peerId) || { 
+            objectId: c.peerId, 
+            displayName: 'کاربر', 
+            username: '', 
+            avatarSeed: c.peerId 
+          };
           return { ...c, user };
         })
-        .filter(c => !q || (c.user.displayName || '').includes(q) || (c.user.username || '').includes(q));
+        .filter(c => {
+          if (!q) return true;
+          const name = (c.user.displayName || '').toLowerCase();
+          const uname = (c.user.username || '').toLowerCase();
+          return name.includes(q) || uname.includes(q);
+        });
 
       if (!items.length) {
-        list.innerHTML = '<div class="empty"><i class="fa-regular fa-comments"></i><div>هنوز چتی ندارید</div><div style="font-size:12.5px">از تب کاربران کسی را پیدا کنید</div></div>';
+        list.innerHTML = `<div class="empty"><i class="fa-regular fa-comments"></i><div>هنوز چتی ندارید</div><div style="font-size:12.5px">از تب کاربران کسی را پیدا کنید</div></div>`;
         return;
       }
+      
       list.innerHTML = items.map(c => {
         const on = onlineUsers.has(c.peerId);
+        const avatarSeed = c.user.avatarSeed || c.user.username || c.peerId;
         return `
           <div class="row" data-peer="${c.peerId}">
             <div class="avatar-wrap">
-              <img class="avatar" src="${avatarUrl(c.user.avatarSeed || c.user.username || c.peerId)}" />
+              <img class="avatar" src="${avatarUrl(avatarSeed)}" alt="" />
               ${on ? '<div class="online-dot"></div>' : ''}
             </div>
             <div class="row-info">
@@ -916,13 +1015,15 @@
           </div>
         `;
       }).join('');
+      
       list.querySelectorAll('.row').forEach(row => {
         row.onclick = () => {
-          const peer = allUsers.find(u => u.objectId === row.dataset.peer) || {
-            objectId: row.dataset.peer,
+          const peerId = row.dataset.peer;
+          const peer = allUsers.find(u => u.objectId === peerId) || {
+            objectId: peerId,
             displayName: 'کاربر',
             username: '',
-            avatarSeed: row.dataset.peer
+            avatarSeed: peerId
           };
           openChat(peer);
         };
@@ -930,35 +1031,43 @@
     }
 
     function renderUserList() {
-      const q = (document.getElementById('searchInput').value || '').trim();
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
       const list = document.getElementById('userList');
-      const items = allUsers.filter(u =>
-        isProfileComplete(u) &&
-        (!q || (u.displayName || '').includes(q) || (u.username || '').includes(q))
-      );
+      
+      const items = allUsers.filter(u => {
+        if (!isProfileComplete(u)) return false;
+        if (!q) return true;
+        const name = (u.displayName || '').toLowerCase();
+        const uname = (u.username || '').toLowerCase();
+        return name.includes(q) || uname.includes(q);
+      });
+      
       if (!items.length) {
-        list.innerHTML = '<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری پیدا نشد</div><div style="font-size:12.5px">فقط حساب‌های تکمیل‌شده نمایش داده می‌شوند</div></div>';
+        list.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری پیدا نشد</div><div style="font-size:12.5px">فقط حساب‌های تکمیل‌شده نمایش داده می‌شوند</div></div>`;
         return;
       }
+      
       list.innerHTML = items.map(u => {
         const on = onlineUsers.has(u.objectId);
+        const avatarSeed = u.avatarSeed || u.username || u.objectId;
         return `
           <div class="row" data-id="${u.objectId}">
             <div class="avatar-wrap">
-              <img class="avatar" src="${avatarUrl(u.avatarSeed || u.username)}" />
+              <img class="avatar" src="${avatarUrl(avatarSeed)}" alt="" />
               ${on ? '<div class="online-dot"></div>' : ''}
             </div>
             <div class="row-info">
               <div class="row-top">
-                <span class="row-name">${escapeHtml(u.displayName)}</span>
+                <span class="row-name">${escapeHtml(u.displayName || 'کاربر')}</span>
               </div>
               <div class="row-bottom">
-                <span class="row-preview">@${escapeHtml(u.username)}</span>
+                <span class="row-preview">@${escapeHtml(u.username || '')}</span>
               </div>
             </div>
           </div>
         `;
       }).join('');
+      
       list.querySelectorAll('.row').forEach(row => {
         row.onclick = () => {
           const u = allUsers.find(x => x.objectId === row.dataset.id);
@@ -968,15 +1077,10 @@
     }
 
     function updateMeBar() {
-      document.getElementById('meAvatar').src = avatarUrl(currentUser.avatarSeed || currentUser.username);
+      const avatarSeed = currentUser.avatarSeed || currentUser.username || currentUser.objectId;
+      document.getElementById('meAvatar').src = avatarUrl(avatarSeed);
       document.getElementById('meName').textContent = currentUser.displayName || 'من';
-      document.getElementById('meSub').textContent = currentUser.username ? '@' + currentUser.username : currentUser.email;
-    }
-
-    function escapeHtml(s) {
-      const d = document.createElement('div');
-      d.textContent = s || '';
-      return d.innerHTML;
+      document.getElementById('meSub').textContent = currentUser.username ? '@' + currentUser.username : currentUser.email || '';
     }
 
     // Tabs
@@ -987,12 +1091,20 @@
         const isChats = tab.dataset.tab === 'chats';
         document.getElementById('chatList').style.display = isChats ? 'block' : 'none';
         document.getElementById('userList').style.display = isChats ? 'none' : 'block';
+        if (isChats) renderChatList();
+        else renderUserList();
       };
     });
+    
     document.getElementById('searchInput').oninput = () => {
-      renderChatList();
-      renderUserList();
+      const activeTab = document.querySelector('.tab.active');
+      if (activeTab && activeTab.dataset.tab === 'chats') {
+        renderChatList();
+      } else {
+        renderUserList();
+      }
     };
+    
     document.getElementById('btnRefresh').onclick = async () => {
       setLoading(true);
       await loadUsers();
@@ -1004,20 +1116,24 @@
     // ===================== CHAT =====================
     async function openChat(peer) {
       currentPeer = peer;
-      document.getElementById('roomAvatar').src = avatarUrl(peer.avatarSeed || peer.username);
+      
+      const avatarSeed = peer.avatarSeed || peer.username || peer.objectId;
+      document.getElementById('roomAvatar').src = avatarUrl(avatarSeed);
       document.getElementById('roomName').textContent = peer.displayName || 'کاربر';
+      
       const on = onlineUsers.has(peer.objectId);
       document.getElementById('roomOnline').style.display = on ? 'block' : 'none';
       document.getElementById('roomStatus').textContent = on ? 'آنلاین' : 'آفلاین';
       document.getElementById('roomStatus').classList.toggle('off', !on);
 
-      // subscribe channel
+      // Subscribe to chat channel
       if (activeChatChannel) {
         try { activeChatChannel.unsubscribe(); } catch(e) {}
       }
-      activeChatChannel = ably.channels.get(channelName(currentUser.objectId, peer.objectId));
+      const chatChan = channelName(currentUser.objectId, peer.objectId);
+      activeChatChannel = ably.channels.get(chatChan);
       activeChatChannel.subscribe('message', (msg) => {
-        if (msg.data.senderId !== currentUser.objectId) {
+        if (msg.data && msg.data.senderId !== currentUser.objectId) {
           appendMessage(msg.data, false);
           if (!mutedChats.has(peer.objectId)) playMsgSound();
         }
@@ -1027,30 +1143,42 @@
       showScreen('chatScreen');
       document.getElementById('mainScreen').classList.add('hide-back');
       document.getElementById('chatScreen').classList.remove('hide');
+      
+      // Reset input
+      document.getElementById('msgInput').value = '';
+      document.getElementById('msgInput').style.height = 'auto';
+      document.getElementById('btnSend').classList.remove('show');
+      document.getElementById('btnMic').style.display = 'flex';
     }
 
     async function loadMessages(peerId) {
       const box = document.getElementById('messages');
       box.innerHTML = '';
+      
       try {
         const uid = currentUser.objectId;
         const clause = "((senderId = '" + uid + "' and receiverId = '" + peerId + "') or (senderId = '" + peerId + "' and receiverId = '" + uid + "'))";
         const query = Backendless.DataQueryBuilder.create()
           .setWhereClause(clause)
           .setSortBy(['created ASC'])
-          .setPageSize(100);
+          .setPageSize(200);
         const list = await Backendless.Data.of('Messages').find(query);
+        
         if (!list || !list.length) {
-          box.innerHTML = '<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>';
+          box.innerHTML = `<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>`;
           return;
         }
+        
         const day = document.createElement('div');
         day.className = 'day';
-        day.textContent = 'پیام‌ها';
+        const d = new Date(list[0]?.created || Date.now());
+        day.textContent = d.toLocaleDateString('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         box.appendChild(day);
+        
         list.forEach(m => appendMessage(m, m.senderId === uid, true));
         box.scrollTop = box.scrollHeight;
       } catch (e) {
+        console.warn('loadMessages error:', e);
         box.innerHTML = '<div class="empty"><div>خطا در بارگذاری پیام‌ها</div></div>';
       }
     }
@@ -1063,23 +1191,29 @@
       const div = document.createElement('div');
       div.className = 'msg ' + (isOut ? 'out' : 'in');
       const time = formatTime(m.created || Date.now());
+      
       if (m.type === 'voice') {
+        const duration = m.duration || '0:00';
         div.innerHTML = `
-          <div class="bubble">🎤 پیام صوتی ${m.duration ? '('+m.duration+')' : ''}</div>
+          <div class="bubble">🎤 پیام صوتی (${duration})</div>
           <div class="meta"><span>${time}</span>${isOut ? '<span class="ticks read">✓✓</span>' : ''}</div>
         `;
       } else {
+        const text = m.text || '';
         div.innerHTML = `
-          <div class="bubble">${escapeHtml(m.text || '')}</div>
+          <div class="bubble">${escapeHtml(text)}</div>
           <div class="meta"><span>${time}</span>${isOut ? '<span class="ticks read">✓✓</span>' : ''}</div>
         `;
       }
       box.appendChild(div);
-      if (!silent) box.scrollTop = box.scrollHeight;
+      if (!silent) {
+        box.scrollTop = box.scrollHeight;
+      }
     }
 
     async function sendTextMessage(text) {
       if (!text || !currentPeer) return;
+      
       const payload = {
         senderId: currentUser.objectId,
         receiverId: currentPeer.objectId,
@@ -1087,9 +1221,10 @@
         type: 'text',
         created: Date.now()
       };
+      
       appendMessage(payload, true);
 
-      // save to Backendless
+      // Save to Backendless
       try {
         await Backendless.Data.of('Messages').save({
           senderId: payload.senderId,
@@ -1099,14 +1234,14 @@
         });
       } catch (e) { console.warn('save msg', e); }
 
-      // realtime
+      // Send via Ably
       try {
         if (activeChatChannel) activeChatChannel.publish('message', payload);
         const peerInbox = ably.channels.get('inbox:' + currentPeer.objectId);
         peerInbox.publish('message', payload);
       } catch (e) { console.warn('publish', e); }
 
-      // update local conversation
+      // Update local conversation
       let conv = conversations.find(c => c.peerId === currentPeer.objectId);
       if (!conv) {
         conv = { peerId: currentPeer.objectId, lastMessage: text, lastTime: Date.now(), unread: 0 };
@@ -1115,14 +1250,18 @@
         conv.lastMessage = text;
         conv.lastTime = Date.now();
       }
+      renderChatList();
     }
 
     function handleIncoming(data) {
       if (!data) return;
-      // update conversations
+      
       const peerId = data.senderId;
+      if (!peerId || peerId === currentUser.objectId) return;
+      
+      const preview = data.type === 'voice' ? '🎤 پیام صوتی' : (data.text || 'پیام');
+      
       let conv = conversations.find(c => c.peerId === peerId);
-      const preview = data.type === 'voice' ? '🎤 پیام صوتی' : (data.text || '');
       if (!conv) {
         conversations.unshift({ peerId, lastMessage: preview, lastTime: data.created || Date.now(), unread: 1 });
       } else {
@@ -1137,7 +1276,7 @@
       if (!mutedChats.has(peerId)) playMsgSound();
     }
 
-    // input handlers
+    // Input handlers
     const msgInput = document.getElementById('msgInput');
     const btnSend = document.getElementById('btnSend');
     const btnMic = document.getElementById('btnMic');
@@ -1153,12 +1292,14 @@
         btnMic.style.display = 'flex';
       }
     });
+    
     msgInput.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         doSend();
       }
     });
+    
     btnSend.onclick = doSend;
 
     function doSend() {
@@ -1171,7 +1312,7 @@
       btnMic.style.display = 'flex';
     }
 
-    // Voice (local visual + save as voice type)
+    // Voice recording
     btnMic.onclick = () => {
       if (isRecording) stopRecording(false);
       else startRecording();
@@ -1214,33 +1355,49 @@
 
       const sec = Math.max(1, Math.floor((Date.now() - recordingStart)/1000));
       const duration = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+      
       const payload = {
         senderId: currentUser.objectId,
         receiverId: currentPeer.objectId,
         type: 'voice',
-        duration,
-        text: '',
+        duration: duration,
+        text: 'voice:' + duration,
         created: Date.now()
       };
+      
       appendMessage(payload, true);
+      
+      // Save to Backendless
       Backendless.Data.of('Messages').save({
         senderId: payload.senderId,
         receiverId: payload.receiverId,
         type: 'voice',
         text: 'voice:' + duration,
-        duration
+        duration: duration
       }).catch(()=>{});
+      
+      // Send via Ably
       try {
         if (activeChatChannel) activeChatChannel.publish('message', payload);
         ably.channels.get('inbox:' + currentPeer.objectId).publish('message', payload);
       } catch(e) {}
+      
       let conv = conversations.find(c => c.peerId === currentPeer.objectId);
-      if (!conv) conversations.unshift({ peerId: currentPeer.objectId, lastMessage: '🎤 پیام صوتی', lastTime: Date.now(), unread:0 });
-      else { conv.lastMessage = '🎤 پیام صوتی'; conv.lastTime = Date.now(); }
+      if (!conv) {
+        conversations.unshift({ peerId: currentPeer.objectId, lastMessage: '🎤 پیام صوتی', lastTime: Date.now(), unread: 0 });
+      } else {
+        conv.lastMessage = '🎤 پیام صوتی';
+        conv.lastTime = Date.now();
+      }
+      renderChatList();
     }
 
+    // Chat navigation
     document.getElementById('btnBackChat').onclick = () => {
-      if (activeChatChannel) { try { activeChatChannel.unsubscribe(); } catch(e){} activeChatChannel = null; }
+      if (activeChatChannel) { 
+        try { activeChatChannel.unsubscribe(); } catch(e){} 
+        activeChatChannel = null; 
+      }
       currentPeer = null;
       showScreen('mainScreen');
       renderChatList();
@@ -1252,10 +1409,12 @@
     document.getElementById('chatMenu').onclick = (e) => {
       if (e.target.id === 'chatMenu') e.target.classList.remove('show');
     };
+    
     document.getElementById('menuViewProfile').onclick = () => {
       document.getElementById('chatMenu').classList.remove('show');
       if (currentPeer) openProfile(currentPeer, true);
     };
+    
     document.getElementById('menuMute').onclick = () => {
       if (!currentPeer) return;
       if (mutedChats.has(currentPeer.objectId)) {
@@ -1268,6 +1427,7 @@
       localStorage.setItem('neo_muted', JSON.stringify([...mutedChats]));
       document.getElementById('chatMenu').classList.remove('show');
     };
+    
     document.getElementById('menuReport').onclick = async () => {
       document.getElementById('chatMenu').classList.remove('show');
       if (!currentPeer) return;
@@ -1278,8 +1438,10 @@
           reason: 'user_report',
           created: Date.now()
         });
-      } catch(e) {}
-      showToast('گزارش ثبت شد');
+        showToast('گزارش ثبت شد');
+      } catch(e) {
+        showToast('خطا در ثبت گزارش');
+      }
     };
 
     document.getElementById('chatUserBtn').onclick = () => {
@@ -1288,13 +1450,16 @@
 
     // ===================== PROFILE =====================
     function openProfile(user, fromChat) {
-      document.getElementById('pfAvatar').src = avatarUrl(user.avatarSeed || user.username);
+      const avatarSeed = user.avatarSeed || user.username || user.objectId;
+      document.getElementById('pfAvatar').src = avatarUrl(avatarSeed);
       document.getElementById('pfName').textContent = user.displayName || 'کاربر';
       document.getElementById('pfUsername').textContent = user.username ? '@' + user.username : '';
       document.getElementById('pfBio').textContent = user.bio || '';
+      
       const on = onlineUsers.has(user.objectId);
       document.getElementById('pfOnline').style.display = on ? 'block' : 'none';
       document.getElementById('pfStatus').textContent = on ? 'آنلاین' : 'آفلاین';
+      
       if (user.showPhone && user.phone) {
         document.getElementById('pfPhoneRow').style.display = 'flex';
         document.getElementById('pfPhone').textContent = user.phone;
@@ -1329,6 +1494,7 @@
       document.getElementById('setSound').checked = soundEnabled;
       showScreen('settingsScreen');
     }
+    
     document.getElementById('btnMyProfile').onclick = openSettings;
     document.getElementById('meBar').onclick = openSettings;
     document.getElementById('btnBackSettings').onclick = () => showScreen('mainScreen');
@@ -1338,8 +1504,9 @@
       const name = (document.getElementById('setName').value || '').trim();
       const err = document.getElementById('settingsError');
       err.classList.remove('show');
+      
       if (!username || username.length < 3) {
-        err.textContent = 'آیدی معتبر نیست';
+        err.textContent = 'آیدی معتبر نیست (حداقل ۳ کاراکتر)';
         err.classList.add('show');
         return;
       }
@@ -1348,23 +1515,37 @@
         err.classList.add('show');
         return;
       }
+      
       setLoading(true);
       try {
+        // Check if username is taken by others
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause("username = '" + username + "' and objectId != '" + currentUser.objectId + "'");
+        const existing = await Backendless.Data.of(Backendless.User).find(query);
+        if (existing && existing.length > 0) {
+          err.textContent = 'این آیدی قبلاً استفاده شده است';
+          err.classList.add('show');
+          setLoading(false);
+          return;
+        }
+        
         currentUser.username = username;
         currentUser.displayName = name;
         currentUser.bio = (document.getElementById('setBio').value || '').trim();
         currentUser.phone = (document.getElementById('setPhone').value || '').trim();
         currentUser.showPhone = document.getElementById('setShowPhone').checked;
         currentUser.profileComplete = true;
+        
         soundEnabled = document.getElementById('setSound').checked;
         localStorage.setItem('neo_sound', soundEnabled ? '1' : '0');
+        
         currentUser = await Backendless.UserService.update(currentUser);
         updateMeBar();
         await loadUsers();
         showToast('ذخیره شد');
         showScreen('mainScreen');
       } catch (e) {
-        err.textContent = e.message || 'خطا';
+        err.textContent = e.message || 'خطا در ذخیره';
         err.classList.add('show');
       } finally {
         setLoading(false);
@@ -1379,6 +1560,11 @@
       } catch(e) {}
       currentUser = null;
       ably = null;
+      presenceChannel = null;
+      activeChatChannel = null;
+      onlineUsers.clear();
+      allUsers = [];
+      conversations = [];
       showScreen('authScreen');
     };
 
@@ -1395,7 +1581,9 @@
             return;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Boot auth check:', e);
+      }
       setLoading(false);
       showScreen('authScreen');
     })();
