@@ -1,937 +1,1404 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🐺 گرگ در جنگل | ۵ انیمیشن + کنترل لمسی</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Neo Messenger</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://api.backendless.com/sdk/js/latest/backendless.min.js"></script>
+  <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-touch-callout: none; }
-    body { overflow: hidden; background: #0d1b2a; font-family: Arial, sans-serif; touch-action: none; }
-    canvas { display: block; width: 100vw; height: 100vh; }
+    :root {
+      --bg: #0b0e11;
+      --surface: #151a21;
+      --surface2: #1c232d;
+      --surface3: #252e3a;
+      --primary: #3b82f6;
+      --primary2: #2563eb;
+      --accent: #22d3ee;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --border: rgba(255,255,255,0.07);
+      --bubble-out: linear-gradient(135deg, #2563eb, #3b82f6);
+      --bubble-in: #1e293b;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body {
+      font-family:'Vazirmatn', system-ui, sans-serif;
+      background:#000; color:var(--text);
+      height:100dvh; overflow:hidden;
+    }
+    .app {
+      max-width:480px; height:100dvh; margin:0 auto;
+      background:var(--bg); position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .screen {
+      position:absolute; inset:0; display:flex; flex-direction:column;
+      background:var(--bg);
+      transition: transform .32s cubic-bezier(.32,.72,0,1), opacity .32s;
+    }
+    .screen.hide { transform:translateX(110%); pointer-events:none; }
+    .screen.hide-back { transform:translateX(-25%); opacity:.45; pointer-events:none; }
 
-    #loading {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0a1520;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      color: #fff;
-      font-family: 'Segoe UI', Arial, sans-serif;
+    /* ===== AUTH ===== */
+    .auth-wrap {
+      flex:1; display:flex; flex-direction:column; justify-content:center;
+      padding:28px 22px; gap:18px;
+    }
+    .auth-logo {
+      text-align:center; margin-bottom:10px;
+    }
+    .auth-logo .mark {
+      width:72px; height:72px; margin:0 auto 14px;
+      border-radius:22px;
+      background:linear-gradient(135deg,#3b82f6,#22d3ee);
+      display:flex; align-items:center; justify-content:center;
+      font-size:30px; font-weight:800; color:#fff;
+      box-shadow:0 10px 30px rgba(59,130,246,.35);
+    }
+    .auth-logo h1 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+    .auth-logo p { color:var(--muted); font-size:13.5px; margin-top:6px; }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    .field label { font-size:13px; color:var(--muted); font-weight:500; }
+    .field input, .field textarea {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; padding:14px 16px; color:var(--text);
+      font-family:inherit; font-size:14.5px; outline:none;
+      transition:border-color .2s;
+    }
+    .field input:focus, .field textarea:focus { border-color:var(--primary); }
+    .field textarea { min-height:90px; resize:vertical; }
+    .btn {
+      width:100%; padding:15px; border:none; border-radius:14px;
+      font-family:inherit; font-size:15px; font-weight:700;
+      cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:transform .15s, opacity .2s;
+    }
+    .btn:active { transform:scale(.98); }
+    .btn-primary {
+      background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff;
+      box-shadow:0 6px 20px rgba(59,130,246,.35);
+    }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+    .btn-ghost {
+      background:var(--surface2); color:var(--text);
+    }
+    .auth-switch { text-align:center; font-size:13.5px; color:var(--muted); }
+    .auth-switch span { color:var(--primary); font-weight:600; cursor:pointer; }
+    .auth-error {
+      background:rgba(239,68,68,.12); color:#fca5a5;
+      border:1px solid rgba(239,68,68,.25);
+      padding:12px 14px; border-radius:12px; font-size:13px; display:none;
+    }
+    .auth-error.show { display:block; }
+
+    /* ===== HEADER ===== */
+    .header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 16px; gap:10px;
+      background:rgba(11,14,17,.92); backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border); z-index:5;
+    }
+    .header-title { font-size:20px; font-weight:800; }
+    .icon-btn {
+      width:40px; height:40px; border-radius:12px; border:none;
+      background:var(--surface2); color:var(--text);
+      display:flex; align-items:center; justify-content:center; cursor:pointer;
+    }
+    .icon-btn:active { background:var(--surface3); }
+    .icon-btn i { font-size:16px; }
+
+    /* ===== SEARCH / TABS ===== */
+    .search-bar { padding:10px 16px 6px; }
+    .search-inner {
+      position:relative;
+    }
+    .search-inner i {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      color:var(--muted); font-size:14px;
+    }
+    .search-inner input {
+      width:100%; background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; padding:12px 40px 12px 14px; color:var(--text);
+      font-family:inherit; font-size:14px; outline:none;
+    }
+    .tabs {
+      display:flex; gap:8px; padding:8px 16px 4px;
+    }
+    .tab {
+      flex:1; text-align:center; padding:9px; border-radius:12px;
+      background:transparent; border:none; color:var(--muted);
+      font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    }
+    .tab.active { background:var(--surface2); color:var(--text); }
+
+    /* ===== LIST ===== */
+    .list { flex:1; overflow-y:auto; }
+    .list::-webkit-scrollbar { width:0; }
+    .row {
+      display:flex; align-items:center; gap:13px;
+      padding:12px 16px; cursor:pointer; transition:background .15s;
+    }
+    .row:active { background:var(--surface); }
+    .avatar-wrap { position:relative; flex-shrink:0; }
+    .avatar {
+      width:52px; height:52px; border-radius:50%; object-fit:cover;
+      background:var(--surface2); border:2px solid transparent;
+    }
+    .avatar.lg { width:84px; height:84px; }
+    .online-dot {
+      position:absolute; bottom:1px; left:1px;
+      width:13px; height:13px; background:var(--green);
+      border:2.5px solid var(--bg); border-radius:50%;
+    }
+    .row-info { flex:1; min-width:0; }
+    .row-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+    .row-name { font-weight:700; font-size:15px; }
+    .row-time { font-size:11.5px; color:var(--muted); }
+    .row-bottom { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .row-preview {
+      font-size:13px; color:var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:230px;
+    }
+    .row-preview.unread { color:var(--text); font-weight:500; }
+    .badge {
+      background:var(--primary); color:#fff; font-size:11px; font-weight:700;
+      min-width:20px; height:20px; border-radius:99px;
+      display:flex; align-items:center; justify-content:center; padding:0 6px;
+    }
+    .empty {
+      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:10px; color:var(--muted); padding:40px 24px; text-align:center;
+    }
+    .empty i { font-size:42px; opacity:.35; }
+
+    /* ===== CHAT ===== */
+    .chat-header {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; background:rgba(11,14,17,.95);
+      backdrop-filter:blur(16px); border-bottom:1px solid var(--border);
+    }
+    .chat-user { display:flex; align-items:center; gap:11px; flex:1; min-width:0; cursor:pointer; }
+    .chat-user .avatar { width:42px; height:42px; }
+    .chat-name { font-weight:700; font-size:15.5px; }
+    .chat-status { font-size:12px; color:var(--green); }
+    .chat-status.off { color:var(--muted); }
+
+    .messages {
+      flex:1; overflow-y:auto; padding:14px 12px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .messages::-webkit-scrollbar { width:0; }
+    .day {
+      align-self:center; background:var(--surface); color:var(--muted);
+      font-size:11.5px; padding:5px 12px; border-radius:20px; margin:8px 0;
+    }
+    .msg {
+      max-width:78%; display:flex; flex-direction:column; gap:2px;
+    }
+    .msg.out { align-self:flex-end; }
+    .msg.in { align-self:flex-start; }
+    .bubble {
+      padding:10px 13px; border-radius:18px; font-size:14.5px; line-height:1.55;
+      word-break:break-word;
+    }
+    .msg.out .bubble {
+      background:var(--bubble-out); color:#fff;
+      border-bottom-left-radius:5px;
+    }
+    .msg.in .bubble {
+      background:var(--bubble-in); color:var(--text);
+      border-bottom-right-radius:5px;
+    }
+    .meta {
+      display:flex; align-items:center; gap:4px;
+      font-size:10.5px; color:var(--muted); padding:0 4px;
+    }
+    .msg.out .meta { justify-content:flex-start; }
+    .msg.in .meta { justify-content:flex-end; }
+    .ticks { color:var(--muted); }
+    .ticks.read { color:var(--accent); }
+
+    .input-bar {
+      display:flex; align-items:flex-end; gap:8px;
+      padding:10px 12px 14px; border-top:1px solid var(--border);
+      background:rgba(11,14,17,.95); backdrop-filter:blur(16px);
+    }
+    .input-box {
+      flex:1; display:flex; align-items:flex-end; gap:6px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:24px; padding:6px 8px 6px 14px;
+    }
+    .input-box:focus-within { border-color:var(--primary); }
+    .input-box textarea {
+      flex:1; background:transparent; border:none; color:var(--text);
+      font-family:inherit; font-size:14.5px; outline:none;
+      max-height:110px; resize:none; padding:8px 0; line-height:1.4;
+    }
+    .input-box button {
+      width:36px; height:36px; border:none; background:transparent;
+      color:var(--muted); border-radius:50%; cursor:pointer;
+    }
+    .send-btn, .mic-btn {
+      width:48px; height:48px; border-radius:50%; border:none;
+      display:flex; align-items:center; justify-content:center; cursor:pointer;
+      flex-shrink:0;
+    }
+    .send-btn {
+      background:var(--primary); color:#fff; display:none;
+    }
+    .send-btn.show { display:flex; }
+    .mic-btn { background:var(--surface2); color:var(--text); }
+    .mic-btn.rec {
+      background:var(--red); color:#fff;
+      animation:pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow:0 0 0 0 rgba(239,68,68,.45); }
+      50% { box-shadow:0 0 0 11px rgba(239,68,68,0); }
     }
 
-    #loading .logo {
-      font-size: 48px;
-      margin-bottom: 20px;
-      text-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+    /* Recording bar */
+    .rec-bar {
+      display:none; flex:1; align-items:center; gap:10px;
+      background:var(--surface); border-radius:24px; padding:10px 14px;
+      border:1px solid rgba(239,68,68,.3);
+    }
+    .rec-bar.show { display:flex; }
+    .rec-dot {
+      width:9px; height:9px; background:var(--red); border-radius:50%;
+      animation:blink 1s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .rec-time { font-size:13px; font-weight:600; color:var(--red); min-width:40px; }
+    .rec-cancel {
+      background:none; border:none; color:var(--muted); font-size:12.5px;
+      font-family:inherit; cursor:pointer; margin-right:auto;
     }
 
-    #loading .title {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      background: linear-gradient(135deg, #ff6b35, #ffb347);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+    /* ===== PROFILE ===== */
+    .profile-head {
+      display:flex; flex-direction:column; align-items:center;
+      padding:28px 20px 18px; gap:10px;
+      background:linear-gradient(180deg, rgba(59,130,246,.12), transparent);
     }
+    .profile-name { font-size:22px; font-weight:800; }
+    .profile-id { color:var(--muted); font-size:13.5px; }
+    .profile-bio {
+      text-align:center; font-size:14px; color:var(--text);
+      line-height:1.6; padding:0 12px; max-width:340px;
+    }
+    .profile-actions {
+      display:flex; gap:10px; padding:8px 16px 16px; justify-content:center;
+    }
+    .profile-actions .btn { width:auto; padding:11px 18px; font-size:13.5px; border-radius:12px; }
+    .info-card {
+      margin:0 16px 12px; background:var(--surface); border-radius:16px;
+      border:1px solid var(--border); overflow:hidden;
+    }
+    .info-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 16px; border-bottom:1px solid var(--border);
+      font-size:14px;
+    }
+    .info-row:last-child { border-bottom:none; }
+    .info-row .label { color:var(--muted); }
+    .info-row .value { font-weight:500; }
 
-    #loading .subtitle {
-      font-size: 14px;
-      color: #8899aa;
-      margin-bottom: 30px;
-      letter-spacing: 4px;
+    /* ===== SETTINGS / MENU ===== */
+    .menu-sheet {
+      position:absolute; inset:0; background:rgba(0,0,0,.55);
+      z-index:50; display:none; align-items:flex-end; justify-content:center;
     }
+    .menu-sheet.show { display:flex; }
+    .sheet {
+      width:100%; max-width:480px; background:var(--surface);
+      border-radius:20px 20px 0 0; padding:10px 0 24px;
+      animation:slideUp .28s ease;
+    }
+    @keyframes slideUp {
+      from { transform:translateY(100%); } to { transform:translateY(0); }
+    }
+    .sheet-handle {
+      width:40px; height:4px; background:rgba(255,255,255,.15);
+      border-radius:4px; margin:6px auto 12px;
+    }
+    .sheet-item {
+      display:flex; align-items:center; gap:14px;
+      padding:14px 22px; cursor:pointer; font-size:15px;
+    }
+    .sheet-item:active { background:var(--surface2); }
+    .sheet-item i { width:22px; text-align:center; color:var(--muted); }
+    .sheet-item.danger { color:var(--red); }
+    .sheet-item.danger i { color:var(--red); }
 
-    #loading .progress-container {
-      width: 300px;
-      max-width: 80%;
-      height: 6px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 15px;
-      position: relative;
+    /* ===== TOAST ===== */
+    .toast {
+      position:absolute; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+      background:var(--surface3); color:var(--text); padding:12px 18px;
+      border-radius:12px; font-size:13px; opacity:0; pointer-events:none;
+      transition:all .3s; z-index:100; white-space:nowrap;
+      border:1px solid var(--border);
     }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    #loading .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff6b35, #ffb347);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-      position: relative;
+    /* ===== LOADING ===== */
+    .loading-overlay {
+      position:absolute; inset:0; background:rgba(11,14,17,.75);
+      display:none; align-items:center; justify-content:center; z-index:80;
     }
+    .loading-overlay.show { display:flex; }
+    .spinner {
+      width:36px; height:36px; border:3px solid rgba(255,255,255,.12);
+      border-top-color:var(--primary); border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
 
-    #loading .progress-bar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      animation: shimmer 1.5s infinite;
+    .me-bar {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; border-top:1px solid var(--border);
+      background:var(--surface); cursor:pointer;
     }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    #loading .status-text {
-      font-size: 13px;
-      color: #aaccee;
-      letter-spacing: 1px;
-    }
-
-    #loading .percentage {
-      font-size: 13px;
-      color: #ffb347;
-      font-weight: bold;
-      margin-left: 8px;
-    }
-
-    #loading .loading-dots::after {
-      content: '';
-      animation: dots 1.5s steps(4, end) infinite;
-    }
-
-    @keyframes dots {
-      0% { content: ''; }
-      25% { content: '.'; }
-      50% { content: '..'; }
-      75% { content: '...'; }
-      100% { content: ''; }
-    }
-
-    #loading .retry-btn {
-      display: none;
-      margin-top: 20px;
-      padding: 12px 36px;
-      background: linear-gradient(135deg, #ff6b35, #e55a2b);
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 1px;
-      transition: all 0.3s;
-    }
-
-    #loading .retry-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
-    }
-
-    #loading .error-text {
-      display: none;
-      color: #ff6b6b;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    #info {
-      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      color: #fff; background: rgba(0,0,0,0.5); padding: 6px 16px; border-radius: 20px;
-      font-size: 12px; z-index: 10; backdrop-filter: blur(5px); pointer-events: none; white-space: nowrap;
-    }
-    #info span { color: #ffb347; font-weight: bold; }
-
-    #status {
-      position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%);
-      color: #88ddff; background: rgba(0,0,0,0.6); padding: 4px 14px; border-radius: 20px;
-      font-size: 11px; z-index: 10; backdrop-filter: blur(5px); pointer-events: none; display: none;
-    }
-
-    #test-status {
-      position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
-      color: #ffdd44; background: rgba(0,0,0,0.7); padding: 6px 18px; border-radius: 20px;
-      font-size: 13px; z-index: 10; backdrop-filter: blur(5px); pointer-events: none;
-      border: 1px solid rgba(255,220,68,0.3); display: none; white-space: nowrap;
-    }
-
-    #touch-controls {
-      position: absolute; bottom: 30px; left: 0; right: 0; display: flex;
-      justify-content: space-between; padding: 0 15px; z-index: 10; pointer-events: none;
-      touch-action: none; opacity: 0; transition: opacity 0.5s;
-    }
-    #touch-controls.active { opacity: 1; }
-
-    #joystick-area { width: 120px; height: 120px; pointer-events: auto; touch-action: none; }
-    #joystick-base {
-      width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); position: relative; touch-action: none;
-    }
-    #joystick-knob {
-      width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.3);
-      border: 2px solid rgba(255,255,255,0.4); position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%); pointer-events: none; touch-action: none;
-      box-shadow: 0 0 20px rgba(255,107,53,0.2);
-    }
-
-    #action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; pointer-events: auto; touch-action: none; }
-    .action-btn {
-      width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); color: #fff; font-size: 10px;
-      font-weight: bold; display: flex; align-items: center; justify-content: center; touch-action: none;
-      transition: all 0.1s; text-shadow: 0 0 10px rgba(0,0,0,0.5); text-align: center; line-height: 1.2;
-    }
-    .action-btn:active, .action-btn.active { background: rgba(255,107,53,0.4); border-color: #ff6b35; transform: scale(0.9); }
-
-    #run-btn { background: rgba(255,200,50,0.2); border-color: rgba(255,200,50,0.4); }
-    #sit-btn { background: rgba(50,200,255,0.2); border-color: rgba(50,200,255,0.4); }
-    #creep-btn { background: rgba(100,200,100,0.2); border-color: rgba(100,200,100,0.4); }
-    #idle-btn { background: rgba(200,150,255,0.2); border-color: rgba(200,150,255,0.4); }
-
-    #hint {
-      position: absolute; bottom: 190px; left: 50%; transform: translateX(-50%);
-      color: rgba(255,255,255,0.35); font-size: 10px; z-index: 10; background: rgba(0,0,0,0.4);
-      padding: 4px 12px; border-radius: 12px; backdrop-filter: blur(5px); pointer-events: none;
-      white-space: nowrap; display: none;
-    }
-
-    @media (max-width: 500px) {
-      #joystick-area { width: 90px; height: 90px; }
-      #joystick-knob { width: 35px; height: 35px; }
-      .action-btn { width: 44px; height: 44px; font-size: 8px; }
-      #info { font-size: 10px; padding: 4px 12px; top: 10px; }
-      #test-status { font-size: 11px; top: 60px; }
-      #action-buttons { gap: 6px; }
-      #loading .title { font-size: 22px; }
-      #loading .progress-container { width: 250px; }
-    }
+    .me-bar .avatar { width:40px; height:40px; }
+    .me-info { flex:1; min-width:0; }
+    .me-name { font-weight:700; font-size:14px; }
+    .me-sub { font-size:12px; color:var(--muted); }
   </style>
 </head>
 <body>
+  <div class="app" id="app">
+    <!-- AUTH -->
+    <div class="screen" id="authScreen">
+      <div class="auth-wrap" id="authWrap">
+        <div class="auth-logo">
+          <div class="mark">N</div>
+          <h1>Neo Messenger</h1>
+          <p>پیام‌رسان امن و سریع</p>
+        </div>
+        <div class="auth-error" id="authError"></div>
+        <div id="loginForm">
+          <div class="field">
+            <label>ایمیل</label>
+            <input type="email" id="loginEmail" placeholder="email@example.com" autocomplete="email" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>رمز عبور</label>
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button class="btn btn-primary" style="margin-top:18px" id="btnLogin">ورود</button>
+          <div class="auth-switch" style="margin-top:16px">
+            حساب نداری؟ <span id="goRegister">ثبت‌نام</span>
+          </div>
+        </div>
+        <div id="registerForm" style="display:none">
+          <div class="field">
+            <label>ایمیل</label>
+            <input type="email" id="regEmail" placeholder="email@example.com" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>رمز عبور (حداقل ۶ کاراکتر)</label>
+            <input type="password" id="regPass" placeholder="••••••••" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>نام نمایشی</label>
+            <input type="text" id="regName" placeholder="مثلاً سارا محمدی" />
+          </div>
+          <button class="btn btn-primary" style="margin-top:18px" id="btnRegister">ساخت حساب</button>
+          <div class="auth-switch" style="margin-top:16px">
+            حساب داری؟ <span id="goLogin">ورود</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div id="loading">
-  <div class="logo">🐺</div>
-  <div class="title">GRG</div>
-  <div class="subtitle">وُلف • جنگل واقعی</div>
-  <div class="progress-container">
-    <div class="progress-bar" id="progress-bar"></div>
+    <!-- COMPLETE PROFILE -->
+    <div class="screen hide" id="completeScreen">
+      <div class="header">
+        <div class="header-title">تکمیل پروفایل</div>
+      </div>
+      <div class="auth-wrap" style="justify-content:flex-start; padding-top:20px">
+        <p style="color:var(--muted); font-size:13.5px; margin-bottom:8px">
+          برای دیده شدن در لیست کاربران، آیدی و نام را کامل کنید.
+        </p>
+        <div class="auth-error" id="completeError"></div>
+        <div class="field">
+          <label>آیدی کاربری (بدون فاصله)</label>
+          <input type="text" id="cpUsername" placeholder="مثلاً sara_m" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>نام نمایشی</label>
+          <input type="text" id="cpName" placeholder="نام شما" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>بیوگرافی (اختیاری)</label>
+          <textarea id="cpBio" placeholder="چند کلمه درباره خودتان..."></textarea>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>شماره موبایل (اختیاری)</label>
+          <input type="tel" id="cpPhone" placeholder="0912..." />
+        </div>
+        <button class="btn btn-primary" style="margin-top:18px" id="btnComplete">ذخیره و ادامه</button>
+      </div>
+    </div>
+
+    <!-- MAIN (CHATS + USERS) -->
+    <div class="screen hide" id="mainScreen">
+      <div class="header">
+        <div class="header-title">پیام‌ها</div>
+        <div style="display:flex; gap:8px">
+          <button class="icon-btn" id="btnRefresh" title="بروزرسانی"><i class="fa-solid fa-rotate"></i></button>
+          <button class="icon-btn" id="btnMyProfile" title="پروفایل من"><i class="fa-solid fa-user"></i></button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <div class="search-inner">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="جستجوی چت یا کاربر..." />
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="chats">چت‌ها</button>
+        <button class="tab" data-tab="users">کاربران</button>
+      </div>
+      <div class="list" id="chatList"></div>
+      <div class="list" id="userList" style="display:none"></div>
+      <div class="me-bar" id="meBar">
+        <img class="avatar" id="meAvatar" src="" alt="" />
+        <div class="me-info">
+          <div class="me-name" id="meName">—</div>
+          <div class="me-sub" id="meSub">—</div>
+        </div>
+        <i class="fa-solid fa-chevron-left" style="color:var(--muted); font-size:13px"></i>
+      </div>
+    </div>
+
+    <!-- CHAT ROOM -->
+    <div class="screen hide" id="chatScreen">
+      <div class="chat-header">
+        <button class="icon-btn" id="btnBackChat"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="chat-user" id="chatUserBtn">
+          <div class="avatar-wrap">
+            <img class="avatar" id="roomAvatar" src="" alt="" />
+            <div class="online-dot" id="roomOnline" style="display:none"></div>
+          </div>
+          <div>
+            <div class="chat-name" id="roomName">—</div>
+            <div class="chat-status" id="roomStatus">—</div>
+          </div>
+        </div>
+        <button class="icon-btn" id="btnChatMenu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="input-bar">
+        <div class="rec-bar" id="recBar">
+          <div class="rec-dot"></div>
+          <div class="rec-time" id="recTime">0:00</div>
+          <button class="rec-cancel" id="recCancel">لغو</button>
+        </div>
+        <div class="input-box" id="inputBox">
+          <textarea id="msgInput" rows="1" placeholder="پیام بنویسید..."></textarea>
+          <button type="button" id="btnEmoji"><i class="fa-regular fa-face-smile"></i></button>
+        </div>
+        <button class="send-btn" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
+        <button class="mic-btn" id="btnMic"><i class="fa-solid fa-microphone"></i></button>
+      </div>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div class="screen hide" id="profileScreen">
+      <div class="header">
+        <button class="icon-btn" id="btnBackProfile"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="header-title">پروفایل</div>
+        <div style="width:40px"></div>
+      </div>
+      <div style="flex:1; overflow-y:auto">
+        <div class="profile-head">
+          <div class="avatar-wrap">
+            <img class="avatar lg" id="pfAvatar" src="" alt="" />
+            <div class="online-dot" id="pfOnline" style="display:none; width:16px; height:16px; bottom:4px; left:4px"></div>
+          </div>
+          <div class="profile-name" id="pfName">—</div>
+          <div class="profile-id" id="pfUsername">—</div>
+          <div class="profile-bio" id="pfBio"></div>
+        </div>
+        <div class="profile-actions" id="pfActions">
+          <button class="btn btn-primary" id="btnMessageUser"><i class="fa-solid fa-comment"></i> پیام</button>
+        </div>
+        <div class="info-card">
+          <div class="info-row"><span class="label">وضعیت</span><span class="value" id="pfStatus">—</span></div>
+          <div class="info-row" id="pfPhoneRow" style="display:none"><span class="label">شماره</span><span class="value" id="pfPhone">—</span></div>
+          <div class="info-row"><span class="label">عضویت</span><span class="value" id="pfJoined">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY SETTINGS / EDIT PROFILE -->
+    <div class="screen hide" id="settingsScreen">
+      <div class="header">
+        <button class="icon-btn" id="btnBackSettings"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="header-title">حساب من</div>
+        <div style="width:40px"></div>
+      </div>
+      <div style="flex:1; overflow-y:auto; padding:16px">
+        <div class="auth-error" id="settingsError"></div>
+        <div class="field">
+          <label>آیدی کاربری</label>
+          <input type="text" id="setUsername" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>نام نمایشی</label>
+          <input type="text" id="setName" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>بیوگرافی</label>
+          <textarea id="setBio"></textarea>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>شماره موبایل</label>
+          <input type="tel" id="setPhone" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer">
+            <input type="checkbox" id="setShowPhone" style="width:18px; height:18px" />
+            نمایش شماره در پروفایل
+          </label>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer">
+            <input type="checkbox" id="setSound" style="width:18px; height:18px" checked />
+            صدای پیام جدید
+          </label>
+        </div>
+        <button class="btn btn-primary" style="margin-top:18px" id="btnSaveSettings">ذخیره تغییرات</button>
+        <button class="btn btn-ghost" style="margin-top:10px" id="btnLogout">خروج از حساب</button>
+      </div>
+    </div>
+
+    <!-- CHAT MENU -->
+    <div class="menu-sheet" id="chatMenu">
+      <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-item" id="menuViewProfile"><i class="fa-solid fa-user"></i> مشاهده پروفایل</div>
+        <div class="sheet-item" id="menuMute"><i class="fa-solid fa-bell"></i> <span id="muteLabel">بی‌صدا کردن چت</span></div>
+        <div class="sheet-item danger" id="menuReport"><i class="fa-solid fa-flag"></i> گزارش کاربر</div>
+        <div class="sheet-item" id="menuClose"><i class="fa-solid fa-xmark"></i> بستن</div>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
+    <div class="toast" id="toast"></div>
   </div>
-  <div class="status-text">
-    <span id="status-message">در حال اتصال به سرور</span>
-    <span class="loading-dots"></span>
-    <span class="percentage" id="percentage-text">0%</span>
-  </div>
-  <div class="error-text" id="error-text">⚠️ خطا در بارگذاری</div>
-  <button class="retry-btn" id="retry-btn">🔄 تلاش مجدد</button>
-</div>
 
-<div id="info">🐺 <span>گرگ</span> | جنگل واقعی + ۵ انیمیشن</div>
-<div id="test-status">🎬 در حال تست انیمیشن‌ها...</div>
-<div id="status">🐺 آماده حرکت...</div>
-<div id="hint">🎮 جویاستیک · ۴ دکمه اکشن</div>
+  <script>
+    // ===================== CONFIG =====================
+    const CONFIG = {
+      APP_ID: 'C50651A5-1DFC-4BA1-AA34-B4444E9AC5A5',
+      API_KEY: '9303E7E8-BAF9-4023-A34B-E4E024192785',
+      ABLY_KEY: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'
+    };
 
-<div id="touch-controls">
-  <div id="joystick-area">
-    <div id="joystick-base"><div id="joystick-knob"></div></div>
-  </div>
-  <div id="action-buttons">
-    <div id="run-btn" class="action-btn">🏃<br>دویدن</div>
-    <div id="sit-btn" class="action-btn">🐕<br>نشستن</div>
-    <div id="creep-btn" class="action-btn">🐾<br>خزیدن</div>
-    <div id="idle-btn" class="action-btn">🧍<br>ایستادن</div>
-  </div>
-</div>
+    // ===================== STATE =====================
+    let currentUser = null;
+    let ably = null;
+    let presenceChannel = null;
+    let activeChatChannel = null;
+    let currentPeer = null;
+    let allUsers = [];
+    let conversations = []; // { peerId, lastMessage, lastTime, unread }
+    let onlineUsers = new Set();
+    let soundEnabled = true;
+    let mutedChats = new Set(JSON.parse(localStorage.getItem('neo_muted') || '[]'));
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let recTimer = null;
+    let recordingStart = 0;
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+    const msgSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5');
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    // ===================== INIT BACKENDLESS =====================
+    Backendless.serverURL = 'https://api.backendless.com';
+    Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
 
-const isMobile = window.innerWidth < 768;
+    // ===================== HELPERS =====================
+    function normalizeEmail(email) {
+      return (email || '').replace(/\s+/g, '').trim().toLowerCase();
+    }
+    function normalizeUsername(u) {
+      return (u || '').replace(/\s+/g, '_').trim().toLowerCase().replace(/[^a-z0-9._]/g, '');
+    }
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2600);
+    }
+    function setLoading(v) {
+      document.getElementById('loading').classList.toggle('show', v);
+    }
+    function showScreen(id) {
+      ['authScreen','completeScreen','mainScreen','chatScreen','profileScreen','settingsScreen'].forEach(s => {
+        const el = document.getElementById(s);
+        if (s === id) el.classList.remove('hide', 'hide-back');
+        else el.classList.add('hide');
+      });
+    }
+    function avatarUrl(seed) {
+      return 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(seed || 'user');
+    }
+    function formatTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      const now = new Date();
+      if (d.toDateString() === now.toDateString()) {
+        return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+      }
+      return d.toLocaleDateString('fa-IR');
+    }
+    function playMsgSound() {
+      if (!soundEnabled) return;
+      try { msgSound.currentTime = 0; msgSound.play().catch(()=>{}); } catch(e) {}
+    }
+    function channelName(uid1, uid2) {
+      return 'chat:' + [uid1, uid2].sort().join('_');
+    }
+    function isProfileComplete(u) {
+      return !!(u && u.username && u.displayName && String(u.username).trim() && String(u.displayName).trim());
+    }
 
-// ============================================================
-// عناصر UI بارگذاری
-// ============================================================
-const loadingDiv = document.getElementById('loading');
-const progressBar = document.getElementById('progress-bar');
-const statusMessage = document.getElementById('status-message');
-const percentageText = document.getElementById('percentage-text');
-const errorText = document.getElementById('error-text');
-const retryBtn = document.getElementById('retry-btn');
+    // ===================== AUTH UI =====================
+    document.getElementById('goRegister').onclick = () => {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'block';
+      document.getElementById('authError').classList.remove('show');
+    };
+    document.getElementById('goLogin').onclick = () => {
+      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('authError').classList.remove('show');
+    };
 
-let loadStartTime = Date.now();
-let loadTimeout;
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
 
-function updateLoading(percent, message) {
-  const p = Math.min(100, Math.max(0, percent));
-  progressBar.style.width = p + '%';
-  percentageText.textContent = Math.round(p) + '%';
-  if (message) statusMessage.textContent = message;
-}
+    document.getElementById('btnLogin').onclick = async () => {
+      const email = normalizeEmail(document.getElementById('loginEmail').value);
+      const pass = document.getElementById('loginPass').value;
+      if (!email || !pass) return showAuthError('ایمیل و رمز را وارد کنید');
+      setLoading(true);
+      try {
+        currentUser = await Backendless.UserService.login(email, pass, true);
+        await afterLogin();
+      } catch (e) {
+        showAuthError(e.message || 'ورود ناموفق بود');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-function showError() {
-  errorText.style.display = 'block';
-  retryBtn.style.display = 'block';
-  statusMessage.textContent = 'خطا در بارگذاری';
-  progressBar.style.background = '#ff6b6b';
-}
+    document.getElementById('btnRegister').onclick = async () => {
+      const email = normalizeEmail(document.getElementById('regEmail').value);
+      const pass = document.getElementById('regPass').value;
+      const name = (document.getElementById('regName').value || '').trim();
+      if (!email || !pass) return showAuthError('ایمیل و رمز الزامی است');
+      if (pass.length < 6) return showAuthError('رمز حداقل ۶ کاراکتر باشد');
+      setLoading(true);
+      try {
+        const user = new Backendless.User();
+        user.email = email;
+        user.password = pass;
+        user.displayName = name || email.split('@')[0];
+        user.username = '';
+        user.bio = '';
+        user.phone = '';
+        user.showPhone = false;
+        user.avatarSeed = email;
+        user.profileComplete = false;
+        currentUser = await Backendless.UserService.register(user);
+        // auto login
+        currentUser = await Backendless.UserService.login(email, pass, true);
+        await afterLogin();
+      } catch (e) {
+        showAuthError(e.message || 'ثبت‌نام ناموفق بود');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-function hideLoading() {
-  loadingDiv.style.display = 'none';
-}
-
-retryBtn.addEventListener('click', () => {
-  location.reload();
-});
-
-// ============================================================
-// صحنه، دوربین، رندر
-// ============================================================
-const scene = new THREE.Scene();
-
-function makeSkyGradient(){
-  const c = document.createElement('canvas');
-  c.width = 2; c.height = 256;
-  const ctx = c.getContext('2d');
-  const grad = ctx.createLinearGradient(0,0,0,256);
-  grad.addColorStop(0, '#3a6ea5');
-  grad.addColorStop(0.45, '#8fc1e3');
-  grad.addColorStop(0.75, '#dff0e0');
-  grad.addColorStop(1, '#eef7e6');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0,0,2,256);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-scene.background = makeSkyGradient();
-scene.fog = new THREE.Fog(0xbcd8c9, 18, 75);
-
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
-camera.position.set(5, 3, 8);
-
-const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, powerPreference: "high-performance" });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.body.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0.8, 0);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.minDistance = 2.5;
-controls.maxDistance = 22;
-controls.maxPolarAngle = Math.PI / 2.15;
-controls.update();
-
-// ============================================================
-// نورپردازی
-// ============================================================
-const hemi = new THREE.HemisphereLight(0xbfd9ff, 0x3a3020, 0.9);
-scene.add(hemi);
-
-const sunLight = new THREE.DirectionalLight(0xfff1d6, 2.0);
-sunLight.position.set(15, 22, 10);
-sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 2048;
-sunLight.shadow.mapSize.height = 2048;
-sunLight.shadow.camera.near = 1;
-sunLight.shadow.camera.far = 60;
-sunLight.shadow.camera.left = -20;
-sunLight.shadow.camera.right = 20;
-sunLight.shadow.camera.top = 20;
-sunLight.shadow.camera.bottom = -20;
-sunLight.shadow.bias = -0.0015;
-scene.add(sunLight);
-
-const fillLight = new THREE.DirectionalLight(0x88aaff, 0.35);
-fillLight.position.set(-10, 6, -8);
-scene.add(fillLight);
-
-// ============================================================
-// زمین
-// ============================================================
-const GROUND_Y = 0;
-
-function makeGrassTexture(){
-  const size = 512;
-  const c = document.createElement('canvas');
-  c.width = c.height = size;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#4c7a3d';
-  ctx.fillRect(0,0,size,size);
-  for(let i=0;i<9000;i++){
-    const x = Math.random()*size, y = Math.random()*size;
-    const g = 90 + Math.random()*60;
-    ctx.fillStyle = `rgba(${40+Math.random()*30},${g},${30+Math.random()*30},0.5)`;
-    ctx.fillRect(x, y, 2+Math.random()*2, 2+Math.random()*2);
-  }
-  for(let i=0;i<40;i++){
-    ctx.fillStyle = 'rgba(30,50,20,0.15)';
-    ctx.beginPath();
-    ctx.arc(Math.random()*size, Math.random()*size, 15+Math.random()*35, 0, Math.PI*2);
-    ctx.fill();
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(24, 24);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-updateLoading(5, 'ساخت محیط جنگل');
-
-const groundGeo = new THREE.PlaneGeometry(160, 160, 64, 64);
-const posAttr = groundGeo.attributes.position;
-for(let i=0;i<posAttr.count;i++){
-  const x = posAttr.getX(i), y = posAttr.getY(i);
-  const distFromCenter = Math.sqrt(x*x+y*y);
-  const falloff = Math.min(1, Math.max(0, (distFromCenter-6)/20));
-  const h = (Math.sin(x*0.15)+Math.cos(y*0.17))*0.35*falloff;
-  posAttr.setZ(i, h);
-}
-groundGeo.computeVertexNormals();
-
-const groundMat = new THREE.MeshStandardMaterial({ map: makeGrassTexture(), roughness: 0.95, metalness: 0.0 });
-const ground = new THREE.Mesh(groundGeo, groundMat);
-ground.rotation.x = -Math.PI/2;
-ground.position.y = GROUND_Y;
-ground.receiveShadow = true;
-scene.add(ground);
-
-const pathMat = new THREE.MeshStandardMaterial({ color:0x8a6d4b, roughness:1 });
-const path = new THREE.Mesh(new THREE.RingGeometry(2.4, 3.1, 48), pathMat);
-path.rotation.x = -Math.PI/2;
-path.position.y = GROUND_Y + 0.003;
-path.receiveShadow = true;
-scene.add(path);
-
-updateLoading(15, 'کاشت درختان');
-
-// ============================================================
-// درخت‌ها، بوته‌ها، سنگ‌ها
-// ============================================================
-function makeTree(x, z, scale=1){
-  const g = new THREE.Group();
-  const trunkMat = new THREE.MeshStandardMaterial({ color:0x5b3d2b, roughness:0.95 });
-  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12*scale, 0.18*scale, 1.6*scale, 8), trunkMat);
-  trunk.position.y = 0.8*scale;
-  trunk.castShadow = true;
-  g.add(trunk);
-
-  const leafColors = [0x2f6b3a, 0x3a7d45, 0x27552f];
-  for(let i=0;i<3;i++){
-    const leafMat = new THREE.MeshStandardMaterial({ color: leafColors[i%leafColors.length], roughness:0.9 });
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry((1.1-i*0.18)*scale, 1.3*scale, 8), leafMat);
-    leaf.position.y = (1.6 + i*0.75)*scale;
-    leaf.castShadow = true;
-    leaf.receiveShadow = true;
-    g.add(leaf);
-  }
-  g.position.set(x, GROUND_Y, z);
-  g.rotation.y = Math.random()*Math.PI*2;
-  return g;
-}
-
-function makeBush(x,z,scale=1){
-  const g = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({ color:0x3d6b34, roughness:0.95 });
-  for(let i=0;i<4;i++){
-    const s = new THREE.Mesh(new THREE.SphereGeometry(0.32*scale, 8, 8), mat);
-    s.position.set((Math.random()-0.5)*0.4*scale, 0.25*scale + Math.random()*0.1, (Math.random()-0.5)*0.4*scale);
-    s.castShadow = true; s.receiveShadow = true;
-    g.add(s);
-  }
-  g.position.set(x, GROUND_Y, z);
-  return g;
-}
-
-function makeRock(x,z,scale=1){
-  const mat = new THREE.MeshStandardMaterial({ color:0x8a8a86, roughness:0.9, flatShading:true });
-  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.35*scale, 0), mat);
-  rock.position.set(x, GROUND_Y + 0.15*scale, z);
-  rock.rotation.set(Math.random(), Math.random(), Math.random());
-  rock.castShadow = true; rock.receiveShadow = true;
-  return rock;
-}
-
-const forestGroup = new THREE.Group();
-const placed = [];
-function farEnough(x,z,min){
-  return placed.every(p => Math.hypot(p.x-x, p.z-z) > min);
-}
-for(let i=0;i<26;i++){
-  const angle = (i/26)*Math.PI*2 + Math.random()*0.15;
-  const radius = 7 + Math.random()*10;
-  const x = Math.cos(angle)*radius;
-  const z = Math.sin(angle)*radius;
-  if(!farEnough(x,z,1.6)) continue;
-  placed.push({x,z});
-  forestGroup.add(makeTree(x,z, 0.85+Math.random()*0.7));
-}
-for(let i=0;i<18;i++){
-  const angle = Math.random()*Math.PI*2;
-  const radius = 4.5 + Math.random()*12;
-  const x = Math.cos(angle)*radius;
-  const z = Math.sin(angle)*radius;
-  if(!farEnough(x,z,1.0)) continue;
-  placed.push({x,z});
-  forestGroup.add(makeBush(x,z, 0.6+Math.random()*0.6));
-}
-for(let i=0;i<12;i++){
-  const angle = Math.random()*Math.PI*2;
-  const radius = 3.5 + Math.random()*13;
-  const x = Math.cos(angle)*radius;
-  const z = Math.sin(angle)*radius;
-  if(!farEnough(x,z,1.0)) continue;
-  placed.push({x,z});
-  forestGroup.add(makeRock(x,z, 0.5+Math.random()*0.9));
-}
-scene.add(forestGroup);
-
-function makeMountainRing(){
-  const g = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({ color:0x7d93a8, roughness:1, flatShading:true });
-  const count = 14;
-  for(let i=0;i<count;i++){
-    const angle = (i/count)*Math.PI*2;
-    const radius = 55 + Math.random()*10;
-    const h = 12 + Math.random()*14;
-    const m = new THREE.Mesh(new THREE.ConeGeometry(10+Math.random()*6, h, 5), mat);
-    m.position.set(Math.cos(angle)*radius, h/2 - 2, Math.sin(angle)*radius);
-    m.rotation.y = Math.random()*Math.PI;
-    g.add(m);
-  }
-  return g;
-}
-scene.add(makeMountainRing());
-
-function makeCloud(x,y,z,scale=1){
-  const g = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({ color:0xffffff, roughness:1, transparent:true, opacity:0.85 });
-  for(let i=0;i<5;i++){
-    const s = new THREE.Mesh(new THREE.SphereGeometry(1.2*scale,8,8), mat);
-    s.position.set((Math.random()-0.5)*3*scale, (Math.random()-0.5)*0.6*scale, (Math.random()-0.5)*1.5*scale);
-    g.add(s);
-  }
-  g.position.set(x,y,z);
-  return g;
-}
-const cloudGroup = new THREE.Group();
-for(let i=0;i<8;i++){
-  cloudGroup.add(makeCloud((Math.random()-0.5)*90, 18+Math.random()*8, (Math.random()-0.5)*90, 1.5+Math.random()*2));
-}
-scene.add(cloudGroup);
-
-updateLoading(30, 'آماده‌سازی گرگ');
-
-// ============================================================
-// متغیرهای گرگ / انیمیشن
-// ============================================================
-let mixer = null;
-let animations = {};
-let currentAction = null;
-let model = null;
-const clock = new THREE.Clock();
-let isModelLoaded = false;
-let modelLoadedOnce = false; // جلوگیری از بارگذاری دوباره
-
-let moveX = 0;
-let moveZ = 0;
-let isRunning = false;
-let isSitting = false;
-let isCreeping = false;
-let isIdle = false;
-let isMoving = false;
-const speed = 0.065;
-
-let isTesting = false;
-let testAnimations = [];
-let testIndex = 0;
-let testTimer = null;
-let isUserControlActive = false;
-
-function logMessage(msg) {
-  console.log(msg);
-  const statusDiv = document.getElementById('status');
-  statusDiv.textContent = msg;
-  statusDiv.style.color = '#88ddff';
-  statusDiv.style.display = 'block';
-  setTimeout(() => { statusDiv.style.display = 'none'; }, 2000);
-}
-function updateTestStatus(text) {
-  const testDiv = document.getElementById('test-status');
-  testDiv.textContent = text;
-  testDiv.style.display = 'block';
-}
-
-const loader = new GLTFLoader();
-
-const contactShadow = new THREE.Mesh(
-  new THREE.CircleGeometry(1.1, 24),
-  new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.28, depthWrite:false })
-);
-contactShadow.rotation.x = -Math.PI/2;
-contactShadow.position.y = GROUND_Y + 0.01;
-scene.add(contactShadow);
-
-// ============================================================
-// بارگذاری مدل با مدیریت جلوگیری از دوبار بارگذاری
-// ============================================================
-let loadAttempts = 0;
-const MAX_ATTEMPTS = 3;
-
-function loadModel() {
-  // اگر قبلا مدل بارگذاری شده، دیگه دوباره تلاش نکن
-  if (modelLoadedOnce) {
-    console.log('مدل قبلاً بارگذاری شده، رد می‌شود');
-    return;
-  }
-  
-  loadAttempts++;
-  updateLoading(35, `بارگذاری گرگ (تلاش ${loadAttempts})`);
-
-  loader.load(
-    'https://cdn.jsdelivr.net/gh/s0379265-netizen/Fagah@main/wolf_with_animations.glb',
-    (gltf) => {
-      // اگر مدل قبلاً بارگذاری شده، این پاسخ رو نادیده بگیر
-      if (modelLoadedOnce) {
-        console.log('مدل قبلاً بارگذاری شده، این درخواست نادیده گرفته شد');
+    async function afterLogin() {
+      soundEnabled = localStorage.getItem('neo_sound') !== '0';
+      if (!isProfileComplete(currentUser)) {
+        document.getElementById('cpName').value = currentUser.displayName || '';
+        showScreen('completeScreen');
         return;
       }
-      
-      clearTimeout(loadTimeout);
-      updateLoading(80, 'پردازش انیمیشن‌ها');
-      
-      model = gltf.scene;
-      model.scale.set(0.8, 0.8, 0.8);
+      await initRealtime();
+      await loadUsers();
+      await loadConversations();
+      updateMeBar();
+      showScreen('mainScreen');
+    }
 
-      const box = new THREE.Box3().setFromObject(model);
-      const feetOffset = -box.min.y;
-      model.position.set(0, GROUND_Y + feetOffset, 0);
-      model.userData.groundOffset = feetOffset;
+    document.getElementById('btnComplete').onclick = async () => {
+      const username = normalizeUsername(document.getElementById('cpUsername').value);
+      const name = (document.getElementById('cpName').value || '').trim();
+      const bio = (document.getElementById('cpBio').value || '').trim();
+      const phone = (document.getElementById('cpPhone').value || '').trim();
+      const err = document.getElementById('completeError');
+      err.classList.remove('show');
+      if (!username || username.length < 3) {
+        err.textContent = 'آیدی حداقل ۳ کاراکتر و بدون فاصله باشد';
+        err.classList.add('show');
+        return;
+      }
+      if (!name) {
+        err.textContent = 'نام نمایشی الزامی است';
+        err.classList.add('show');
+        return;
+      }
+      setLoading(true);
+      try {
+        currentUser.username = username;
+        currentUser.displayName = name;
+        currentUser.bio = bio;
+        currentUser.phone = phone;
+        currentUser.profileComplete = true;
+        currentUser = await Backendless.UserService.update(currentUser);
+        await initRealtime();
+        await loadUsers();
+        await loadConversations();
+        updateMeBar();
+        showScreen('mainScreen');
+        showToast('پروفایل ذخیره شد');
+      } catch (e) {
+        err.textContent = e.message || 'خطا در ذخیره';
+        err.classList.add('show');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      model.traverse((node) => {
-        if (node.isMesh) {
-          node.castShadow = true;
-          node.receiveShadow = true;
+    // ===================== ABLY REALTIME =====================
+    async function initRealtime() {
+      if (ably) return;
+      ably = new Ably.Realtime({ key: CONFIG.ABLY_KEY, clientId: currentUser.objectId });
+      await new Promise((resolve, reject) => {
+        ably.connection.once('connected', resolve);
+        ably.connection.once('failed', reject);
+        setTimeout(() => resolve(), 4000);
+      });
+
+      presenceChannel = ably.channels.get('neo-presence');
+      presenceChannel.presence.subscribe('enter', (m) => {
+        onlineUsers.add(m.clientId);
+        refreshOnlineUI();
+      });
+      presenceChannel.presence.subscribe('leave', (m) => {
+        onlineUsers.delete(m.clientId);
+        refreshOnlineUI();
+      });
+      presenceChannel.presence.subscribe('update', (m) => {
+        onlineUsers.add(m.clientId);
+        refreshOnlineUI();
+      });
+      try {
+        const members = await presenceChannel.presence.get();
+        members.forEach(m => onlineUsers.add(m.clientId));
+        await presenceChannel.presence.enter({ name: currentUser.displayName });
+      } catch (e) { console.warn('presence', e); }
+
+      // global message notify channel for this user
+      const inbox = ably.channels.get('inbox:' + currentUser.objectId);
+      inbox.subscribe('message', (msg) => {
+        handleIncoming(msg.data);
+      });
+    }
+
+    function refreshOnlineUI() {
+      renderChatList();
+      renderUserList();
+      if (currentPeer) {
+        const on = onlineUsers.has(currentPeer.objectId);
+        document.getElementById('roomOnline').style.display = on ? 'block' : 'none';
+        document.getElementById('roomStatus').textContent = on ? 'آنلاین' : 'آفلاین';
+        document.getElementById('roomStatus').classList.toggle('off', !on);
+      }
+    }
+
+    // ===================== USERS & CONVERSATIONS =====================
+    async function loadUsers() {
+      try {
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause("profileComplete = true and objectId != '" + currentUser.objectId + "'")
+          .setPageSize(100);
+        allUsers = await Backendless.Data.of(Backendless.User).find(query);
+      } catch (e) {
+        // fallback: try without clause fields
+        try {
+          const all = await Backendless.Data.of(Backendless.User).find();
+          allUsers = (all || []).filter(u => u.objectId !== currentUser.objectId && isProfileComplete(u));
+        } catch (e2) {
+          allUsers = [];
+        }
+      }
+      renderUserList();
+    }
+
+    async function loadConversations() {
+      try {
+        const uid = currentUser.objectId;
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause("senderId = '" + uid + "' or receiverId = '" + uid + "'")
+          .setSortBy(['created DESC'])
+          .setPageSize(100);
+        const messages = await Backendless.Data.of('Messages').find(query);
+        const map = new Map();
+        (messages || []).forEach(m => {
+          const peerId = m.senderId === uid ? m.receiverId : m.senderId;
+          if (!map.has(peerId)) {
+            map.set(peerId, {
+              peerId,
+              lastMessage: m.type === 'voice' ? '🎤 پیام صوتی' : (m.text || ''),
+              lastTime: m.created,
+              unread: 0
+            });
+          }
+        });
+        conversations = Array.from(map.values());
+        renderChatList();
+      } catch (e) {
+        conversations = [];
+        renderChatList();
+      }
+    }
+
+    function renderChatList() {
+      const q = (document.getElementById('searchInput').value || '').trim();
+      const list = document.getElementById('chatList');
+      const items = conversations
+        .map(c => {
+          const user = allUsers.find(u => u.objectId === c.peerId) || { objectId: c.peerId, displayName: 'کاربر', username: '', avatarSeed: c.peerId };
+          return { ...c, user };
+        })
+        .filter(c => !q || (c.user.displayName || '').includes(q) || (c.user.username || '').includes(q));
+
+      if (!items.length) {
+        list.innerHTML = '<div class="empty"><i class="fa-regular fa-comments"></i><div>هنوز چتی ندارید</div><div style="font-size:12.5px">از تب کاربران کسی را پیدا کنید</div></div>';
+        return;
+      }
+      list.innerHTML = items.map(c => {
+        const on = onlineUsers.has(c.peerId);
+        return `
+          <div class="row" data-peer="${c.peerId}">
+            <div class="avatar-wrap">
+              <img class="avatar" src="${avatarUrl(c.user.avatarSeed || c.user.username || c.peerId)}" />
+              ${on ? '<div class="online-dot"></div>' : ''}
+            </div>
+            <div class="row-info">
+              <div class="row-top">
+                <span class="row-name">${escapeHtml(c.user.displayName || 'کاربر')}</span>
+                <span class="row-time">${formatTime(c.lastTime)}</span>
+              </div>
+              <div class="row-bottom">
+                <span class="row-preview">${escapeHtml(c.lastMessage || '')}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      list.querySelectorAll('.row').forEach(row => {
+        row.onclick = () => {
+          const peer = allUsers.find(u => u.objectId === row.dataset.peer) || {
+            objectId: row.dataset.peer,
+            displayName: 'کاربر',
+            username: '',
+            avatarSeed: row.dataset.peer
+          };
+          openChat(peer);
+        };
+      });
+    }
+
+    function renderUserList() {
+      const q = (document.getElementById('searchInput').value || '').trim();
+      const list = document.getElementById('userList');
+      const items = allUsers.filter(u =>
+        isProfileComplete(u) &&
+        (!q || (u.displayName || '').includes(q) || (u.username || '').includes(q))
+      );
+      if (!items.length) {
+        list.innerHTML = '<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری پیدا نشد</div><div style="font-size:12.5px">فقط حساب‌های تکمیل‌شده نمایش داده می‌شوند</div></div>';
+        return;
+      }
+      list.innerHTML = items.map(u => {
+        const on = onlineUsers.has(u.objectId);
+        return `
+          <div class="row" data-id="${u.objectId}">
+            <div class="avatar-wrap">
+              <img class="avatar" src="${avatarUrl(u.avatarSeed || u.username)}" />
+              ${on ? '<div class="online-dot"></div>' : ''}
+            </div>
+            <div class="row-info">
+              <div class="row-top">
+                <span class="row-name">${escapeHtml(u.displayName)}</span>
+              </div>
+              <div class="row-bottom">
+                <span class="row-preview">@${escapeHtml(u.username)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      list.querySelectorAll('.row').forEach(row => {
+        row.onclick = () => {
+          const u = allUsers.find(x => x.objectId === row.dataset.id);
+          if (u) openProfile(u);
+        };
+      });
+    }
+
+    function updateMeBar() {
+      document.getElementById('meAvatar').src = avatarUrl(currentUser.avatarSeed || currentUser.username);
+      document.getElementById('meName').textContent = currentUser.displayName || 'من';
+      document.getElementById('meSub').textContent = currentUser.username ? '@' + currentUser.username : currentUser.email;
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isChats = tab.dataset.tab === 'chats';
+        document.getElementById('chatList').style.display = isChats ? 'block' : 'none';
+        document.getElementById('userList').style.display = isChats ? 'none' : 'block';
+      };
+    });
+    document.getElementById('searchInput').oninput = () => {
+      renderChatList();
+      renderUserList();
+    };
+    document.getElementById('btnRefresh').onclick = async () => {
+      setLoading(true);
+      await loadUsers();
+      await loadConversations();
+      setLoading(false);
+      showToast('بروزرسانی شد');
+    };
+
+    // ===================== CHAT =====================
+    async function openChat(peer) {
+      currentPeer = peer;
+      document.getElementById('roomAvatar').src = avatarUrl(peer.avatarSeed || peer.username);
+      document.getElementById('roomName').textContent = peer.displayName || 'کاربر';
+      const on = onlineUsers.has(peer.objectId);
+      document.getElementById('roomOnline').style.display = on ? 'block' : 'none';
+      document.getElementById('roomStatus').textContent = on ? 'آنلاین' : 'آفلاین';
+      document.getElementById('roomStatus').classList.toggle('off', !on);
+
+      // subscribe channel
+      if (activeChatChannel) {
+        try { activeChatChannel.unsubscribe(); } catch(e) {}
+      }
+      activeChatChannel = ably.channels.get(channelName(currentUser.objectId, peer.objectId));
+      activeChatChannel.subscribe('message', (msg) => {
+        if (msg.data.senderId !== currentUser.objectId) {
+          appendMessage(msg.data, false);
+          if (!mutedChats.has(peer.objectId)) playMsgSound();
         }
       });
 
-      scene.add(model);
-      isModelLoaded = true;
-      modelLoadedOnce = true;
+      await loadMessages(peer.objectId);
+      showScreen('chatScreen');
+      document.getElementById('mainScreen').classList.add('hide-back');
+      document.getElementById('chatScreen').classList.remove('hide');
+    }
 
-      mixer = new THREE.AnimationMixer(model);
-      const clips = gltf.animations || [];
+    async function loadMessages(peerId) {
+      const box = document.getElementById('messages');
+      box.innerHTML = '';
+      try {
+        const uid = currentUser.objectId;
+        const clause = "((senderId = '" + uid + "' and receiverId = '" + peerId + "') or (senderId = '" + peerId + "' and receiverId = '" + uid + "'))";
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause(clause)
+          .setSortBy(['created ASC'])
+          .setPageSize(100);
+        const list = await Backendless.Data.of('Messages').find(query);
+        if (!list || !list.length) {
+          box.innerHTML = '<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>';
+          return;
+        }
+        const day = document.createElement('div');
+        day.className = 'day';
+        day.textContent = 'پیام‌ها';
+        box.appendChild(day);
+        list.forEach(m => appendMessage(m, m.senderId === uid, true));
+        box.scrollTop = box.scrollHeight;
+      } catch (e) {
+        box.innerHTML = '<div class="empty"><div>خطا در بارگذاری پیام‌ها</div></div>';
+      }
+    }
 
-      if (clips.length === 0) {
-        logMessage('❌ هیچ انیمیشنی پیدا نشد!');
-        showError();
+    function appendMessage(m, isOut, silent) {
+      const box = document.getElementById('messages');
+      const empty = box.querySelector('.empty');
+      if (empty) empty.remove();
+
+      const div = document.createElement('div');
+      div.className = 'msg ' + (isOut ? 'out' : 'in');
+      const time = formatTime(m.created || Date.now());
+      if (m.type === 'voice') {
+        div.innerHTML = `
+          <div class="bubble">🎤 پیام صوتی ${m.duration ? '('+m.duration+')' : ''}</div>
+          <div class="meta"><span>${time}</span>${isOut ? '<span class="ticks read">✓✓</span>' : ''}</div>
+        `;
+      } else {
+        div.innerHTML = `
+          <div class="bubble">${escapeHtml(m.text || '')}</div>
+          <div class="meta"><span>${time}</span>${isOut ? '<span class="ticks read">✓✓</span>' : ''}</div>
+        `;
+      }
+      box.appendChild(div);
+      if (!silent) box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendTextMessage(text) {
+      if (!text || !currentPeer) return;
+      const payload = {
+        senderId: currentUser.objectId,
+        receiverId: currentPeer.objectId,
+        text: text,
+        type: 'text',
+        created: Date.now()
+      };
+      appendMessage(payload, true);
+
+      // save to Backendless
+      try {
+        await Backendless.Data.of('Messages').save({
+          senderId: payload.senderId,
+          receiverId: payload.receiverId,
+          text: payload.text,
+          type: 'text'
+        });
+      } catch (e) { console.warn('save msg', e); }
+
+      // realtime
+      try {
+        if (activeChatChannel) activeChatChannel.publish('message', payload);
+        const peerInbox = ably.channels.get('inbox:' + currentPeer.objectId);
+        peerInbox.publish('message', payload);
+      } catch (e) { console.warn('publish', e); }
+
+      // update local conversation
+      let conv = conversations.find(c => c.peerId === currentPeer.objectId);
+      if (!conv) {
+        conv = { peerId: currentPeer.objectId, lastMessage: text, lastTime: Date.now(), unread: 0 };
+        conversations.unshift(conv);
+      } else {
+        conv.lastMessage = text;
+        conv.lastTime = Date.now();
+      }
+    }
+
+    function handleIncoming(data) {
+      if (!data) return;
+      // update conversations
+      const peerId = data.senderId;
+      let conv = conversations.find(c => c.peerId === peerId);
+      const preview = data.type === 'voice' ? '🎤 پیام صوتی' : (data.text || '');
+      if (!conv) {
+        conversations.unshift({ peerId, lastMessage: preview, lastTime: data.created || Date.now(), unread: 1 });
+      } else {
+        conv.lastMessage = preview;
+        conv.lastTime = data.created || Date.now();
+      }
+      renderChatList();
+
+      if (currentPeer && currentPeer.objectId === peerId) {
+        appendMessage(data, false);
+      }
+      if (!mutedChats.has(peerId)) playMsgSound();
+    }
+
+    // input handlers
+    const msgInput = document.getElementById('msgInput');
+    const btnSend = document.getElementById('btnSend');
+    const btnMic = document.getElementById('btnMic');
+
+    msgInput.addEventListener('input', () => {
+      msgInput.style.height = 'auto';
+      msgInput.style.height = Math.min(msgInput.scrollHeight, 110) + 'px';
+      if (msgInput.value.trim()) {
+        btnSend.classList.add('show');
+        btnMic.style.display = 'none';
+      } else {
+        btnSend.classList.remove('show');
+        btnMic.style.display = 'flex';
+      }
+    });
+    msgInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        doSend();
+      }
+    });
+    btnSend.onclick = doSend;
+
+    function doSend() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      sendTextMessage(text);
+      msgInput.value = '';
+      msgInput.style.height = 'auto';
+      btnSend.classList.remove('show');
+      btnMic.style.display = 'flex';
+    }
+
+    // Voice (local visual + save as voice type)
+    btnMic.onclick = () => {
+      if (isRecording) stopRecording(false);
+      else startRecording();
+    };
+    document.getElementById('recCancel').onclick = () => stopRecording(true);
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
+        mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
+        mediaRecorder.start();
+        isRecording = true;
+        recordingStart = Date.now();
+        document.getElementById('inputBox').style.display = 'none';
+        btnSend.style.display = 'none';
+        btnMic.classList.add('rec');
+        document.getElementById('recBar').classList.add('show');
+        recTimer = setInterval(() => {
+          const sec = Math.floor((Date.now() - recordingStart) / 1000);
+          document.getElementById('recTime').textContent = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+        }, 200);
+      } catch (e) {
+        showToast('دسترسی میکروفون لازم است');
+      }
+    }
+
+    function stopRecording(cancel) {
+      if (!isRecording) return;
+      isRecording = false;
+      clearInterval(recTimer);
+      document.getElementById('recBar').classList.remove('show');
+      document.getElementById('inputBox').style.display = 'flex';
+      btnMic.classList.remove('rec');
+      btnMic.style.display = 'flex';
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+      if (cancel) { audioChunks = []; return; }
+
+      const sec = Math.max(1, Math.floor((Date.now() - recordingStart)/1000));
+      const duration = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+      const payload = {
+        senderId: currentUser.objectId,
+        receiverId: currentPeer.objectId,
+        type: 'voice',
+        duration,
+        text: '',
+        created: Date.now()
+      };
+      appendMessage(payload, true);
+      Backendless.Data.of('Messages').save({
+        senderId: payload.senderId,
+        receiverId: payload.receiverId,
+        type: 'voice',
+        text: 'voice:' + duration,
+        duration
+      }).catch(()=>{});
+      try {
+        if (activeChatChannel) activeChatChannel.publish('message', payload);
+        ably.channels.get('inbox:' + currentPeer.objectId).publish('message', payload);
+      } catch(e) {}
+      let conv = conversations.find(c => c.peerId === currentPeer.objectId);
+      if (!conv) conversations.unshift({ peerId: currentPeer.objectId, lastMessage: '🎤 پیام صوتی', lastTime: Date.now(), unread:0 });
+      else { conv.lastMessage = '🎤 پیام صوتی'; conv.lastTime = Date.now(); }
+    }
+
+    document.getElementById('btnBackChat').onclick = () => {
+      if (activeChatChannel) { try { activeChatChannel.unsubscribe(); } catch(e){} activeChatChannel = null; }
+      currentPeer = null;
+      showScreen('mainScreen');
+      renderChatList();
+    };
+
+    // Chat menu
+    document.getElementById('btnChatMenu').onclick = () => document.getElementById('chatMenu').classList.add('show');
+    document.getElementById('menuClose').onclick = () => document.getElementById('chatMenu').classList.remove('show');
+    document.getElementById('chatMenu').onclick = (e) => {
+      if (e.target.id === 'chatMenu') e.target.classList.remove('show');
+    };
+    document.getElementById('menuViewProfile').onclick = () => {
+      document.getElementById('chatMenu').classList.remove('show');
+      if (currentPeer) openProfile(currentPeer, true);
+    };
+    document.getElementById('menuMute').onclick = () => {
+      if (!currentPeer) return;
+      if (mutedChats.has(currentPeer.objectId)) {
+        mutedChats.delete(currentPeer.objectId);
+        showToast('صدای چت روشن شد');
+      } else {
+        mutedChats.add(currentPeer.objectId);
+        showToast('چت بی‌صدا شد');
+      }
+      localStorage.setItem('neo_muted', JSON.stringify([...mutedChats]));
+      document.getElementById('chatMenu').classList.remove('show');
+    };
+    document.getElementById('menuReport').onclick = async () => {
+      document.getElementById('chatMenu').classList.remove('show');
+      if (!currentPeer) return;
+      try {
+        await Backendless.Data.of('Reports').save({
+          reporterId: currentUser.objectId,
+          reportedId: currentPeer.objectId,
+          reason: 'user_report',
+          created: Date.now()
+        });
+      } catch(e) {}
+      showToast('گزارش ثبت شد');
+    };
+
+    document.getElementById('chatUserBtn').onclick = () => {
+      if (currentPeer) openProfile(currentPeer, true);
+    };
+
+    // ===================== PROFILE =====================
+    function openProfile(user, fromChat) {
+      document.getElementById('pfAvatar').src = avatarUrl(user.avatarSeed || user.username);
+      document.getElementById('pfName').textContent = user.displayName || 'کاربر';
+      document.getElementById('pfUsername').textContent = user.username ? '@' + user.username : '';
+      document.getElementById('pfBio').textContent = user.bio || '';
+      const on = onlineUsers.has(user.objectId);
+      document.getElementById('pfOnline').style.display = on ? 'block' : 'none';
+      document.getElementById('pfStatus').textContent = on ? 'آنلاین' : 'آفلاین';
+      if (user.showPhone && user.phone) {
+        document.getElementById('pfPhoneRow').style.display = 'flex';
+        document.getElementById('pfPhone').textContent = user.phone;
+      } else {
+        document.getElementById('pfPhoneRow').style.display = 'none';
+      }
+      document.getElementById('pfJoined').textContent = user.created ? formatTime(user.created) : '—';
+
+      const isMe = user.objectId === currentUser.objectId;
+      document.getElementById('pfActions').style.display = isMe ? 'none' : 'flex';
+      document.getElementById('btnMessageUser').onclick = () => openChat(user);
+
+      document.getElementById('profileScreen').dataset.fromChat = fromChat ? '1' : '0';
+      showScreen('profileScreen');
+    }
+
+    document.getElementById('btnBackProfile').onclick = () => {
+      if (document.getElementById('profileScreen').dataset.fromChat === '1' && currentPeer) {
+        showScreen('chatScreen');
+      } else {
+        showScreen('mainScreen');
+      }
+    };
+
+    // ===================== SETTINGS =====================
+    function openSettings() {
+      document.getElementById('setUsername').value = currentUser.username || '';
+      document.getElementById('setName').value = currentUser.displayName || '';
+      document.getElementById('setBio').value = currentUser.bio || '';
+      document.getElementById('setPhone').value = currentUser.phone || '';
+      document.getElementById('setShowPhone').checked = !!currentUser.showPhone;
+      document.getElementById('setSound').checked = soundEnabled;
+      showScreen('settingsScreen');
+    }
+    document.getElementById('btnMyProfile').onclick = openSettings;
+    document.getElementById('meBar').onclick = openSettings;
+    document.getElementById('btnBackSettings').onclick = () => showScreen('mainScreen');
+
+    document.getElementById('btnSaveSettings').onclick = async () => {
+      const username = normalizeUsername(document.getElementById('setUsername').value);
+      const name = (document.getElementById('setName').value || '').trim();
+      const err = document.getElementById('settingsError');
+      err.classList.remove('show');
+      if (!username || username.length < 3) {
+        err.textContent = 'آیدی معتبر نیست';
+        err.classList.add('show');
         return;
       }
-
-      clips.forEach((clip) => {
-        const name = clip.name || 'بی‌نام';
-        animations[name] = clip;
-      });
-
-      updateLoading(95, 'آماده‌سازی نهایی');
-      
-      setTimeout(() => {
-        updateLoading(100, 'بارگذاری کامل');
-        setTimeout(() => {
-          hideLoading();
-          startAutoTest();
-        }, 400);
-      }, 300);
-    },
-    (progress) => {
-      if (progress.total > 0) {
-        const percent = 35 + (progress.loaded / progress.total) * 45;
-        updateLoading(percent, 'بارگذاری گرگ');
+      if (!name) {
+        err.textContent = 'نام الزامی است';
+        err.classList.add('show');
+        return;
       }
-    },
-    (error) => {
-      clearTimeout(loadTimeout);
-      console.error('❌ خطا:', error);
-      
-      if (loadAttempts < MAX_ATTEMPTS && !modelLoadedOnce) {
-        updateLoading(30, `تلاش مجدد... (${loadAttempts}/${MAX_ATTEMPTS})`);
-        setTimeout(() => loadModel(), 1500);
-      } else if (!modelLoadedOnce) {
-        showError();
-        statusMessage.textContent = 'خطا در بارگذاری گرگ';
+      setLoading(true);
+      try {
+        currentUser.username = username;
+        currentUser.displayName = name;
+        currentUser.bio = (document.getElementById('setBio').value || '').trim();
+        currentUser.phone = (document.getElementById('setPhone').value || '').trim();
+        currentUser.showPhone = document.getElementById('setShowPhone').checked;
+        currentUser.profileComplete = true;
+        soundEnabled = document.getElementById('setSound').checked;
+        localStorage.setItem('neo_sound', soundEnabled ? '1' : '0');
+        currentUser = await Backendless.UserService.update(currentUser);
+        updateMeBar();
+        await loadUsers();
+        showToast('ذخیره شد');
+        showScreen('mainScreen');
+      } catch (e) {
+        err.textContent = e.message || 'خطا';
+        err.classList.add('show');
+      } finally {
+        setLoading(false);
       }
-    }
-  );
-}
+    };
 
-// تایم‌اوت برای جلوگیری از هنگ کردن
-loadTimeout = setTimeout(() => {
-  if (!modelLoadedOnce && loadingDiv.style.display !== 'none') {
-    if (loadAttempts < MAX_ATTEMPTS) {
-      updateLoading(30, 'مدت زمان زیاد شد، تلاش مجدد...');
-      setTimeout(() => loadModel(), 1000);
-    } else if (!modelLoadedOnce) {
-      showError();
-      statusMessage.textContent = 'مدت زمان بارگذاری بیش از حد';
-    }
-  }
-}, 15000);
+    document.getElementById('btnLogout').onclick = async () => {
+      try {
+        if (presenceChannel) await presenceChannel.presence.leave();
+        if (ably) ably.close();
+        await Backendless.UserService.logout();
+      } catch(e) {}
+      currentUser = null;
+      ably = null;
+      showScreen('authScreen');
+    };
 
-// شروع بارگذاری - فقط یک بار
-loadModel();
-
-function playAnimation(name, fadeIn = 0.3) {
-  if (!mixer || !animations[name] || !model || !isModelLoaded) return;
-  if (currentAction && currentAction.getClip && currentAction.getClip().name === name) return;
-  if (currentAction) currentAction.fadeOut(fadeIn);
-  const action = mixer.clipAction(animations[name]);
-  action.reset();
-  action.fadeIn(fadeIn);
-  action.play();
-  currentAction = action;
-}
-
-function startAutoTest() {
-  isTesting = true;
-  testAnimations = ['01_Run', '02_walk', '03_creep', '05_site', '04_Idle'];
-  testIndex = 0;
-
-  document.getElementById('touch-controls').classList.remove('active');
-  document.getElementById('hint').style.display = 'none';
-
-  updateTestStatus(`🎬 تست ${testAnimations[testIndex]}`);
-  playAnimation(testAnimations[testIndex]);
-
-  testTimer = setInterval(() => {
-    testIndex++;
-    if (testIndex >= testAnimations.length) {
-      clearInterval(testTimer);
-      isTesting = false;
-      updateTestStatus('✅ تست کامل شد! کنترل را به دست بگیرید');
-
-      document.getElementById('touch-controls').classList.add('active');
-      document.getElementById('hint').style.display = 'block';
-
-      setTimeout(() => {
-        playAnimation('04_Idle');
-        document.getElementById('test-status').style.display = 'none';
-        isUserControlActive = true;
-      }, 2000);
-      return;
-    }
-    updateTestStatus(`🎬 تست ${testAnimations[testIndex]}`);
-    playAnimation(testAnimations[testIndex]);
-  }, 2500);
-}
-
-function groundHeightAt(x, z){
-  const distFromCenter = Math.sqrt(x*x+z*z);
-  const falloff = Math.min(1, Math.max(0, (distFromCenter-6)/20));
-  return GROUND_Y + (Math.sin(x*0.15)+Math.cos(z*0.17))*0.35*falloff;
-}
-
-function updateMovement(delta) {
-  if (!model || !isModelLoaded || !isUserControlActive) return;
-
-  const moveLen = Math.sqrt(moveX * moveX + moveZ * moveZ);
-  const isMovingNow = moveLen > 0.05;
-
-  if (isSitting) { playAnimation('05_site'); isMoving = false; }
-  else if (isIdle) { playAnimation('04_Idle'); isMoving = false; }
-  else if (isCreeping && !isMovingNow) { playAnimation('03_creep'); isMoving = false; }
-  else if (isMovingNow && !isSitting && !isIdle) {
-    const forward = new THREE.Vector3(0, 0, -1);
-    forward.applyQuaternion(model.quaternion);
-    const right = new THREE.Vector3(1, 0, 0);
-    right.applyQuaternion(model.quaternion);
-
-    const moveVec = new THREE.Vector3();
-    moveVec.addScaledVector(forward, -moveZ);
-    moveVec.addScaledVector(right, moveX);
-    moveVec.normalize().multiplyScalar(speed * (isRunning ? 2.5 : 1));
-
-    model.position.x += moveVec.x;
-    model.position.z += moveVec.z;
-    const R = 55;
-    const dist = Math.hypot(model.position.x, model.position.z);
-    if(dist > R){
-      model.position.x *= R/dist;
-      model.position.z *= R/dist;
-    }
-
-    if (moveLen > 0.1) {
-      const targetAngle = Math.atan2(-moveX, -moveZ);
-      let currentAngle = model.rotation.y;
-      let diff = targetAngle - currentAngle;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      model.rotation.y += diff * 0.08;
-    }
-
-    if (isRunning) playAnimation('01_Run');
-    else if (isCreeping) playAnimation('03_creep');
-    else playAnimation('02_walk');
-
-    isMoving = true;
-  } else if (!isSitting && !isIdle && !isCreeping) {
-    if (isMoving || !currentAction || (currentAction.getClip && currentAction.getClip().name !== '04_Idle')) {
-      playAnimation('04_Idle');
-      isMoving = false;
-    }
-  }
-
-  const groundOffset = model.userData.groundOffset || 0;
-  const targetY = groundHeightAt(model.position.x, model.position.z) + groundOffset;
-  model.position.y += (targetY - model.position.y) * 0.25;
-
-  const slopeX = groundHeightAt(model.position.x+0.3, model.position.z) - groundHeightAt(model.position.x-0.3, model.position.z);
-  const slopeZ = groundHeightAt(model.position.x, model.position.z+0.3) - groundHeightAt(model.position.x, model.position.z-0.3);
-  model.rotation.z += (-slopeX*0.3 - model.rotation.z) * 0.1;
-  model.rotation.x += (slopeZ*0.3 - model.rotation.x) * 0.1;
-
-  contactShadow.position.set(model.position.x, groundHeightAt(model.position.x, model.position.z) + 0.01, model.position.z);
-
-  controls.target.lerp(new THREE.Vector3(model.position.x, model.position.y+0.6, model.position.z), 0.05);
-}
-
-// ============================================================
-// جویاستیک
-// ============================================================
-const joystickBase = document.getElementById('joystick-base');
-const joystickKnob = document.getElementById('joystick-knob');
-const joystickArea = document.getElementById('joystick-area');
-
-let joystickActive = false;
-let joystickTouchId = null;
-
-function handleJoystickStart(clientX, clientY) {
-  joystickActive = true;
-  const rect = joystickBase.getBoundingClientRect();
-  updateJoystick(clientX - (rect.left+rect.width/2), clientY - (rect.top+rect.height/2));
-}
-function handleJoystickMove(clientX, clientY) {
-  if (!joystickActive) return;
-  const rect = joystickBase.getBoundingClientRect();
-  updateJoystick(clientX - (rect.left+rect.width/2), clientY - (rect.top+rect.height/2));
-}
-function updateJoystick(dx, dy) {
-  const maxDist = 40;
-  const dist = Math.sqrt(dx*dx+dy*dy);
-  const clampedDist = Math.min(dist, maxDist);
-  const angle = Math.atan2(dy, dx);
-  const x = Math.cos(angle)*clampedDist, y = Math.sin(angle)*clampedDist;
-  joystickKnob.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-  moveX = Math.max(-1, Math.min(1, x/maxDist));
-  moveZ = Math.max(-1, Math.min(1, y/maxDist));
-}
-function resetJoystick() {
-  joystickActive = false;
-  joystickKnob.style.transform = 'translate(-50%, -50%)';
-  moveX = 0; moveZ = 0;
-}
-
-joystickArea.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  const touch = e.changedTouches[0];
-  joystickTouchId = touch.identifier;
-  handleJoystickStart(touch.clientX, touch.clientY);
-});
-document.addEventListener('touchmove', (e) => {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier === joystickTouchId) { e.preventDefault(); handleJoystickMove(touch.clientX, touch.clientY); }
-  }
-}, { passive: false });
-document.addEventListener('touchend', (e) => {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier === joystickTouchId) { resetJoystick(); joystickTouchId = null; }
-  }
-});
-let mouseJoystickDown = false;
-joystickArea.addEventListener('mousedown', (e)=>{ mouseJoystickDown=true; handleJoystickStart(e.clientX, e.clientY); });
-document.addEventListener('mousemove', (e)=>{ if(mouseJoystickDown) handleJoystickMove(e.clientX, e.clientY); });
-document.addEventListener('mouseup', ()=>{ if(mouseJoystickDown){ mouseJoystickDown=false; resetJoystick(); } });
-
-// ============================================================
-// دکمه‌های اکشن
-// ============================================================
-const runBtn = document.getElementById('run-btn');
-const sitBtn = document.getElementById('sit-btn');
-const creepBtn = document.getElementById('creep-btn');
-const idleBtn = document.getElementById('idle-btn');
-
-function clearActiveBtns(except){
-  [runBtn,sitBtn,creepBtn,idleBtn].forEach(b=>{ if(b!==except) b.classList.remove('active'); });
-}
-
-function bindPressHold(btn, onDown, onUp){
-  btn.addEventListener('touchstart', (e)=>{ e.preventDefault(); onDown(); });
-  btn.addEventListener('touchend', (e)=>{ e.preventDefault(); onUp(); });
-  btn.addEventListener('mousedown', onDown);
-  btn.addEventListener('mouseup', onUp);
-}
-bindPressHold(runBtn,
-  ()=>{ if(!isUserControlActive) return; isSitting=false; isIdle=false; isCreeping=false; isRunning=true; runBtn.classList.add('active'); clearActiveBtns(runBtn); logMessage('🏃 دویدن'); },
-  ()=>{ isRunning=false; runBtn.classList.remove('active'); }
-);
-
-function bindToggle(btn, setter, offMsg, onMsg){
-  const handler = ()=>{
-    if(!isUserControlActive) return;
-    const newState = !setter.get();
-    setter.set(newState);
-    btn.classList.toggle('active', newState);
-    clearActiveBtns(btn);
-    logMessage(newState ? onMsg : offMsg);
-  };
-  btn.addEventListener('touchstart', (e)=>{ e.preventDefault(); handler(); });
-  btn.addEventListener('mousedown', handler);
-}
-bindToggle(sitBtn, { get:()=>isSitting, set:(v)=>{ isSitting=v; if(v){isRunning=false;isIdle=false;isCreeping=false;} } }, '🐺 ایستادن', '🐕 نشستن');
-bindToggle(creepBtn, { get:()=>isCreeping, set:(v)=>{ isCreeping=v; if(v){isRunning=false;isSitting=false;isIdle=false;} } }, '🐺 ایستادن', '🐾 خزیدن');
-bindToggle(idleBtn, { get:()=>isIdle, set:(v)=>{ isIdle=v; if(v){isRunning=false;isSitting=false;isCreeping=false;} } }, '🐺 حرکت آزاد', '🧍 ایستادن');
-
-// ============================================================
-// حلقه اصلی
-// ============================================================
-function animate() {
-  requestAnimationFrame(animate);
-  const delta = clock.getDelta();
-  if (mixer) mixer.update(delta);
-  updateMovement(delta);
-
-  cloudGroup.children.forEach((c,i)=>{ c.position.x += Math.sin(clock.elapsedTime*0.05+i)*0.003; });
-
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-console.log('%c🐺 گرگ در جنگل واقعی — ۵ انیمیشن + کنترل کامل', 'font-size: 16px; font-weight: bold;');
-</script>
+    // ===================== BOOT =====================
+    (async function boot() {
+      setLoading(true);
+      try {
+        const valid = await Backendless.UserService.isValidLogin();
+        if (valid) {
+          currentUser = await Backendless.UserService.getCurrentUser();
+          if (currentUser) {
+            await afterLogin();
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {}
+      setLoading(false);
+      showScreen('authScreen');
+    })();
+  </script>
 </body>
 </html>
