@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
-<title>Neo Messenger</title>
+<title>Neo Messenger - پخش زنده</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
@@ -42,6 +42,7 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
 .btn{width:100%;padding:14px;border:0;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p{background:linear-gradient(135deg,#4f8cff,#3b6ef5);color:#fff;box-shadow:0 6px 22px rgba(79,140,255,.3)}
 .btn-g{background:var(--s2);color:var(--t)}
+.btn-danger{background:var(--r);color:#fff}
 .sw{text-align:center;font-size:13px;color:var(--m)}.sw span{color:var(--p);font-weight:700;cursor:pointer}
 .err{display:none;background:rgba(255,92,108,.1);color:#ffb0b8;border:1px solid rgba(255,92,108,.25);padding:11px 12px;border-radius:12px;font-size:13px}
 .err.show{display:block}
@@ -51,33 +52,18 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
 .ib{width:40px;height:40px;border-radius:12px;border:0;background:var(--s2);color:var(--t);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .ib:active{background:var(--s3)}
 .vbadge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#4f8cff;color:#fff;font-size:9px;margin-right:4px;vertical-align:middle}
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:var(--r);color:#fff;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* compact stories */
 .stories{display:flex;gap:12px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid var(--b)}
 .stories::-webkit-scrollbar{display:none}
 .st-item{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:56px;cursor:pointer}
 .st-ring{width:52px;height:52px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#4f8cff,#ff4d8d,#ffb020);display:flex;align-items:center;justify-content:center}
 .st-ring.seen{background:#3a4556}
 .st-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg)}
+.st-ring.live-ring{background:linear-gradient(135deg,#ff0040,#ff6b00);animation:livePulse 1s infinite}
+@keyframes livePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .st-lab{font-size:10px;color:var(--m);max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
-
-#storyV{position:absolute;inset:0;z-index:200;background:#000;display:none;flex-direction:column}
-#storyV.show{display:flex}
-.st-top{position:absolute;top:0;left:0;right:0;z-index:12;padding:10px 12px 0;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent)}
-.st-prog{height:3px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden;margin-bottom:10px}
-.st-prog i{display:block;height:100%;width:0;background:#fff;animation:fill 20s linear forwards}
-@keyframes fill{to{width:100%}}
-.st-user{display:flex;align-items:center;gap:8px}
-.st-user img{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid #fff}
-.st-user .nm{font-weight:700;font-size:13px;display:flex;align-items:center}
-.st-user .tm{font-size:10px;color:rgba(255,255,255,.7)}
-.st-x{margin-right:auto;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:15px;cursor:pointer}
-.st-body{flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative}
-.st-body video,.st-body iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
-.st-admin{position:absolute;bottom:16px;left:12px;right:12px;z-index:15;display:none;gap:8px}
-.st-admin.show{display:flex}
-.st-admin input{flex:1;border-radius:12px;border:1px solid var(--b);background:rgba(20,26,34,.95);color:#fff;padding:10px 12px;font-family:inherit;font-size:13px}
-.st-admin button{border:0;border-radius:12px;background:var(--p);color:#fff;padding:10px 14px;font-family:inherit;font-weight:700;cursor:pointer}
 
 .srch{padding:8px 12px 4px;position:relative}
 .srch i{position:absolute;right:24px;top:50%;transform:translateY(-50%);color:var(--m);font-size:13px}
@@ -117,6 +103,7 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
 .meta{font-size:10px;color:var(--m);padding:0 4px;display:flex;gap:4px;align-items:center}
 .msg.out .meta{justify-content:flex-start}.msg.in .meta{justify-content:flex-end}
 .tick{color:var(--a)}
+.live-msg .bub{background:rgba(255,0,64,.2);border:1px solid rgba(255,0,64,.3);border-radius:12px}
 
 .ibar{display:flex;align-items:flex-end;gap:7px;padding:8px 10px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--b);background:rgba(10,12,16,.95)}
 .ibox{flex:1;display:flex;align-items:flex-end;background:var(--s);border:1px solid var(--b);border-radius:22px;padding:4px 8px 4px 12px}
@@ -124,45 +111,26 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
 .sb,.mb{width:46px;height:46px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
 .sb{background:var(--p);color:#fff;display:none}.sb.show{display:flex}
 .mb{background:var(--s2);color:var(--t)}.mb.rec{background:var(--r);color:#fff}
-.recb{display:none;flex:1;align-items:center;gap:8px;background:var(--s);border-radius:22px;padding:10px 14px;border:1px solid rgba(255,92,108,.3)}
-.recb.show{display:flex}
-.rd{width:8px;height:8px;background:var(--r);border-radius:50%;animation:bl 1s infinite}
-@keyframes bl{50%{opacity:.3}}
-.rct{font-size:13px;font-weight:700;color:var(--r)}
-.rcc{background:0;border:0;color:var(--m);font-family:inherit;font-size:12px;cursor:pointer;margin-right:auto}
+.mb.live-on{background:var(--r);color:#fff;animation:livePulse 1s infinite}
 
-.pf-h{display:flex;flex-direction:column;align-items:center;padding:28px 16px 14px;gap:8px;background:radial-gradient(ellipse at 50% 0%,rgba(79,140,255,.15),transparent 70%)}
-.pf-h .av{width:88px;height:88px;border:3px solid rgba(79,140,255,.35)}
-.pf-n{font-size:22px;font-weight:900;display:flex;align-items:center;gap:6px}
-.pf-i{color:var(--m);font-size:13px}
-.pf-b{text-align:center;font-size:13.5px;line-height:1.6;color:#c8d0dc;max-width:320px}
-.pf-a{display:flex;gap:8px;justify-content:center;padding:8px 14px 14px}
-.pf-a .btn{width:auto;padding:11px 18px;font-size:13px}
-.card{margin:0 14px 12px;background:var(--s);border-radius:16px;border:1px solid var(--b);overflow:hidden}
-.ir{display:flex;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--b);font-size:13.5px}
-.ir:last-child{border-bottom:0}.ir .l{color:var(--m)}
+/* صفحه پخش زنده */
+#liveScreen{position:absolute;inset:0;z-index:100;background:var(--bg);display:none;flex-direction:column}
+#liveScreen.show{display:flex}
+.live-top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,.85);z-index:10}
+.live-top .live-badge{margin-right:4px}
+.live-top .back-btn{background:0;border:0;color:#fff;font-size:20px;cursor:pointer}
+.live-top .info{flex:1;font-size:13px;color:var(--m)}
+.live-top .viewers{font-size:12px;color:var(--m)}
+.live-container{flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative;overflow:hidden}
+.live-container video{width:100%;height:100%;object-fit:contain;background:#000}
+.live-container .placeholder{color:var(--m);font-size:16px;text-align:center;padding:20px}
+.live-container .placeholder i{font-size:48px;display:block;margin-bottom:12px;opacity:.4}
+.live-controls{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:5;background:rgba(0,0,0,.6);padding:8px 16px;border-radius:30px;backdrop-filter:blur(8px)}
+.live-controls button{background:rgba(255,255,255,.15);border:0;color:#fff;width:44px;height:44px;border-radius:50%;font-size:18px;cursor:pointer}
+.live-controls button:active{background:rgba(255,255,255,.25)}
+.live-controls button.stop-live{background:var(--r)}
+.live-controls button.stop-live:active{background:#cc0033}
 
-.sec{margin:0 0 14px;background:var(--s);border-radius:16px;border:1px solid var(--b);overflow:hidden}
-.sec-t{padding:10px 14px 4px;font-size:11px;font-weight:700;color:var(--m)}
-.si{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--b);cursor:pointer}
-.si:last-child{border-bottom:0}
-.swx{width:44px;height:26px;border-radius:99px;background:var(--s3);position:relative;flex-shrink:0}
-.swx.on{background:var(--p)}
-.swx:after{content:'';position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
-.swx.on:after{transform:translateX(-18px)}
-
-.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;align-items:flex-end}
-.sheet-bg.show{display:flex}
-.sheet{width:100%;max-width:480px;margin:0 auto;background:var(--s);border-radius:20px 20px 0 0;padding:8px 0 20px}
-.sh{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:4px;margin:6px auto 10px}
-.shi{display:flex;align-items:center;gap:12px;padding:13px 20px;cursor:pointer;font-size:14.5px;font-weight:600}
-.shi i{width:22px;text-align:center;color:var(--m)}.shi.dang{color:var(--r)}.shi.dang i{color:var(--r)}
-
-.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--s3);color:var(--t);padding:11px 16px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:120;border:1px solid var(--b);max-width:88%;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.load{position:absolute;inset:0;background:rgba(10,12,16,.7);display:none;align-items:center;justify-content:center;z-index:90}
-.load.show{display:flex}
-.spn{width:34px;height:34px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite}
 .me{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--b);background:var(--s);cursor:pointer}
 .me .av{width:38px;height:38px}
 .me .n{font-weight:800;font-size:13.5px}.me .s{font-size:11.5px;color:var(--m)}
@@ -199,7 +167,7 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
   <div class="screen hide" id="completeScreen">
     <div class="hdr"><h2>تکمیل پروفایل</h2></div>
     <div class="auth" style="justify-content:flex-start;padding-top:16px">
-      <p style="color:var(--m);font-size:13px;text-align:right">این اطلاعات فقط برای نمایش است. ورود با ایمیل و رمز سرور انجام می‌شود.</p>
+      <p style="color:var(--m);font-size:13px;text-align:right">این اطلاعات فقط برای نمایش است.</p>
       <div class="err" id="cpErr"></div>
       <div class="field"><label>آیدی</label><input id="cpUser" placeholder="sara_m"/></div>
       <div class="field" style="margin-top:10px"><label>نام</label><input id="cpName"/></div>
@@ -222,6 +190,10 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
       <div class="st-item" id="storyBtn">
         <div class="st-ring" id="storyRing"><img id="storyIcon" src="https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png" alt="story"/></div>
         <div class="st-lab">پشتیبانی</div>
+      </div>
+      <div class="st-item" id="liveBtn">
+        <div class="st-ring" id="liveRing"><i class="fa-solid fa-circle-play" style="font-size:28px;color:#fff"></i></div>
+        <div class="st-lab">پخش زنده</div>
       </div>
     </div>
     <div class="srch"><i class="fa-solid fa-magnifying-glass"></i><input id="search" placeholder="جستجو..."/></div>
@@ -296,6 +268,7 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
         <div class="field" style="padding:10px 12px 0"><label>لینک ویدیو/امبد استوری</label><input id="setStoryUrl" placeholder="https://..."/></div>
         <button class="btn btn-p" style="margin:10px 12px;width:calc(100% - 24px)" id="btnSaveStory">ذخیره استوری روی سرور</button>
         <div class="si" id="btnViewReports"><i class="fa-solid fa-flag" style="color:var(--r)"></i><div style="flex:1;margin-right:8px"><div style="font-weight:700;font-size:14px">گزارش‌ها</div><div style="font-size:11px;color:var(--m)">مشاهده گزارش کاربران</div></div></div>
+        <div class="si" id="btnStartLive"><i class="fa-solid fa-broadcast" style="color:var(--r)"></i><div style="flex:1;margin-right:8px"><div style="font-weight:700;font-size:14px">پخش زنده صفحه</div><div style="font-size:11px;color:var(--m)">اشتراک‌گذاری صفحه با کاربران</div></div></div>
       </div>
       <button class="btn btn-p" style="margin-top:6px" id="btnSaveSet">ذخیره</button>
       <button class="btn btn-g" style="margin-top:8px;color:var(--r)" id="btnOut">خروج</button>
@@ -305,6 +278,26 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
   <div class="screen hide" id="reportsScreen">
     <div class="hdr"><button class="ib" id="btnBackRep"><i class="fa-solid fa-arrow-right"></i></button><h2>گزارش‌ها</h2><div style="width:40px"></div></div>
     <div class="list" id="repList"></div>
+  </div>
+
+  <!-- صفحه پخش زنده -->
+  <div id="liveScreen">
+    <div class="live-top">
+      <button class="back-btn" id="liveBack"><i class="fa-solid fa-arrow-right"></i></button>
+      <span class="live-badge"><i class="fa-solid fa-circle"></i> زنده</span>
+      <span class="info" id="liveInfo">پخش زنده</span>
+      <span class="viewers" id="liveViewers"><i class="fa-regular fa-eye"></i> 0</span>
+    </div>
+    <div class="live-container" id="liveContainer">
+      <div class="placeholder" id="livePlaceholder">
+        <i class="fa-solid fa-broadcast"></i>
+        <div>پخش زنده در حال آماده‌سازی...</div>
+      </div>
+      <video id="liveVideo" autoplay playsInline style="display:none"></video>
+    </div>
+    <div class="live-controls" id="liveControls">
+      <button class="stop-live" id="liveStopBtn"><i class="fa-solid fa-stop"></i></button>
+    </div>
   </div>
 
   <div id="storyV">
@@ -328,6 +321,7 @@ body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);h
       <div class="sh"></div>
       <div class="shi" id="mSettings"><i class="fa-solid fa-gear"></i> تنظیمات</div>
       <div class="shi" id="mStory"><i class="fa-solid fa-circle-play"></i> استوری</div>
+      <div class="shi" id="mLive"><i class="fa-solid fa-broadcast"></i> پخش زنده</div>
       <div class="shi" id="mSync"><i class="fa-solid fa-arrows-rotate"></i> همگام‌سازی</div>
       <div class="shi" id="mClose"><i class="fa-solid fa-xmark"></i> بستن</div>
     </div>
@@ -364,6 +358,12 @@ const PROFILE_KEY='neo_profile_';
 
 let retry=0,bootDone=false;
 const spSt=document.getElementById('spSt'),spEr=document.getElementById('spEr'),spRe=document.getElementById('spRe');
+
+// WebRTC variables
+let localStream=null;
+let peerConnection=null;
+let isLive=false;
+let liveViewers=0;
 
 function loadSDK(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 function tryLoad(){
@@ -454,14 +454,12 @@ function boot(){
   async function afterLogin(){
     try{me=await Backendless.UserService.getCurrentUser();}catch(e){}
     soundOn=localStorage.getItem('neo_sound')!=='0';
-    // merge local profile display fields
     const lp=localProfile();
     if(lp.username)me.username=me.username||lp.username;
     if(lp.displayName)me.displayName=me.displayName||lp.displayName;
     if(lp.bio)me.bio=me.bio||lp.bio;
     if(lp.phone)me.phone=me.phone||lp.phone;
 
-    // update last seen on server best-effort
     try{me.lastSeen=Date.now();await Backendless.UserService.update({objectId:me.objectId,lastSeen:me.lastSeen});}catch(e){}
 
     if(!profileDone(me)&&!isSupport()){
@@ -470,7 +468,6 @@ function boot(){
       document.getElementById('cpBio').value=me.bio||'';
       document.getElementById('cpPhone').value=me.phone||'';
       show('completeScreen');
-      // still init so data works if they skip
     }
     await initRealtime();
     await loadStory();
@@ -496,12 +493,11 @@ function boot(){
     if(!username||username.length<3){err.textContent='آیدی حداقل ۳ کاراکتر';err.classList.add('show');return;}
     if(!name){err.textContent='نام الزامی';err.classList.add('show');return;}
     loading(true);
-    // local always
     saveLocalProfile({done:true,username,displayName:name,bio,phone});
     me.username=username;me.displayName=name;me.bio=bio;me.phone=phone;
     try{
       await Backendless.UserService.update({objectId:me.objectId,username,displayName:name,bio,phone,lastSeen:Date.now()});
-    }catch(e){/* local is enough for form fields */}
+    }catch(e){}
     loading(false);
     updateMe();show('mainScreen');toast('پروفایل ذخیره شد');
   };
@@ -526,6 +522,8 @@ function boot(){
       const inbox=ably.channels.get('inbox:'+me.objectId);
       inbox.unsubscribe();
       inbox.subscribe('message',msg=>{if(msg.data)onIncoming(msg.data);});
+      // subscribe to live signaling
+      inbox.subscribe('live-signal',msg=>{if(msg.data)handleLiveSignal(msg.data);});
     }catch(e){}
   }
   function refreshOn(){renderChats();renderUsers();if(peer&&!peer.isGroup){
@@ -534,6 +532,291 @@ function boot(){
     document.getElementById('roomSt').textContent=on?'آنلاین':('آخرین بازدید '+ft(lastSeenMap[peer.objectId]||peer.lastSeen));
     document.getElementById('roomSt').classList.toggle('off',!on);
   }}
+
+  // WebRTC Signal handling
+  function handleLiveSignal(data){
+    if(!data)return;
+    if(data.type==='offer' && !isLive){
+      // User receiving offer from support
+      handleOffer(data);
+    }else if(data.type==='answer' && isLive){
+      handleAnswer(data);
+    }else if(data.type==='ice-candidate' && isLive){
+      if(peerConnection)peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(()=>{});
+    }
+  }
+
+  // ============ LIVE SCREEN SHARING ============
+  async function startLiveScreen(){
+    if(isLive){toast('پخش در حال اجراست');return;}
+    try{
+      // Get screen stream
+      localStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 30, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: true
+      });
+      
+      // Show live screen
+      document.getElementById('liveScreen').classList.add('show');
+      const video = document.getElementById('liveVideo');
+      video.srcObject = localStream;
+      video.style.display = 'block';
+      document.getElementById('livePlaceholder').style.display = 'none';
+      document.getElementById('liveInfo').textContent = me.displayName + ' در حال پخش';
+      document.getElementById('liveViewers').textContent = '🔴 0';
+      document.getElementById('liveRing').classList.add('live-ring');
+      
+      isLive = true;
+      liveViewers = 0;
+      
+      // Setup peer connection for support (broadcaster)
+      setupBroadcaster();
+      
+      // Notify all users via ably
+      const liveChannel = ably.channels.get('neo-live');
+      await liveChannel.publish('live-start', { 
+        broadcaster: me.objectId, 
+        name: me.displayName,
+        timestamp: Date.now()
+      });
+      
+      toast('پخش زنده شروع شد');
+    }catch(e){
+      toast('دسترسی به صفحه ممکن نیست: '+e.message);
+      stopLiveScreen();
+    }
+  }
+
+  function setupBroadcaster(){
+    if(peerConnection)peerConnection.close();
+    peerConnection = new RTCPeerConnection({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    });
+    
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track, localStream);
+    });
+    
+    peerConnection.onicecandidate = (event) => {
+      if(event.candidate){
+        // Send ice candidate to all users
+        const liveChannel = ably.channels.get('neo-live');
+        liveChannel.publish('signal', {
+          type: 'ice-candidate',
+          candidate: event.candidate,
+          broadcaster: me.objectId
+        });
+      }
+    };
+    
+    peerConnection.onconnectionstatechange = () => {
+      if(peerConnection.connectionState === 'disconnected' || 
+         peerConnection.connectionState === 'failed'){
+        stopLiveScreen();
+      }
+    };
+    
+    // Create offer when users connect
+    // Actually we'll wait for users to request connection
+  }
+
+  async function handleOffer(data){
+    if(!data.offer)return;
+    try{
+      if(peerConnection)peerConnection.close();
+      peerConnection = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+      
+      const video = document.getElementById('liveVideo');
+      peerConnection.ontrack = (event) => {
+        if(event.streams && event.streams[0]){
+          video.srcObject = event.streams[0];
+          video.style.display = 'block';
+          document.getElementById('livePlaceholder').style.display = 'none';
+          document.getElementById('liveInfo').textContent = 'تماشای زنده';
+        }
+      };
+      
+      peerConnection.onicecandidate = (event) => {
+        if(event.candidate){
+          ably.channels.get('inbox:'+data.broadcaster).publish('live-signal', {
+            type: 'ice-candidate',
+            candidate: event.candidate,
+            viewer: me.objectId
+          });
+        }
+      };
+      
+      await peerConnection.setRemoteDescription(data.offer);
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      
+      ably.channels.get('inbox:'+data.broadcaster).publish('live-signal', {
+        type: 'answer',
+        answer: answer,
+        viewer: me.objectId
+      });
+      
+      document.getElementById('liveScreen').classList.add('show');
+      toast('اتصال به پخش زنده...');
+      
+    }catch(e){toast('خطا در اتصال به پخش');}
+  }
+
+  async function handleAnswer(data){
+    if(!data.answer)return;
+    try{
+      if(peerConnection){
+        await peerConnection.setRemoteDescription(data.answer);
+        // Update viewer count
+        if(data.viewer){
+          liveViewers = Math.max(0, liveViewers + 1);
+          document.getElementById('liveViewers').textContent = '👁 '+liveViewers;
+          // Notify everyone of viewer count
+          ably.channels.get('neo-live').publish('viewer-count', { count: liveViewers });
+        }
+      }
+    }catch(e){}
+  }
+
+  // User viewing live
+  async function viewLive(broadcasterId){
+    if(isLive){toast('شما در حال پخش هستید');return;}
+    if(document.getElementById('liveScreen').classList.contains('show'))return;
+    
+    try{
+      // Request offer from broadcaster
+      const pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+      
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      
+      // Send offer to broadcaster
+      ably.channels.get('inbox:'+broadcasterId).publish('live-signal', {
+        type: 'offer',
+        offer: offer,
+        broadcaster: broadcasterId,
+        viewer: me.objectId
+      });
+      
+      // Keep pc for later
+      peerConnection = pc;
+      
+      document.getElementById('liveScreen').classList.add('show');
+      document.getElementById('liveInfo').textContent = 'در حال اتصال...';
+      toast('درخواست اتصال به پخش زنده');
+      
+    }catch(e){toast('خطا: '+e.message);}
+  }
+
+  function stopLiveScreen(){
+    // Stop local stream
+    if(localStream){
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
+    if(peerConnection){
+      peerConnection.close();
+      peerConnection = null;
+    }
+    isLive = false;
+    liveViewers = 0;
+    
+    document.getElementById('liveScreen').classList.remove('show');
+    document.getElementById('liveVideo').style.display = 'none';
+    document.getElementById('livePlaceholder').style.display = 'flex';
+    document.getElementById('liveRing').classList.remove('live-ring');
+    
+    // Notify users
+    try{
+      ably.channels.get('neo-live').publish('live-end', { broadcaster: me.objectId });
+    }catch(e){}
+    
+    toast('پخش زنده متوقف شد');
+  }
+
+  // Listen for live events from others
+  function setupLiveListener(){
+    try{
+      const liveChannel = ably.channels.get('neo-live');
+      liveChannel.subscribe('live-start', (msg) => {
+        if(msg.data && msg.data.broadcaster !== me.objectId){
+          // Show live indicator in stories
+          document.getElementById('liveRing').classList.add('live-ring');
+          document.getElementById('liveBtn').dataset.broadcaster = msg.data.broadcaster;
+          document.getElementById('liveBtn').dataset.name = msg.data.name || 'پخش زنده';
+          toast('پخش زنده توسط '+ (msg.data.name || 'کاربر') + ' شروع شد');
+        }
+      });
+      
+      liveChannel.subscribe('live-end', (msg) => {
+        if(msg.data && msg.data.broadcaster !== me.objectId){
+          document.getElementById('liveRing').classList.remove('live-ring');
+          document.getElementById('liveBtn').dataset.broadcaster = '';
+          toast('پخش زنده پایان یافت');
+        }
+      });
+      
+      liveChannel.subscribe('signal', (msg) => {
+        if(msg.data && msg.data.broadcaster && msg.data.broadcaster !== me.objectId){
+          // Forward signal to local handler if viewing
+          handleLiveSignal(msg.data);
+        }
+      });
+      
+      liveChannel.subscribe('viewer-count', (msg) => {
+        if(msg.data && msg.data.count !== undefined){
+          if(document.getElementById('liveScreen').classList.contains('show') && !isLive){
+            document.getElementById('liveViewers').textContent = '👁 '+msg.data.count;
+          }
+        }
+      });
+    }catch(e){}
+  }
+
+  // Click on live story button
+  document.getElementById('liveBtn').onclick = () => {
+    const broadcaster = document.getElementById('liveBtn').dataset.broadcaster;
+    if(isSupport()){
+      // Support: start/stop live
+      if(isLive){
+        stopLiveScreen();
+      }else{
+        startLiveScreen();
+      }
+    }else if(broadcaster){
+      viewLive(broadcaster);
+    }else{
+      toast('پخش زنده‌ای در دسترس نیست');
+    }
+  };
+
+  // Live screen controls
+  document.getElementById('liveBack').onclick = () => {
+    if(!isLive) stopLiveScreen();
+    else toast('ابتدا پخش را متوقف کنید');
+  };
+  document.getElementById('liveStopBtn').onclick = () => {
+    if(isLive) stopLiveScreen();
+    else toast('پخشی فعال نیست');
+  };
+
+  // Close live on video end
+  document.getElementById('liveVideo').addEventListener('ended', () => {
+    if(!isLive) stopLiveScreen();
+  });
 
   async function loadStory(){
     try{
@@ -546,7 +829,6 @@ function boot(){
     url=(url||'').trim();if(!url)return;
     storyUrl=url;
     try{
-      // replace latest
       const q=Backendless.DataQueryBuilder.create().setPageSize(5);
       const old=await Backendless.Data.of('AppStory').find(q);
       if(old&&old[0])await Backendless.Data.of('AppStory').save({objectId:old[0].objectId,url,updatedBy:me.objectId});
@@ -569,7 +851,6 @@ function boot(){
     if(!users.find(u=>u.objectId===GROUP_ID)){
       users.push({objectId:GROUP_ID,displayName:GROUP_NAME,username:'team_developer',isGroup:true,avatarSeed:GROUP_ID});
     }
-    // inject support visual if support email user exists
     renderUsers();renderChats();renderGroups();
   }
 
@@ -715,7 +996,6 @@ function boot(){
       try{list=await Backendless.Data.of(MSG_TABLE).find(q);}catch(e){
         for(const n of['Message','ChatMessage']){try{list=await Backendless.Data.of(n).find(q);if(list&&list.length)break;}catch(e2){}}
       }
-      // also try createdAt sort fallback by sorting client-side
       list=(list||[]).slice().sort((a,b)=>(a.created||a.createdAt||0)-(b.created||b.createdAt||0));
       if(!list.length){box.innerHTML='<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>';return;}
       const day=document.createElement('div');day.className='day';day.textContent='پیام‌ها';box.appendChild(day);
@@ -748,7 +1028,6 @@ function boot(){
     try{
       if(chatCh)chatCh.publish('message',payload);
       if(!isG)ably.channels.get('inbox:'+peer.objectId).publish('message',payload);
-      // group: also publish to each? channel is enough for online members
     }catch(e){}
     upsert(receiverId,text);
   }
@@ -806,7 +1085,6 @@ function boot(){
     if(chatCh){try{chatCh.unsubscribe();}catch(e){}}chatCh=null;peer=null;show('mainScreen');renderChats();
   };
 
-  // story viewer - video/iframe without accidental close
   function openStory(){
     const body=document.getElementById('stBody');
     body.innerHTML='';
@@ -837,12 +1115,21 @@ function boot(){
     if(u){saveStoryUrl(u);document.getElementById('stClose').click();}
   };
 
-  // menus
   document.getElementById('btnMenu').onclick=()=>document.getElementById('mainMenu').classList.add('show');
   document.getElementById('mClose').onclick=()=>document.getElementById('mainMenu').classList.remove('show');
   document.getElementById('mainMenu').onclick=e=>{if(e.target.id==='mainMenu')e.target.classList.remove('show');};
   document.getElementById('mSettings').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');openSettings();};
   document.getElementById('mStory').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');openStory();};
+  document.getElementById('mLive').onclick=()=>{
+    document.getElementById('mainMenu').classList.remove('show');
+    if(isSupport()){
+      if(isLive)stopLiveScreen();else startLiveScreen();
+    }else{
+      const broadcaster = document.getElementById('liveBtn').dataset.broadcaster;
+      if(broadcaster)viewLive(broadcaster);
+      else toast('پخش زنده‌ای در دسترس نیست');
+    }
+  };
   document.getElementById('mSync').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');document.getElementById('btnRef').click();};
 
   document.getElementById('btnChatMore').onclick=()=>document.getElementById('chatMenu').classList.add('show');
@@ -917,6 +1204,13 @@ function boot(){
   };
   document.getElementById('btnBackRep').onclick=()=>show('settingsScreen');
 
+  // Start Live from settings (support only)
+  document.getElementById('btnStartLive').onclick=()=>{
+    if(isSupport()){
+      if(isLive)stopLiveScreen();else startLiveScreen();
+    }
+  };
+
   document.getElementById('btnSaveSet').onclick=async()=>{
     const username=normUser(document.getElementById('setUser').value);
     const name=(document.getElementById('setName').value||'').trim();
@@ -930,9 +1224,13 @@ function boot(){
     updateMe();toast('ذخیره شد');show('mainScreen');
   };
   document.getElementById('btnOut').onclick=async()=>{
+    if(isLive)stopLiveScreen();
     try{if(pres)await pres.presence.leave();if(ably)ably.close();await Backendless.UserService.logout();}catch(e){}
     me=null;ably=null;show('authScreen');
   };
+
+  // Setup live listener after ably is ready
+  setTimeout(setupLiveListener, 2000);
 
   (async()=>{
     loading(true);
