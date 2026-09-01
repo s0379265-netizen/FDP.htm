@@ -1,1751 +1,951 @@
-<!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Neo Messenger</title>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    /* ===== تمام استایل‌ها مانند قبل ===== */
-    :root {
-      --bg: #0b0e11;
-      --surface: #151a21;
-      --surface2: #1c232d;
-      --surface3: #252e3a;
-      --primary: #3b82f6;
-      --primary2: #2563eb;
-      --accent: #22d3ee;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --green: #22c55e;
-      --red: #ef4444;
-      --orange: #f59e0b;
-      --border: rgba(255,255,255,0.07);
-      --bubble-out: linear-gradient(135deg, #2563eb, #3b82f6);
-      --bubble-in: #1e293b;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    body {
-      font-family:'Vazirmatn', system-ui, sans-serif;
-      background:#000; color:var(--text);
-      height:100dvh; overflow:hidden;
-    }
-    .app {
-      max-width:480px; height:100dvh; margin:0 auto;
-      background:var(--bg); position:relative; overflow:hidden;
-      display:flex; flex-direction:column;
-    }
-    .screen {
-      position:absolute; inset:0; display:flex; flex-direction:column;
-      background:var(--bg);
-      transition: transform .32s cubic-bezier(.32,.72,0,1), opacity .32s;
-    }
-    .screen.hide { transform:translateX(110%); pointer-events:none; }
-    .screen.hide-back { transform:translateX(-25%); opacity:.45; pointer-events:none; }
-    #splashScreen {
-      position:absolute; inset:0; z-index:999;
-      background:var(--bg); display:flex;
-      flex-direction:column; align-items:center; justify-content:center;
-      gap:18px;
-    }
-    #splashScreen .mark {
-      width:80px; height:80px; border-radius:24px;
-      background:linear-gradient(135deg,#3b82f6,#22d3ee);
-      display:flex; align-items:center; justify-content:center;
-      font-size:36px; font-weight:800; color:#fff;
-      box-shadow:0 12px 30px rgba(59,130,246,.4);
-      animation:pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%,100% { transform:scale(1); }
-      50% { transform:scale(1.05); }
-    }
-    #splashScreen h1 { font-size:24px; font-weight:800; letter-spacing:-.5px; }
-    #splashScreen .loader {
-      width:30px; height:30px; border:3px solid rgba(255,255,255,.1);
-      border-top-color:var(--primary); border-radius:50%;
-      animation:spin .8s linear infinite;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    #splashScreen .status {
-      color:var(--muted); font-size:13px; margin-top:8px;
-    }
-    #splashScreen .error {
-      color:var(--red); font-size:13px; display:none;
-      background:rgba(239,68,68,.15); padding:10px 20px; border-radius:10px;
-      margin-top:12px;
-    }
-    #splashScreen .retry-btn {
-      background:var(--primary); border:none; color:#fff;
-      padding:10px 24px; border-radius:12px; font-family:inherit;
-      font-size:14px; font-weight:600; cursor:pointer; display:none;
-      margin-top:10px;
-    }
-    .group-badge {
-      background:var(--primary); color:#fff; font-size:11px;
-      padding:2px 10px; border-radius:12px; margin-right:8px;
-    }
-    .auth-wrap {
-      flex:1; display:flex; flex-direction:column; justify-content:center;
-      padding:28px 22px; gap:18px;
-    }
-    .auth-logo {
-      text-align:center; margin-bottom:10px;
-    }
-    .auth-logo .mark {
-      width:72px; height:72px; margin:0 auto 14px;
-      border-radius:22px;
-      background:linear-gradient(135deg,#3b82f6,#22d3ee);
-      display:flex; align-items:center; justify-content:center;
-      font-size:30px; font-weight:800; color:#fff;
-      box-shadow:0 10px 30px rgba(59,130,246,.35);
-    }
-    .auth-logo h1 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
-    .auth-logo p { color:var(--muted); font-size:13.5px; margin-top:6px; }
-    .field { display:flex; flex-direction:column; gap:7px; }
-    .field label { font-size:13px; color:var(--muted); font-weight:500; }
-    .field input, .field textarea {
-      background:var(--surface); border:1px solid var(--border);
-      border-radius:14px; padding:14px 16px; color:var(--text);
-      font-family:inherit; font-size:14.5px; outline:none;
-      transition:border-color .2s;
-    }
-    .field input:focus, .field textarea:focus { border-color:var(--primary); }
-    .field textarea { min-height:90px; resize:vertical; }
-    .btn {
-      width:100%; padding:15px; border:none; border-radius:14px;
-      font-family:inherit; font-size:15px; font-weight:700;
-      cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
-      transition:transform .15s, opacity .2s;
-    }
-    .btn:active { transform:scale(.98); }
-    .btn-primary {
-      background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff;
-      box-shadow:0 6px 20px rgba(59,130,246,.35);
-    }
-    .btn-primary:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
-    .btn-ghost {
-      background:var(--surface2); color:var(--text);
-    }
-    .auth-switch { text-align:center; font-size:13.5px; color:var(--muted); }
-    .auth-switch span { color:var(--primary); font-weight:600; cursor:pointer; }
-    .auth-error {
-      background:rgba(239,68,68,.12); color:#fca5a5;
-      border:1px solid rgba(239,68,68,.25);
-      padding:12px 14px; border-radius:12px; font-size:13px; display:none;
-    }
-    .auth-error.show { display:block; }
-    .header {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 16px; gap:10px;
-      background:rgba(11,14,17,.92); backdrop-filter:blur(16px);
-      border-bottom:1px solid var(--border); z-index:5;
-    }
-    .header-title { font-size:20px; font-weight:800; }
-    .icon-btn {
-      width:40px; height:40px; border-radius:12px; border:none;
-      background:var(--surface2); color:var(--text);
-      display:flex; align-items:center; justify-content:center; cursor:pointer;
-    }
-    .icon-btn:active { background:var(--surface3); }
-    .icon-btn i { font-size:16px; }
-    .search-bar { padding:10px 16px 6px; }
-    .search-inner {
-      position:relative;
-    }
-    .search-inner i {
-      position:absolute; right:14px; top:50%; transform:translateY(-50%);
-      color:var(--muted); font-size:14px;
-    }
-    .search-inner input {
-      width:100%; background:var(--surface); border:1px solid var(--border);
-      border-radius:14px; padding:12px 40px 12px 14px; color:var(--text);
-      font-family:inherit; font-size:14px; outline:none;
-    }
-    .tabs {
-      display:flex; gap:8px; padding:8px 16px 4px;
-    }
-    .tab {
-      flex:1; text-align:center; padding:9px; border-radius:12px;
-      background:transparent; border:none; color:var(--muted);
-      font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
-    }
-    .tab.active { background:var(--surface2); color:var(--text); }
-    .list { flex:1; overflow-y:auto; }
-    .list::-webkit-scrollbar { width:0; }
-    .row {
-      display:flex; align-items:center; gap:13px;
-      padding:12px 16px; cursor:pointer; transition:background .15s;
-    }
-    .row:active { background:var(--surface); }
-    .avatar-wrap { position:relative; flex-shrink:0; }
-    .avatar {
-      width:52px; height:52px; border-radius:50%; object-fit:cover;
-      background:var(--surface2); border:2px solid transparent;
-    }
-    .avatar.lg { width:84px; height:84px; }
-    .online-dot {
-      position:absolute; bottom:1px; left:1px;
-      width:13px; height:13px; background:var(--green);
-      border:2.5px solid var(--bg); border-radius:50%;
-    }
-    .row-info { flex:1; min-width:0; }
-    .row-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
-    .row-name { font-weight:700; font-size:15px; }
-    .row-time { font-size:11.5px; color:var(--muted); }
-    .row-bottom { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .row-preview {
-      font-size:13px; color:var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:230px;
-    }
-    .row-preview.unread { color:var(--text); font-weight:500; }
-    .badge {
-      background:var(--primary); color:#fff; font-size:11px; font-weight:700;
-      min-width:20px; height:20px; border-radius:99px;
-      display:flex; align-items:center; justify-content:center; padding:0 6px;
-    }
-    .empty {
-      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:10px; color:var(--muted); padding:40px 24px; text-align:center;
-    }
-    .empty i { font-size:42px; opacity:.35; }
-    .chat-header {
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px; background:rgba(11,14,17,.95);
-      backdrop-filter:blur(16px); border-bottom:1px solid var(--border);
-    }
-    .chat-user { display:flex; align-items:center; gap:11px; flex:1; min-width:0; cursor:pointer; }
-    .chat-user .avatar { width:42px; height:42px; }
-    .chat-name { font-weight:700; font-size:15.5px; }
-    .chat-status { font-size:12px; color:var(--green); }
-    .chat-status.off { color:var(--muted); }
-    .messages {
-      flex:1; overflow-y:auto; padding:14px 12px;
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .messages::-webkit-scrollbar { width:0; }
-    .day {
-      align-self:center; background:var(--surface); color:var(--muted);
-      font-size:11.5px; padding:5px 12px; border-radius:20px; margin:8px 0;
-    }
-    .msg {
-      max-width:78%; display:flex; flex-direction:column; gap:2px;
-    }
-    .msg.out { align-self:flex-end; }
-    .msg.in { align-self:flex-start; }
-    .bubble {
-      padding:10px 13px; border-radius:18px; font-size:14.5px; line-height:1.55;
-      word-break:break-word;
-    }
-    .msg.out .bubble {
-      background:var(--bubble-out); color:#fff;
-      border-bottom-left-radius:5px;
-    }
-    .msg.in .bubble {
-      background:var(--bubble-in); color:var(--text);
-      border-bottom-right-radius:5px;
-    }
-    .meta {
-      display:flex; align-items:center; gap:4px;
-      font-size:10.5px; color:var(--muted); padding:0 4px;
-    }
-    .msg.out .meta { justify-content:flex-start; }
-    .msg.in .meta { justify-content:flex-end; }
-    .ticks { color:var(--muted); }
-    .ticks.read { color:var(--accent); }
-    .input-bar {
-      display:flex; align-items:flex-end; gap:8px;
-      padding:10px 12px 14px; border-top:1px solid var(--border);
-      background:rgba(11,14,17,.95); backdrop-filter:blur(16px);
-    }
-    .input-box {
-      flex:1; display:flex; align-items:flex-end; gap:6px;
-      background:var(--surface); border:1px solid var(--border);
-      border-radius:24px; padding:6px 8px 6px 14px;
-    }
-    .input-box:focus-within { border-color:var(--primary); }
-    .input-box textarea {
-      flex:1; background:transparent; border:none; color:var(--text);
-      font-family:inherit; font-size:14.5px; outline:none;
-      max-height:110px; resize:none; padding:8px 0; line-height:1.4;
-    }
-    .input-box button {
-      width:36px; height:36px; border:none; background:transparent;
-      color:var(--muted); border-radius:50%; cursor:pointer;
-    }
-    .send-btn, .mic-btn {
-      width:48px; height:48px; border-radius:50%; border:none;
-      display:flex; align-items:center; justify-content:center; cursor:pointer;
-      flex-shrink:0;
-    }
-    .send-btn {
-      background:var(--primary); color:#fff; display:none;
-    }
-    .send-btn.show { display:flex; }
-    .mic-btn { background:var(--surface2); color:var(--text); }
-    .mic-btn.rec {
-      background:var(--red); color:#fff;
-      animation:pulse 1.2s infinite;
-    }
-    .rec-bar {
-      display:none; flex:1; align-items:center; gap:10px;
-      background:var(--surface); border-radius:24px; padding:10px 14px;
-      border:1px solid rgba(239,68,68,.3);
-    }
-    .rec-bar.show { display:flex; }
-    .rec-dot {
-      width:9px; height:9px; background:var(--red); border-radius:50%;
-      animation:blink 1s infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .rec-time { font-size:13px; font-weight:600; color:var(--red); min-width:40px; }
-    .rec-cancel {
-      background:none; border:none; color:var(--muted); font-size:12.5px;
-      font-family:inherit; cursor:pointer; margin-right:auto;
-    }
-    .profile-head {
-      display:flex; flex-direction:column; align-items:center;
-      padding:28px 20px 18px; gap:10px;
-      background:linear-gradient(180deg, rgba(59,130,246,.12), transparent);
-    }
-    .profile-name { font-size:22px; font-weight:800; }
-    .profile-id { color:var(--muted); font-size:13.5px; }
-    .profile-bio {
-      text-align:center; font-size:14px; color:var(--text);
-      line-height:1.6; padding:0 12px; max-width:340px;
-    }
-    .profile-actions {
-      display:flex; gap:10px; padding:8px 16px 16px; justify-content:center;
-    }
-    .profile-actions .btn { width:auto; padding:11px 18px; font-size:13.5px; border-radius:12px; }
-    .info-card {
-      margin:0 16px 12px; background:var(--surface); border-radius:16px;
-      border:1px solid var(--border); overflow:hidden;
-    }
-    .info-row {
-      display:flex; justify-content:space-between; align-items:center;
-      padding:14px 16px; border-bottom:1px solid var(--border);
-      font-size:14px;
-    }
-    .info-row:last-child { border-bottom:none; }
-    .info-row .label { color:var(--muted); }
-    .info-row .value { font-weight:500; }
-    .menu-sheet {
-      position:absolute; inset:0; background:rgba(0,0,0,.55);
-      z-index:50; display:none; align-items:flex-end; justify-content:center;
-    }
-    .menu-sheet.show { display:flex; }
-    .sheet {
-      width:100%; max-width:480px; background:var(--surface);
-      border-radius:20px 20px 0 0; padding:10px 0 24px;
-      animation:slideUp .28s ease;
-    }
-    @keyframes slideUp {
-      from { transform:translateY(100%); } to { transform:translateY(0); }
-    }
-    .sheet-handle {
-      width:40px; height:4px; background:rgba(255,255,255,.15);
-      border-radius:4px; margin:6px auto 12px;
-    }
-    .sheet-item {
-      display:flex; align-items:center; gap:14px;
-      padding:14px 22px; cursor:pointer; font-size:15px;
-    }
-    .sheet-item:active { background:var(--surface2); }
-    .sheet-item i { width:22px; text-align:center; color:var(--muted); }
-    .sheet-item.danger { color:var(--red); }
-    .sheet-item.danger i { color:var(--red); }
-    .toast {
-      position:absolute; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
-      background:var(--surface3); color:var(--text); padding:12px 18px;
-      border-radius:12px; font-size:13px; opacity:0; pointer-events:none;
-      transition:all .3s; z-index:100; white-space:nowrap;
-      border:1px solid var(--border);
-    }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    .loading-overlay {
-      position:absolute; inset:0; background:rgba(11,14,17,.75);
-      display:none; align-items:center; justify-content:center; z-index:80;
-    }
-    .loading-overlay.show { display:flex; }
-    .spinner {
-      width:36px; height:36px; border:3px solid rgba(255,255,255,.12);
-      border-top-color:var(--primary); border-radius:50%;
-      animation:spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .me-bar {
-      display:flex; align-items:center; gap:12px;
-      padding:12px 16px; border-top:1px solid var(--border);
-      background:var(--surface); cursor:pointer;
-    }
-    .me-bar .avatar { width:40px; height:40px; }
-    .me-info { flex:1; min-width:0; }
-    .me-name { font-weight:700; font-size:14px; }
-    .me-sub { font-size:12px; color:var(--muted); }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>Neo Messenger</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --bg:#0a0c10;--s:#141a22;--s2:#1c2430;--s3:#263142;
+  --p:#4f8cff;--p2:#3b6ef5;--a:#2ee6a6;--t:#eef3fb;--m:#8b9bb4;
+  --r:#ff5c6c;--g:#2ee6a6;--b:rgba(255,255,255,.08);
+  --out:linear-gradient(135deg,#4f8cff,#3b6ef5);--in:#1c2533;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:Vazirmatn,system-ui,sans-serif;background:#000;color:var(--t);height:100dvh;overflow:hidden}
+.app{max-width:480px;height:100dvh;margin:0 auto;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:transform .3s cubic-bezier(.32,.72,0,1),opacity .3s}
+.screen.hide{transform:translateX(110%);pointer-events:none}
+.screen.hide-back{transform:translateX(-18%);opacity:.4;pointer-events:none}
+
+#splash{position:absolute;inset:0;z-index:999;background:radial-gradient(ellipse at 50% 28%,#152038,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#splash .logo{width:84px;height:84px;border-radius:24px;background:linear-gradient(145deg,#4f8cff,#6d5efc);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;box-shadow:0 10px 36px rgba(79,140,255,.35)}
+#splash h1{font-size:24px;font-weight:900}
+#splash .ld{width:26px;height:26px;border:3px solid rgba(255,255,255,.12);border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#splash .st{color:var(--m);font-size:13px}
+#splash .er{display:none;color:var(--r);background:rgba(255,92,108,.12);padding:10px 16px;border-radius:12px;font-size:13px}
+#splash .rb{display:none;background:var(--p);border:0;color:#fff;padding:10px 22px;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer}
+
+.auth{flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 22px;gap:14px}
+.auth .logo{text-align:center;margin-bottom:6px}
+.auth .logo .m{width:72px;height:72px;margin:0 auto 12px;border-radius:22px;background:linear-gradient(145deg,#4f8cff,#6d5efc);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
+.auth h1{font-size:26px;font-weight:900;text-align:center}
+.auth p{color:var(--m);font-size:13px;text-align:center;margin-top:4px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;color:var(--m);font-weight:600}
+.field input,.field textarea{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:13px 14px;color:var(--t);font-family:inherit;font-size:14px;outline:0}
+.field input:focus,.field textarea:focus{border-color:rgba(79,140,255,.55)}
+.field textarea{min-height:80px;resize:vertical}
+.btn{width:100%;padding:14px;border:0;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p{background:linear-gradient(135deg,#4f8cff,#3b6ef5);color:#fff;box-shadow:0 6px 22px rgba(79,140,255,.3)}
+.btn-g{background:var(--s2);color:var(--t)}
+.sw{text-align:center;font-size:13px;color:var(--m)}.sw span{color:var(--p);font-weight:700;cursor:pointer}
+.err{display:none;background:rgba(255,92,108,.1);color:#ffb0b8;border:1px solid rgba(255,92,108,.25);padding:11px 12px;border-radius:12px;font-size:13px}
+.err.show{display:block}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;gap:8px;background:rgba(10,12,16,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--b);z-index:5}
+.hdr h2{font-size:19px;font-weight:900;display:flex;align-items:center;gap:6px}
+.ib{width:40px;height:40px;border-radius:12px;border:0;background:var(--s2);color:var(--t);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.ib:active{background:var(--s3)}
+.vbadge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#4f8cff;color:#fff;font-size:9px;margin-right:4px;vertical-align:middle}
+
+/* compact stories */
+.stories{display:flex;gap:12px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid var(--b)}
+.stories::-webkit-scrollbar{display:none}
+.st-item{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:56px;cursor:pointer}
+.st-ring{width:52px;height:52px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#4f8cff,#ff4d8d,#ffb020);display:flex;align-items:center;justify-content:center}
+.st-ring.seen{background:#3a4556}
+.st-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg)}
+.st-lab{font-size:10px;color:var(--m);max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+
+#storyV{position:absolute;inset:0;z-index:200;background:#000;display:none;flex-direction:column}
+#storyV.show{display:flex}
+.st-top{position:absolute;top:0;left:0;right:0;z-index:12;padding:10px 12px 0;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent)}
+.st-prog{height:3px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.st-prog i{display:block;height:100%;width:0;background:#fff;animation:fill 20s linear forwards}
+@keyframes fill{to{width:100%}}
+.st-user{display:flex;align-items:center;gap:8px}
+.st-user img{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid #fff}
+.st-user .nm{font-weight:700;font-size:13px;display:flex;align-items:center}
+.st-user .tm{font-size:10px;color:rgba(255,255,255,.7)}
+.st-x{margin-right:auto;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:15px;cursor:pointer}
+.st-body{flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative}
+.st-body video,.st-body iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
+.st-admin{position:absolute;bottom:16px;left:12px;right:12px;z-index:15;display:none;gap:8px}
+.st-admin.show{display:flex}
+.st-admin input{flex:1;border-radius:12px;border:1px solid var(--b);background:rgba(20,26,34,.95);color:#fff;padding:10px 12px;font-family:inherit;font-size:13px}
+.st-admin button{border:0;border-radius:12px;background:var(--p);color:#fff;padding:10px 14px;font-family:inherit;font-weight:700;cursor:pointer}
+
+.srch{padding:8px 12px 4px;position:relative}
+.srch i{position:absolute;right:24px;top:50%;transform:translateY(-50%);color:var(--m);font-size:13px}
+.srch input{width:100%;background:var(--s);border:1px solid var(--b);border-radius:14px;padding:11px 40px 11px 12px;color:var(--t);font-family:inherit;font-size:13px;outline:0}
+.tabs{display:flex;gap:6px;padding:6px 12px}
+.tab{flex:1;border:0;background:transparent;color:var(--m);padding:9px 4px;border-radius:12px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.tab.active{background:rgba(79,140,255,.16);color:var(--t)}
+
+.list{flex:1;overflow-y:auto}.list::-webkit-scrollbar{width:0}
+.row{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03)}
+.row:active{background:var(--s)}
+.av{width:50px;height:50px;border-radius:50%;object-fit:cover;background:var(--s2)}
+.avw{position:relative;flex-shrink:0}
+.od{position:absolute;bottom:1px;left:1px;width:12px;height:12px;background:var(--g);border:2px solid var(--bg);border-radius:50%}
+.ri{flex:1;min-width:0}
+.rt{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.rn{font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:4px}
+.rtm{font-size:11px;color:var(--m)}
+.rp{font-size:12.5px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gb{background:rgba(79,140,255,.2);color:#9ec0ff;font-size:10px;padding:1px 7px;border-radius:7px;font-weight:700}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--m);padding:40px;text-align:center}
+.empty i{font-size:40px;opacity:.3}
+
+.ch-h{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(10,12,16,.95);border-bottom:1px solid var(--b)}
+.ch-u{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
+.ch-u .av{width:40px;height:40px}
+.cn{font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:4px}
+.cs{font-size:11.5px;color:var(--g)}.cs.off{color:var(--m)}
+.msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:6px}
+.msgs::-webkit-scrollbar{width:0}
+.day{align-self:center;background:var(--s);color:var(--m);font-size:11px;padding:5px 12px;border-radius:16px;margin:6px 0}
+.msg{max-width:78%;display:flex;flex-direction:column;gap:2px}
+.msg.out{align-self:flex-end}.msg.in{align-self:flex-start}
+.bub{padding:10px 12px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word}
+.msg.out .bub{background:var(--out);color:#fff;border-bottom-left-radius:5px}
+.msg.in .bub{background:var(--in);color:var(--t);border-bottom-right-radius:5px}
+.meta{font-size:10px;color:var(--m);padding:0 4px;display:flex;gap:4px;align-items:center}
+.msg.out .meta{justify-content:flex-start}.msg.in .meta{justify-content:flex-end}
+.tick{color:var(--a)}
+
+.ibar{display:flex;align-items:flex-end;gap:7px;padding:8px 10px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--b);background:rgba(10,12,16,.95)}
+.ibox{flex:1;display:flex;align-items:flex-end;background:var(--s);border:1px solid var(--b);border-radius:22px;padding:4px 8px 4px 12px}
+.ibox textarea{flex:1;background:0;border:0;color:var(--t);font-family:inherit;font-size:14px;outline:0;max-height:100px;resize:none;padding:8px 0}
+.sb,.mb{width:46px;height:46px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
+.sb{background:var(--p);color:#fff;display:none}.sb.show{display:flex}
+.mb{background:var(--s2);color:var(--t)}.mb.rec{background:var(--r);color:#fff}
+.recb{display:none;flex:1;align-items:center;gap:8px;background:var(--s);border-radius:22px;padding:10px 14px;border:1px solid rgba(255,92,108,.3)}
+.recb.show{display:flex}
+.rd{width:8px;height:8px;background:var(--r);border-radius:50%;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+.rct{font-size:13px;font-weight:700;color:var(--r)}
+.rcc{background:0;border:0;color:var(--m);font-family:inherit;font-size:12px;cursor:pointer;margin-right:auto}
+
+.pf-h{display:flex;flex-direction:column;align-items:center;padding:28px 16px 14px;gap:8px;background:radial-gradient(ellipse at 50% 0%,rgba(79,140,255,.15),transparent 70%)}
+.pf-h .av{width:88px;height:88px;border:3px solid rgba(79,140,255,.35)}
+.pf-n{font-size:22px;font-weight:900;display:flex;align-items:center;gap:6px}
+.pf-i{color:var(--m);font-size:13px}
+.pf-b{text-align:center;font-size:13.5px;line-height:1.6;color:#c8d0dc;max-width:320px}
+.pf-a{display:flex;gap:8px;justify-content:center;padding:8px 14px 14px}
+.pf-a .btn{width:auto;padding:11px 18px;font-size:13px}
+.card{margin:0 14px 12px;background:var(--s);border-radius:16px;border:1px solid var(--b);overflow:hidden}
+.ir{display:flex;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--b);font-size:13.5px}
+.ir:last-child{border-bottom:0}.ir .l{color:var(--m)}
+
+.sec{margin:0 0 14px;background:var(--s);border-radius:16px;border:1px solid var(--b);overflow:hidden}
+.sec-t{padding:10px 14px 4px;font-size:11px;font-weight:700;color:var(--m)}
+.si{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--b);cursor:pointer}
+.si:last-child{border-bottom:0}
+.swx{width:44px;height:26px;border-radius:99px;background:var(--s3);position:relative;flex-shrink:0}
+.swx.on{background:var(--p)}
+.swx:after{content:'';position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.swx.on:after{transform:translateX(-18px)}
+
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;align-items:flex-end}
+.sheet-bg.show{display:flex}
+.sheet{width:100%;max-width:480px;margin:0 auto;background:var(--s);border-radius:20px 20px 0 0;padding:8px 0 20px}
+.sh{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:4px;margin:6px auto 10px}
+.shi{display:flex;align-items:center;gap:12px;padding:13px 20px;cursor:pointer;font-size:14.5px;font-weight:600}
+.shi i{width:22px;text-align:center;color:var(--m)}.shi.dang{color:var(--r)}.shi.dang i{color:var(--r)}
+
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--s3);color:var(--t);padding:11px 16px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:120;border:1px solid var(--b);max-width:88%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.load{position:absolute;inset:0;background:rgba(10,12,16,.7);display:none;align-items:center;justify-content:center;z-index:90}
+.load.show{display:flex}
+.spn{width:34px;height:34px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite}
+.me{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--b);background:var(--s);cursor:pointer}
+.me .av{width:38px;height:38px}
+.me .n{font-weight:800;font-size:13.5px}.me .s{font-size:11.5px;color:var(--m)}
+</style>
 </head>
 <body>
-  <div class="app" id="app">
-    <!-- SPLASH -->
-    <div id="splashScreen">
-      <div class="mark">N</div>
-      <h1>Neo Messenger</h1>
-      <div class="loader"></div>
-      <div class="status" id="splashStatus">در حال بارگذاری...</div>
-      <div class="error" id="splashError">خطا در بارگذاری SDK</div>
-      <button class="retry-btn" id="retryBtn">تلاش مجدد</button>
-    </div>
-
-    <!-- AUTH -->
-    <div class="screen hide" id="authScreen">
-      <div class="auth-wrap">
-        <div class="auth-logo">
-          <div class="mark">N</div>
-          <h1>Neo Messenger</h1>
-          <p>پیام‌رسان امن و سریع</p>
-        </div>
-        <div class="auth-error" id="authError"></div>
-        <div id="loginForm">
-          <div class="field"><label>ایمیل</label><input type="email" id="loginEmail" placeholder="email@example.com" /></div>
-          <div class="field" style="margin-top:12px"><label>رمز عبور</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
-          <button class="btn btn-primary" style="margin-top:18px" id="btnLogin">ورود</button>
-          <div class="auth-switch" style="margin-top:16px">حساب نداری؟ <span id="goRegister">ثبت‌نام</span></div>
-        </div>
-        <div id="registerForm" style="display:none">
-          <div class="field"><label>ایمیل</label><input type="email" id="regEmail" placeholder="email@example.com" /></div>
-          <div class="field" style="margin-top:12px"><label>رمز عبور (حداقل ۶ کاراکتر)</label><input type="password" id="regPass" placeholder="••••••••" /></div>
-          <div class="field" style="margin-top:12px"><label>نام نمایشی</label><input type="text" id="regName" placeholder="مثلاً سارا محمدی" /></div>
-          <button class="btn btn-primary" style="margin-top:18px" id="btnRegister">ساخت حساب</button>
-          <div class="auth-switch" style="margin-top:16px">حساب داری؟ <span id="goLogin">ورود</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- COMPLETE PROFILE -->
-    <div class="screen hide" id="completeScreen">
-      <div class="header"><div class="header-title">تکمیل پروفایل</div></div>
-      <div class="auth-wrap" style="justify-content:flex-start; padding-top:20px">
-        <p style="color:var(--muted); font-size:13.5px; margin-bottom:8px">برای دیده شدن در لیست کاربران، آیدی و نام را کامل کنید.</p>
-        <div class="auth-error" id="completeError"></div>
-        <div class="field"><label>آیدی کاربری (بدون فاصله)</label><input type="text" id="cpUsername" placeholder="مثلاً sara_m" /></div>
-        <div class="field" style="margin-top:12px"><label>نام نمایشی</label><input type="text" id="cpName" placeholder="نام شما" /></div>
-        <div class="field" style="margin-top:12px"><label>بیوگرافی (اختیاری)</label><textarea id="cpBio" placeholder="چند کلمه درباره خودتان..."></textarea></div>
-        <div class="field" style="margin-top:12px"><label>شماره موبایل (اختیاری)</label><input type="tel" id="cpPhone" placeholder="0912..." /></div>
-        <button class="btn btn-primary" style="margin-top:18px" id="btnComplete">ذخیره و ادامه</button>
-      </div>
-    </div>
-
-    <!-- MAIN -->
-    <div class="screen hide" id="mainScreen">
-      <div class="header">
-        <div class="header-title">پیام‌ها</div>
-        <div style="display:flex; gap:8px">
-          <button class="icon-btn" id="btnRefresh"><i class="fa-solid fa-rotate"></i></button>
-          <button class="icon-btn" id="btnMyProfile"><i class="fa-solid fa-user"></i></button>
-        </div>
-      </div>
-      <div class="search-bar"><div class="search-inner"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchInput" placeholder="جستجو..." /></div></div>
-      <div class="tabs">
-        <button class="tab active" data-tab="chats">چت‌ها</button>
-        <button class="tab" data-tab="users">کاربران</button>
-        <button class="tab" data-tab="groups">گروه‌ها</button>
-      </div>
-      <div class="list" id="chatList"></div>
-      <div class="list" id="userList" style="display:none"></div>
-      <div class="list" id="groupList" style="display:none"></div>
-      <div class="me-bar" id="meBar">
-        <img class="avatar" id="meAvatar" src="" alt="" />
-        <div class="me-info"><div class="me-name" id="meName">—</div><div class="me-sub" id="meSub">—</div></div>
-        <i class="fa-solid fa-chevron-left" style="color:var(--muted); font-size:13px"></i>
-      </div>
-    </div>
-
-    <!-- CHAT ROOM -->
-    <div class="screen hide" id="chatScreen">
-      <div class="chat-header">
-        <button class="icon-btn" id="btnBackChat"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="chat-user" id="chatUserBtn">
-          <div class="avatar-wrap"><img class="avatar" id="roomAvatar" src="" alt="" /><div class="online-dot" id="roomOnline" style="display:none"></div></div>
-          <div><div class="chat-name" id="roomName">—</div><div class="chat-status" id="roomStatus">—</div></div>
-        </div>
-        <button class="icon-btn" id="btnChatMenu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-      </div>
-      <div class="messages" id="messages"></div>
-      <div class="input-bar">
-        <div class="rec-bar" id="recBar"><div class="rec-dot"></div><div class="rec-time" id="recTime">0:00</div><button class="rec-cancel" id="recCancel">لغو</button></div>
-        <div class="input-box" id="inputBox"><textarea id="msgInput" rows="1" placeholder="پیام بنویسید..."></textarea><button type="button" id="btnEmoji"><i class="fa-regular fa-face-smile"></i></button></div>
-        <button class="send-btn" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
-        <button class="mic-btn" id="btnMic"><i class="fa-solid fa-microphone"></i></button>
-      </div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="screen hide" id="profileScreen">
-      <div class="header"><button class="icon-btn" id="btnBackProfile"><i class="fa-solid fa-arrow-right"></i></button><div class="header-title">پروفایل</div><div style="width:40px"></div></div>
-      <div style="flex:1; overflow-y:auto">
-        <div class="profile-head">
-          <div class="avatar-wrap"><img class="avatar lg" id="pfAvatar" src="" alt="" /><div class="online-dot" id="pfOnline" style="display:none; width:16px; height:16px; bottom:4px; left:4px"></div></div>
-          <div class="profile-name" id="pfName">—</div><div class="profile-id" id="pfUsername">—</div><div class="profile-bio" id="pfBio"></div>
-        </div>
-        <div class="profile-actions" id="pfActions"><button class="btn btn-primary" id="btnMessageUser"><i class="fa-solid fa-comment"></i> پیام</button></div>
-        <div class="info-card">
-          <div class="info-row"><span class="label">وضعیت</span><span class="value" id="pfStatus">—</span></div>
-          <div class="info-row" id="pfPhoneRow" style="display:none"><span class="label">شماره</span><span class="value" id="pfPhone">—</span></div>
-          <div class="info-row"><span class="label">عضویت</span><span class="value" id="pfJoined">—</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="screen hide" id="settingsScreen">
-      <div class="header"><button class="icon-btn" id="btnBackSettings"><i class="fa-solid fa-arrow-right"></i></button><div class="header-title">حساب من</div><div style="width:40px"></div></div>
-      <div style="flex:1; overflow-y:auto; padding:16px">
-        <div class="auth-error" id="settingsError"></div>
-        <div class="field"><label>آیدی کاربری</label><input type="text" id="setUsername" /></div>
-        <div class="field" style="margin-top:12px"><label>نام نمایشی</label><input type="text" id="setName" /></div>
-        <div class="field" style="margin-top:12px"><label>بیوگرافی</label><textarea id="setBio"></textarea></div>
-        <div class="field" style="margin-top:12px"><label>شماره موبایل</label><input type="tel" id="setPhone" /></div>
-        <div class="field" style="margin-top:12px"><label style="display:flex; align-items:center; gap:10px; cursor:pointer"><input type="checkbox" id="setShowPhone" style="width:18px; height:18px" /> نمایش شماره در پروفایل</label></div>
-        <div class="field" style="margin-top:12px"><label style="display:flex; align-items:center; gap:10px; cursor:pointer"><input type="checkbox" id="setSound" style="width:18px; height:18px" checked /> صدای پیام جدید</label></div>
-        <button class="btn btn-primary" style="margin-top:18px" id="btnSaveSettings">ذخیره تغییرات</button>
-        <button class="btn btn-ghost" style="margin-top:10px" id="btnLogout">خروج از حساب</button>
-      </div>
-    </div>
-
-    <!-- MENU -->
-    <div class="menu-sheet" id="chatMenu">
-      <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-item" id="menuViewProfile"><i class="fa-solid fa-user"></i> مشاهده پروفایل</div>
-        <div class="sheet-item" id="menuMute"><i class="fa-solid fa-bell"></i> <span id="muteLabel">بی‌صدا کردن چت</span></div>
-        <div class="sheet-item danger" id="menuReport"><i class="fa-solid fa-flag"></i> گزارش کاربر</div>
-        <div class="sheet-item" id="menuClose"><i class="fa-solid fa-xmark"></i> بستن</div>
-      </div>
-    </div>
-
-    <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
-    <div class="toast" id="toast"></div>
+<div class="app">
+  <div id="splash">
+    <div class="logo">N</div><h1>Neo Messenger</h1>
+    <div class="ld"></div><div class="st" id="spSt">در حال بارگذاری...</div>
+    <div class="er" id="spEr"></div><button class="rb" id="spRe">تلاش مجدد</button>
   </div>
 
-  <script>
-    // ============================================================
-    // 1. بارگذاری SDK با قابلیت Retry (تا ۱۰ بار با تاخیر افزایشی)
-    // ============================================================
-    (function() {
-      const CONFIG = {
-        APP_ID: 'C50651A5-1DFC-4BA1-AA34-B4444E9AC5A5',
-        API_KEY: '9303E7E8-BAF9-4023-A34B-E4E024192785',
-        ABLY_KEY: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'
-      };
+  <div class="screen hide" id="authScreen">
+    <div class="auth">
+      <div class="logo"><div class="m">N</div><h1>Neo Messenger</h1><p>سریع و ابری</p></div>
+      <div class="err" id="authErr"></div>
+      <div id="loginF">
+        <div class="field"><label>ایمیل</label><input id="loginEmail" type="email" placeholder="email@example.com"/></div>
+        <div class="field" style="margin-top:10px"><label>رمز عبور</label><input id="loginPass" type="password" placeholder="••••••••"/></div>
+        <button class="btn btn-p" style="margin-top:16px" id="btnLogin"><i class="fa-solid fa-right-to-bracket"></i> ورود</button>
+        <div class="sw" style="margin-top:14px">حساب نداری؟ <span id="goReg">ثبت‌نام</span></div>
+      </div>
+      <div id="regF" style="display:none">
+        <div class="field"><label>ایمیل</label><input id="regEmail" type="email"/></div>
+        <div class="field" style="margin-top:10px"><label>رمز (حداقل ۶)</label><input id="regPass" type="password"/></div>
+        <div class="field" style="margin-top:10px"><label>نام نمایشی</label><input id="regName" type="text" placeholder="نام شما"/></div>
+        <button class="btn btn-p" style="margin-top:16px" id="btnReg"><i class="fa-solid fa-user-plus"></i> ساخت حساب</button>
+        <div class="sw" style="margin-top:14px">حساب داری؟ <span id="goLog">ورود</span></div>
+      </div>
+    </div>
+  </div>
 
-      let retryCount = 0;
-      const MAX_RETRIES = 10;
-      let retryTimeout = null;
-      let bootExecuted = false;
+  <div class="screen hide" id="completeScreen">
+    <div class="hdr"><h2>تکمیل پروفایل</h2></div>
+    <div class="auth" style="justify-content:flex-start;padding-top:16px">
+      <p style="color:var(--m);font-size:13px;text-align:right">این اطلاعات فقط برای نمایش است. ورود با ایمیل و رمز سرور انجام می‌شود.</p>
+      <div class="err" id="cpErr"></div>
+      <div class="field"><label>آیدی</label><input id="cpUser" placeholder="sara_m"/></div>
+      <div class="field" style="margin-top:10px"><label>نام</label><input id="cpName"/></div>
+      <div class="field" style="margin-top:10px"><label>بیوگرافی</label><textarea id="cpBio"></textarea></div>
+      <div class="field" style="margin-top:10px"><label>شماره</label><input id="cpPhone" type="tel"/></div>
+      <button class="btn btn-p" style="margin-top:16px" id="btnCp">ادامه</button>
+      <button class="btn btn-g" style="margin-top:8px" id="btnCpSkip">بعداً</button>
+    </div>
+  </div>
 
-      const statusEl = document.getElementById('splashStatus');
-      const errorEl = document.getElementById('splashError');
-      const retryBtn = document.getElementById('retryBtn');
+  <div class="screen hide" id="mainScreen">
+    <div class="hdr">
+      <h2>Neo</h2>
+      <div style="display:flex;gap:6px">
+        <button class="ib" id="btnRef"><i class="fa-solid fa-arrows-rotate"></i></button>
+        <button class="ib" id="btnMenu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+      </div>
+    </div>
+    <div class="stories">
+      <div class="st-item" id="storyBtn">
+        <div class="st-ring" id="storyRing"><img id="storyIcon" src="https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png" alt="story"/></div>
+        <div class="st-lab">پشتیبانی</div>
+      </div>
+    </div>
+    <div class="srch"><i class="fa-solid fa-magnifying-glass"></i><input id="search" placeholder="جستجو..."/></div>
+    <div class="tabs">
+      <button class="tab active" data-t="chats">چت‌ها</button>
+      <button class="tab" data-t="users">کاربران</button>
+      <button class="tab" data-t="groups">گروه‌ها</button>
+    </div>
+    <div class="list" id="chatList"></div>
+    <div class="list" id="userList" style="display:none"></div>
+    <div class="list" id="groupList" style="display:none"></div>
+    <div class="me" id="meBar">
+      <img class="av" id="meAv"/>
+      <div style="flex:1;min-width:0"><div class="n" id="meName">—</div><div class="s" id="meSub">—</div></div>
+      <i class="fa-solid fa-gear" style="color:var(--m)"></i>
+    </div>
+  </div>
 
-      function loadSDK(src) {
-        return new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = src;
-          script.onload = () => resolve();
-          script.onerror = () => reject();
-          document.head.appendChild(script);
-        });
+  <div class="screen hide" id="chatScreen">
+    <div class="ch-h">
+      <button class="ib" id="btnBack"><i class="fa-solid fa-arrow-right"></i></button>
+      <div class="ch-u" id="chUser">
+        <div class="avw"><img class="av" id="roomAv"/><div class="od" id="roomOd" style="display:none"></div></div>
+        <div><div class="cn" id="roomName">—</div><div class="cs" id="roomSt">—</div></div>
+      </div>
+      <button class="ib" id="btnChatMore"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    </div>
+    <div class="msgs" id="messages"></div>
+    <div class="ibar">
+      <div class="recb" id="recBar"><div class="rd"></div><div class="rct" id="recT">0:00</div><button class="rcc" id="recCancel">لغو</button></div>
+      <div class="ibox" id="ibox"><textarea id="msgIn" rows="1" placeholder="پیام..."></textarea></div>
+      <button class="sb" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
+      <button class="mb" id="btnMic"><i class="fa-solid fa-microphone"></i></button>
+    </div>
+  </div>
+
+  <div class="screen hide" id="profileScreen">
+    <div class="hdr"><button class="ib" id="btnBackPf"><i class="fa-solid fa-arrow-right"></i></button><h2>پروفایل</h2><div style="width:40px"></div></div>
+    <div style="flex:1;overflow-y:auto">
+      <div class="pf-h">
+        <div class="avw"><img class="av" id="pfAv"/><div class="od" id="pfOd" style="display:none;width:14px;height:14px;bottom:4px;left:4px"></div></div>
+        <div class="pf-n" id="pfName">—</div>
+        <div class="pf-i" id="pfUser">—</div>
+        <div class="pf-b" id="pfBio"></div>
+      </div>
+      <div class="pf-a" id="pfAct"><button class="btn btn-p" id="btnMsgU"><i class="fa-solid fa-comment"></i> پیام</button></div>
+      <div class="card">
+        <div class="ir"><span class="l">وضعیت</span><span id="pfSt">—</span></div>
+        <div class="ir" id="pfPhoneRow" style="display:none"><span class="l">شماره</span><span id="pfPhone">—</span></div>
+        <div class="ir"><span class="l">آخرین بازدید</span><span id="pfLast">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen hide" id="settingsScreen">
+    <div class="hdr"><button class="ib" id="btnBackSet"><i class="fa-solid fa-arrow-right"></i></button><h2>تنظیمات</h2><div style="width:40px"></div></div>
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div class="err" id="setErr"></div>
+      <div class="sec">
+        <div class="sec-t">حساب</div>
+        <div class="field" style="padding:10px 12px 0"><label>آیدی</label><input id="setUser"/></div>
+        <div class="field" style="padding:8px 12px 0"><label>نام</label><input id="setName"/></div>
+        <div class="field" style="padding:8px 12px 0"><label>بیو</label><textarea id="setBio"></textarea></div>
+        <div class="field" style="padding:8px 12px 12px"><label>شماره</label><input id="setPhone" type="tel"/></div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">اعلان</div>
+        <div class="si" id="togSound"><div style="flex:1"><div style="font-weight:700;font-size:14px">صدای پیام</div></div><div class="swx on" id="swSound"></div></div>
+      </div>
+      <div class="sec" id="supportPanel" style="display:none">
+        <div class="sec-t">پنل پشتیبانی</div>
+        <div class="field" style="padding:10px 12px 0"><label>لینک ویدیو/امبد استوری</label><input id="setStoryUrl" placeholder="https://..."/></div>
+        <button class="btn btn-p" style="margin:10px 12px;width:calc(100% - 24px)" id="btnSaveStory">ذخیره استوری روی سرور</button>
+        <div class="si" id="btnViewReports"><i class="fa-solid fa-flag" style="color:var(--r)"></i><div style="flex:1;margin-right:8px"><div style="font-weight:700;font-size:14px">گزارش‌ها</div><div style="font-size:11px;color:var(--m)">مشاهده گزارش کاربران</div></div></div>
+      </div>
+      <button class="btn btn-p" style="margin-top:6px" id="btnSaveSet">ذخیره</button>
+      <button class="btn btn-g" style="margin-top:8px;color:var(--r)" id="btnOut">خروج</button>
+    </div>
+  </div>
+
+  <div class="screen hide" id="reportsScreen">
+    <div class="hdr"><button class="ib" id="btnBackRep"><i class="fa-solid fa-arrow-right"></i></button><h2>گزارش‌ها</h2><div style="width:40px"></div></div>
+    <div class="list" id="repList"></div>
+  </div>
+
+  <div id="storyV">
+    <div class="st-top">
+      <div class="st-prog"><i id="stProg"></i></div>
+      <div class="st-user">
+        <img src="https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png"/>
+        <div><div class="nm">پشتیبانی Neo <span class="vbadge"><i class="fa-solid fa-check"></i></span></div><div class="tm">استوری رسمی</div></div>
+        <button class="st-x" id="stClose"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="st-body" id="stBody"></div>
+    <div class="st-admin" id="stAdmin">
+      <input id="stUrlIn" placeholder="لینک ویدیو استوری"/>
+      <button id="stSaveBtn">ذخیره</button>
+    </div>
+  </div>
+
+  <div class="sheet-bg" id="mainMenu">
+    <div class="sheet">
+      <div class="sh"></div>
+      <div class="shi" id="mSettings"><i class="fa-solid fa-gear"></i> تنظیمات</div>
+      <div class="shi" id="mStory"><i class="fa-solid fa-circle-play"></i> استوری</div>
+      <div class="shi" id="mSync"><i class="fa-solid fa-arrows-rotate"></i> همگام‌سازی</div>
+      <div class="shi" id="mClose"><i class="fa-solid fa-xmark"></i> بستن</div>
+    </div>
+  </div>
+  <div class="sheet-bg" id="chatMenu">
+    <div class="sheet">
+      <div class="sh"></div>
+      <div class="shi" id="cProfile"><i class="fa-solid fa-user"></i> پروفایل</div>
+      <div class="shi" id="cMute"><i class="fa-solid fa-bell-slash"></i> بی‌صدا</div>
+      <div class="shi dang" id="cReport"><i class="fa-solid fa-flag"></i> گزارش</div>
+      <div class="shi" id="cClose"><i class="fa-solid fa-xmark"></i> بستن</div>
+    </div>
+  </div>
+
+  <div class="load" id="loading"><div class="spn"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+const CONFIG={
+  APP_ID:'C50651A5-1DFC-4BA1-AA34-B4444E9AC5A5',
+  API_KEY:'9303E7E8-BAF9-4023-A34B-E4E024192785',
+  ABLY_KEY:'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'
+};
+const SUPPORT_EMAIL='s0379265@gmail.com';
+const GROUP_ID='team_developer_group';
+const GROUP_NAME='تیم توسعه دهنده پیام رسان';
+const GROUP_AVATAR='https://cdn.imgurl.ir/uploads/j30850_InShot_20260829_114222431.png';
+const STORY_ICON='https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png';
+const DEFAULT_STORY='https://uplod.ir/embed-9cshxpuh638t.html';
+const MSG_TABLE='Messages';
+const PROFILE_KEY='neo_profile_';
+
+let retry=0,bootDone=false;
+const spSt=document.getElementById('spSt'),spEr=document.getElementById('spEr'),spRe=document.getElementById('spRe');
+
+function loadSDK(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function tryLoad(){
+  retry++;spSt.textContent='تلاش '+retry+' از ۱۰...';
+  Promise.all([
+    loadSDK('https://api.backendless.com/sdk/js/latest/backendless.min.js'),
+    loadSDK('https://cdn.ably.com/lib/ably.min-1.js')
+  ]).then(()=>setTimeout(()=>{
+    if(typeof Backendless!=='undefined'&&typeof Ably!=='undefined'){
+      spSt.textContent='آماده';
+      if(!bootDone){bootDone=true;boot();}
+    } else fail();
+  },400)).catch(fail);
+}
+function fail(){
+  if(retry>=10){spEr.style.display='block';spEr.textContent='SDK لود نشد';spRe.style.display='block';}
+  else setTimeout(tryLoad,Math.min(1200*retry,15000));
+}
+spRe.onclick=()=>{retry=0;spEr.style.display='none';spRe.style.display='none';tryLoad();};
+tryLoad();
+
+function boot(){
+  let me=null,ably=null,pres=null,chatCh=null,peer=null;
+  let users=[],convs=[],online=new Set(),soundOn=true,muted=new Set(JSON.parse(localStorage.getItem('neo_muted')||'[]'));
+  let storyUrl=DEFAULT_STORY,storySeen=localStorage.getItem('neo_story_seen')==='1';
+  let lastSeenMap={};
+
+  Backendless.serverURL='https://api.backendless.com';
+  Backendless.initApp(CONFIG.APP_ID,CONFIG.API_KEY);
+
+  const normEmail=e=>(e||'').replace(/\s+/g,'').trim().toLowerCase();
+  const normUser=u=>(u||'').replace(/\s+/g,'_').trim().toLowerCase().replace(/[^a-z0-9._]/g,'');
+  const toast=t=>{const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600);};
+  const loading=v=>document.getElementById('loading').classList.toggle('show',!!v);
+  const show=id=>{['authScreen','completeScreen','mainScreen','chatScreen','profileScreen','settingsScreen','reportsScreen'].forEach(s=>{
+    const el=document.getElementById(s);if(!el)return;
+    if(s===id)el.classList.remove('hide','hide-back');else el.classList.add('hide');
+  });};
+  const av=s=>'https://api.dicebear.com/7.x/avataaars/svg?seed='+encodeURIComponent(s||'u');
+  const ft=ts=>{if(!ts)return'—';const d=new Date(ts),n=new Date();
+    if(d.toDateString()===n.toDateString())return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    return d.toLocaleDateString('fa-IR');};
+  const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+  const gid=()=>Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+  const isSupport=()=>me&&normEmail(me.email)===SUPPORT_EMAIL;
+  const chan=(a,b)=>'chat:'+[a,b].sort().join('_');
+  const localProfile=()=>{try{return JSON.parse(localStorage.getItem(PROFILE_KEY+(me&&me.objectId||''))||'{}');}catch(e){return{};};};
+  const saveLocalProfile=p=>{if(me)localStorage.setItem(PROFILE_KEY+me.objectId,JSON.stringify(p||{}));};
+  const profileDone=u=>{
+    if(!u)return false;
+    const lp=localProfile();
+    if(lp.done)return true;
+    return !!(u.username&&u.displayName);
+  };
+  const badge=()=>'<span class="vbadge"><i class="fa-solid fa-check"></i></span>';
+
+  document.getElementById('goReg').onclick=()=>{document.getElementById('loginF').style.display='none';document.getElementById('regF').style.display='block';};
+  document.getElementById('goLog').onclick=()=>{document.getElementById('regF').style.display='none';document.getElementById('loginF').style.display='block';};
+  const authErr=m=>{const e=document.getElementById('authErr');e.textContent=m;e.classList.add('show');};
+
+  document.getElementById('btnLogin').onclick=async()=>{
+    const email=normEmail(document.getElementById('loginEmail').value);
+    const pass=document.getElementById('loginPass').value;
+    if(!email||!pass)return authErr('ایمیل و رمز را وارد کنید');
+    loading(true);
+    try{me=await Backendless.UserService.login(email,pass,true);await afterLogin();}
+    catch(e){authErr(e.message||'ورود ناموفق');}
+    finally{loading(false);}
+  };
+  document.getElementById('btnReg').onclick=async()=>{
+    const email=normEmail(document.getElementById('regEmail').value);
+    const pass=document.getElementById('regPass').value;
+    const name=(document.getElementById('regName').value||'').trim();
+    if(!email||!pass)return authErr('ایمیل و رمز الزامی');
+    if(pass.length<6)return authErr('رمز حداقل ۶ کاراکتر');
+    loading(true);
+    try{
+      const u=new Backendless.User();
+      u.email=email;u.password=pass;u.displayName=name||email.split('@')[0];
+      u.username='';u.bio='';u.phone='';u.avatarSeed=email;
+      await Backendless.UserService.register(u);
+      me=await Backendless.UserService.login(email,pass,true);
+      await afterLogin();
+    }catch(e){authErr(e.message||'ثبت‌نام ناموفق');}
+    finally{loading(false);}
+  };
+
+  async function afterLogin(){
+    try{me=await Backendless.UserService.getCurrentUser();}catch(e){}
+    soundOn=localStorage.getItem('neo_sound')!=='0';
+    // merge local profile display fields
+    const lp=localProfile();
+    if(lp.username)me.username=me.username||lp.username;
+    if(lp.displayName)me.displayName=me.displayName||lp.displayName;
+    if(lp.bio)me.bio=me.bio||lp.bio;
+    if(lp.phone)me.phone=me.phone||lp.phone;
+
+    // update last seen on server best-effort
+    try{me.lastSeen=Date.now();await Backendless.UserService.update({objectId:me.objectId,lastSeen:me.lastSeen});}catch(e){}
+
+    if(!profileDone(me)&&!isSupport()){
+      document.getElementById('cpName').value=me.displayName||'';
+      document.getElementById('cpUser').value=me.username||'';
+      document.getElementById('cpBio').value=me.bio||'';
+      document.getElementById('cpPhone').value=me.phone||'';
+      show('completeScreen');
+      // still init so data works if they skip
+    }
+    await initRealtime();
+    await loadStory();
+    await loadUsers();
+    await loadConvs();
+    updateMe();
+    if(profileDone(me)||isSupport()){
+      if(!profileDone(me)&&isSupport()){
+        saveLocalProfile({done:true,username:'support',displayName:'پشتیبانی Neo'});
+        me.username=me.username||'support';me.displayName=me.displayName||'پشتیبانی Neo';
       }
+      show('mainScreen');
+    }
+    document.getElementById('storyRing').classList.toggle('seen',storySeen);
+  }
 
-      function checkSDKs() {
-        const hasBackendless = typeof Backendless !== 'undefined' && typeof Backendless.initApp === 'function';
-        const hasAbly = typeof Ably !== 'undefined' && typeof Ably.Realtime === 'function';
-        return { hasBackendless, hasAbly };
+  document.getElementById('btnCp').onclick=async()=>{
+    const username=normUser(document.getElementById('cpUser').value);
+    const name=(document.getElementById('cpName').value||'').trim();
+    const bio=(document.getElementById('cpBio').value||'').trim();
+    const phone=(document.getElementById('cpPhone').value||'').trim();
+    const err=document.getElementById('cpErr');err.classList.remove('show');
+    if(!username||username.length<3){err.textContent='آیدی حداقل ۳ کاراکتر';err.classList.add('show');return;}
+    if(!name){err.textContent='نام الزامی';err.classList.add('show');return;}
+    loading(true);
+    // local always
+    saveLocalProfile({done:true,username,displayName:name,bio,phone});
+    me.username=username;me.displayName=name;me.bio=bio;me.phone=phone;
+    try{
+      await Backendless.UserService.update({objectId:me.objectId,username,displayName:name,bio,phone,lastSeen:Date.now()});
+    }catch(e){/* local is enough for form fields */}
+    loading(false);
+    updateMe();show('mainScreen');toast('پروفایل ذخیره شد');
+  };
+  document.getElementById('btnCpSkip').onclick=()=>{
+    saveLocalProfile({done:true,username:me.username||('user_'+String(me.objectId).slice(-4)),displayName:me.displayName||'کاربر'});
+    show('mainScreen');
+  };
+
+  async function initRealtime(){
+    if(ably){try{if(pres)await pres.presence.leave();ably.close();}catch(e){}ably=null;}
+    ably=new Ably.Realtime({key:CONFIG.ABLY_KEY,clientId:me.objectId,echoMessages:false});
+    await new Promise(r=>{ably.connection.once('connected',r);setTimeout(r,4500);});
+    pres=ably.channels.get('neo-presence');
+    try{
+      pres.presence.subscribe('enter',m=>{if(m&&m.clientId&&m.clientId!==me.objectId){online.add(m.clientId);refreshOn();}});
+      pres.presence.subscribe('leave',m=>{if(m&&m.clientId){online.delete(m.clientId);lastSeenMap[m.clientId]=Date.now();refreshOn();}});
+      const members=await pres.presence.get();
+      (Array.isArray(members)?members:(members?[members]:[])).forEach(m=>{if(m&&m.clientId&&m.clientId!==me.objectId)online.add(m.clientId);});
+      await pres.presence.enter({name:me.displayName||'user'});
+    }catch(e){console.warn(e);}
+    try{
+      const inbox=ably.channels.get('inbox:'+me.objectId);
+      inbox.unsubscribe();
+      inbox.subscribe('message',msg=>{if(msg.data)onIncoming(msg.data);});
+    }catch(e){}
+  }
+  function refreshOn(){renderChats();renderUsers();if(peer&&!peer.isGroup){
+    const on=online.has(peer.objectId);
+    document.getElementById('roomOd').style.display=on?'block':'none';
+    document.getElementById('roomSt').textContent=on?'آنلاین':('آخرین بازدید '+ft(lastSeenMap[peer.objectId]||peer.lastSeen));
+    document.getElementById('roomSt').classList.toggle('off',!on);
+  }}
+
+  async function loadStory(){
+    try{
+      const q=Backendless.DataQueryBuilder.create().setPageSize(1).setSortBy(['created DESC']);
+      const rows=await Backendless.Data.of('AppStory').find(q);
+      if(rows&&rows[0]&&rows[0].url)storyUrl=rows[0].url;
+    }catch(e){}
+  }
+  async function saveStoryUrl(url){
+    url=(url||'').trim();if(!url)return;
+    storyUrl=url;
+    try{
+      // replace latest
+      const q=Backendless.DataQueryBuilder.create().setPageSize(5);
+      const old=await Backendless.Data.of('AppStory').find(q);
+      if(old&&old[0])await Backendless.Data.of('AppStory').save({objectId:old[0].objectId,url,updatedBy:me.objectId});
+      else await Backendless.Data.of('AppStory').save({url,updatedBy:me.objectId});
+      toast('استوری روی سرور ذخیره شد');
+    }catch(e){toast('ذخیره استوری: جدول AppStory را بسازید');}
+  }
+
+  async function loadUsers(){
+    users=[];
+    try{
+      const all=await Backendless.Data.of(Backendless.User).find(Backendless.DataQueryBuilder.create().setPageSize(100));
+      users=(all||[]).filter(u=>u&&u.objectId&&u.objectId!==me.objectId).map(u=>({
+        ...u,
+        displayName:u.displayName||(u.email?u.email.split('@')[0]:'کاربر'),
+        username:u.username||'',
+        lastSeen:u.lastSeen||null
+      }));
+    }catch(e){users=[];}
+    if(!users.find(u=>u.objectId===GROUP_ID)){
+      users.push({objectId:GROUP_ID,displayName:GROUP_NAME,username:'team_developer',isGroup:true,avatarSeed:GROUP_ID});
+    }
+    // inject support visual if support email user exists
+    renderUsers();renderChats();renderGroups();
+  }
+
+  async function saveMsg(p){
+    const data={
+      msgId:p.id||gid(),
+      senderId:String(p.senderId||''),
+      receiverId:String(p.receiverId||''),
+      text:String(p.text||''),
+      type:String(p.type||'text'),
+      duration:String(p.duration||''),
+      senderName:String(p.senderName||''),
+      createdAt:Number(p.created||Date.now())
+    };
+    try{return await Backendless.Data.of(MSG_TABLE).save(data);}
+    catch(e1){
+      for(const n of['Message','ChatMessage']){try{return await Backendless.Data.of(n).save(data);}catch(e){}}
+      throw e1;
+    }
+  }
+
+  async function loadConvs(){
+    try{
+      const uid=me.objectId;
+      const q=Backendless.DataQueryBuilder.create()
+        .setWhereClause("senderId = '"+uid+"' OR receiverId = '"+uid+"' OR receiverId = '"+GROUP_ID+"'")
+        .setSortBy(['created DESC']).setPageSize(200);
+      let list=[];
+      try{list=await Backendless.Data.of(MSG_TABLE).find(q);}catch(e){
+        for(const n of['Message','ChatMessage']){try{list=await Backendless.Data.of(n).find(q);if(list&&list.length)break;}catch(e2){}}
       }
+      const map=new Map();
+      (list||[]).forEach(m=>{
+        let peerId=m.senderId===uid?m.receiverId:m.senderId;
+        if(m.receiverId===GROUP_ID)peerId=GROUP_ID;
+        if(!peerId||map.has(peerId))return;
+        map.set(peerId,{peerId,lastMessage:m.type==='voice'?'🎤 ویس':(m.text||'پیام'),lastTime:m.created||m.createdAt||Date.now()});
+      });
+      convs=Array.from(map.values());
+    }catch(e){convs=[];}
+    renderChats();
+  }
 
-      function attemptLoad() {
-        retryCount++;
-        statusEl.textContent = 'تلاش ' + retryCount + ' از ' + MAX_RETRIES + ' برای بارگذاری...';
+  function renderChats(){
+    const q=(document.getElementById('search').value||'').trim().toLowerCase();
+    const list=document.getElementById('chatList');
+    const items=convs.map(c=>{
+      const u=users.find(x=>x.objectId===c.peerId)||{objectId:c.peerId,displayName:'کاربر'};
+      return {...c,user:u};
+    }).filter(c=>!q||(c.user.displayName||'').toLowerCase().includes(q));
+    if(!items.length){list.innerHTML='<div class="empty"><i class="fa-regular fa-comments"></i><div>چتی نیست</div></div>';return;}
+    list.innerHTML=items.map(c=>{
+      const on=online.has(c.peerId);
+      const isG=c.peerId===GROUP_ID;
+      const isSup=normEmail(c.user.email)===SUPPORT_EMAIL;
+      return `<div class="row" data-p="${c.peerId}">
+        <div class="avw"><img class="av" src="${isG?GROUP_AVATAR:av(c.user.avatarSeed||c.user.username||c.peerId)}"/>${on?'<div class="od"></div>':''}</div>
+        <div class="ri"><div class="rt"><span class="rn">${esc(c.user.displayName||'کاربر')}${isSup?badge():''}${isG?' <span class="gb">گروه</span>':''}</span><span class="rtm">${ft(c.lastTime)}</span></div>
+        <div class="rp">${esc(c.lastMessage||'')}</div></div></div>`;
+    }).join('');
+    list.querySelectorAll('.row').forEach(r=>r.onclick=()=>{
+      const u=users.find(x=>x.objectId===r.dataset.p)||{objectId:r.dataset.p,displayName:'کاربر'};
+      openChat(u);
+    });
+  }
+  function renderUsers(){
+    const q=(document.getElementById('search').value||'').trim().toLowerCase();
+    const list=document.getElementById('userList');
+    const items=users.filter(u=>!u.isGroup&&(!q||(u.displayName||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)));
+    if(!items.length){list.innerHTML='<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری نیست</div></div>';return;}
+    list.innerHTML=items.map(u=>{
+      const on=online.has(u.objectId);
+      const isSup=normEmail(u.email)===SUPPORT_EMAIL;
+      return `<div class="row" data-id="${u.objectId}">
+        <div class="avw"><img class="av" src="${av(u.avatarSeed||u.username||u.objectId)}"/>${on?'<div class="od"></div>':''}</div>
+        <div class="ri"><div class="rt"><span class="rn">${esc(u.displayName||'کاربر')}${isSup?badge():''}</span></div>
+        <div class="rp">${u.username?'@'+esc(u.username):(on?'آنلاین':'آخرین بازدید '+ft(u.lastSeen))}</div></div></div>`;
+    }).join('');
+    list.querySelectorAll('.row').forEach(r=>r.onclick=()=>{const u=users.find(x=>x.objectId===r.dataset.id);if(u)openProfile(u);});
+  }
+  function renderGroups(){
+    document.getElementById('groupList').innerHTML=`<div class="row" id="openGroup">
+      <div class="avw"><img class="av" src="${GROUP_AVATAR}"/><div class="od" style="background:var(--p)"></div></div>
+      <div class="ri"><div class="rt"><span class="rn">${GROUP_NAME} <span class="gb">گروه</span></span></div>
+      <div class="rp">${users.length} عضو</div></div></div>`;
+    document.getElementById('openGroup').onclick=()=>openChat({objectId:GROUP_ID,displayName:GROUP_NAME,isGroup:true});
+  }
+  function updateMe(){
+    document.getElementById('meAv').src=av(me.avatarSeed||me.username||me.objectId);
+    document.getElementById('meName').innerHTML=(me.displayName||'من')+(isSupport()?(' '+badge()):'');
+    document.getElementById('meSub').textContent=me.username?'@'+me.username:(me.email||'');
+  }
 
-        // بارگذاری مجدد اسکریپت‌ها
-        Promise.all([
-          loadSDK('https://api.backendless.com/sdk/js/latest/backendless.min.js'),
-          loadSDK('https://cdn.ably.com/lib/ably.min-1.js')
-        ]).then(() => {
-          // صبر کوتاه برای مقداردهی
-          setTimeout(() => {
-            const { hasBackendless, hasAbly } = checkSDKs();
-            if (hasBackendless && hasAbly) {
-              statusEl.textContent = '✅ SDKها بارگذاری شدند!';
-              setTimeout(() => {
-                document.getElementById('splashStatus').textContent = 'در حال راه‌اندازی...';
-                if (!bootExecuted) {
-                  bootExecuted = true;
-                  bootApp(CONFIG);
-                }
-              }, 300);
-            } else {
-              if (retryCount >= MAX_RETRIES) {
-                errorEl.style.display = 'block';
-                errorEl.textContent = '❌ پس از ' + MAX_RETRIES + ' تلاش، SDKها بارگذاری نشدند.';
-                retryBtn.style.display = 'block';
-                statusEl.textContent = '❌ خطا در بارگذاری';
-              } else {
-                // تاخیر افزایشی: ۱, ۲, ۴, ۸, ... ثانیه
-                const delay = Math.min(1000 * Math.pow(1.5, retryCount - 1), 30000);
-                statusEl.textContent = '⏳ تلاش مجدد در ' + (delay/1000) + ' ثانیه...';
-                clearTimeout(retryTimeout);
-                retryTimeout = setTimeout(attemptLoad, delay);
-              }
-            }
-          }, 500);
-        }).catch(() => {
-          if (retryCount >= MAX_RETRIES) {
-            errorEl.style.display = 'block';
-            errorEl.textContent = '❌ خطا در دانلود SDKها';
-            retryBtn.style.display = 'block';
-            statusEl.textContent = '❌ خطا در بارگذاری';
-          } else {
-            const delay = Math.min(1000 * Math.pow(1.5, retryCount - 1), 30000);
-            statusEl.textContent = '⏳ تلاش مجدد در ' + (delay/1000) + ' ثانیه...';
-            clearTimeout(retryTimeout);
-            retryTimeout = setTimeout(attemptLoad, delay);
-          }
-        });
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');
+    const n=t.dataset.t;
+    document.getElementById('chatList').style.display=n==='chats'?'block':'none';
+    document.getElementById('userList').style.display=n==='users'?'block':'none';
+    document.getElementById('groupList').style.display=n==='groups'?'block':'none';
+  });
+  document.getElementById('search').oninput=()=>{renderChats();renderUsers();};
+  document.getElementById('btnRef').onclick=async()=>{loading(true);await loadUsers();await loadConvs();await loadStory();loading(false);toast('همگام شد');};
+
+  async function openChat(p){
+    peer=p;
+    const isG=p.isGroup||p.objectId===GROUP_ID;
+    const isSup=normEmail(p.email)===SUPPORT_EMAIL;
+    document.getElementById('roomAv').src=isG?GROUP_AVATAR:av(p.avatarSeed||p.objectId);
+    document.getElementById('roomName').innerHTML=esc(p.displayName||'کاربر')+(isSup?(' '+badge()):'')+(isG?' <span class="gb">گروه</span>':'');
+    if(isG){
+      document.getElementById('roomOd').style.display='block';
+      document.getElementById('roomSt').textContent=users.length+' عضو';
+      document.getElementById('roomSt').classList.remove('off');
+    }else{
+      const on=online.has(p.objectId);
+      document.getElementById('roomOd').style.display=on?'block':'none';
+      document.getElementById('roomSt').textContent=on?'آنلاین':('آخرین بازدید '+ft(lastSeenMap[p.objectId]||p.lastSeen));
+      document.getElementById('roomSt').classList.toggle('off',!on);
+    }
+    if(chatCh){try{chatCh.unsubscribe();}catch(e){}}
+    const name=isG?('group:'+GROUP_ID):chan(me.objectId,p.objectId);
+    chatCh=ably.channels.get(name);
+    chatCh.subscribe('message',msg=>{
+      if(msg.data&&msg.data.senderId!==me.objectId){
+        appendMsg(msg.data,false);
+        if(!muted.has(p.objectId)&&soundOn)try{new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5').play();}catch(e){}
       }
+    });
+    await loadMsgs(p.objectId,isG);
+    show('chatScreen');
+    document.getElementById('mainScreen').classList.add('hide-back');
+  }
 
-      // دکمه تلاش مجدد
-      retryBtn.onclick = () => {
-        errorEl.style.display = 'none';
-        retryBtn.style.display = 'none';
-        retryCount = 0;
-        statusEl.textContent = '🔄 تلاش مجدد...';
-        // حذف اسکریپت‌های قبلی
-        document.querySelectorAll('script[src*="backendless"], script[src*="ably"]').forEach(s => s.remove());
-        clearTimeout(retryTimeout);
-        setTimeout(attemptLoad, 500);
-      };
-
-      // شروع بارگذاری
-      attemptLoad();
-
-      // ============================================================
-      // 2. تابع اصلی برنامه (bootApp)
-      // ============================================================
-      function bootApp(CONFIG) {
-        // ===================== STATE =====================
-        let currentUser = null;
-        let ably = null;
-        let presenceChannel = null;
-        let activeChatChannel = null;
-        let currentPeer = null;
-        let allUsers = [];
-        let conversations = [];
-        let onlineUsers = new Set();
-        let soundEnabled = true;
-        let mutedChats = new Set(JSON.parse(localStorage.getItem('neo_muted') || '[]'));
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
-        let recTimer = null;
-        let recordingStart = 0;
-
-        const GROUP_ID = 'team_developer_group';
-        const GROUP_NAME = 'تیم توسعه دهنده پیام رسان';
-        const GROUP_AVATAR = 'https://cdn.imgurl.ir/uploads/j30850_InShot_20260829_114222431.png';
-
-        // ===================== INIT BACKENDLESS =====================
-        Backendless.serverURL = 'https://api.backendless.com';
-        Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
-
-        // ===================== HELPERS =====================
-        function normalizeEmail(email) {
-          return (email || '').replace(/\s+/g, '').trim().toLowerCase();
-        }
-        function normalizeUsername(u) {
-          return (u || '').replace(/\s+/g, '_').trim().toLowerCase().replace(/[^a-z0-9._]/g, '');
-        }
-        function showToast(text) {
-          const t = document.getElementById('toast');
-          t.textContent = text;
-          t.classList.add('show');
-          setTimeout(() => t.classList.remove('show'), 2600);
-        }
-        function setLoading(v) {
-          document.getElementById('loading').classList.toggle('show', v);
-        }
-        function showScreen(id) {
-          ['authScreen','completeScreen','mainScreen','chatScreen','profileScreen','settingsScreen'].forEach(s => {
-            const el = document.getElementById(s);
-            if (s === id) el.classList.remove('hide', 'hide-back');
-            else el.classList.add('hide');
-          });
-        }
-        function avatarUrl(seed) {
-          return 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(seed || 'user');
-        }
-        function formatTime(ts) {
-          if (!ts) return '';
-          const d = new Date(ts);
-          const now = new Date();
-          if (d.toDateString() === now.toDateString()) {
-            return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-          }
-          return d.toLocaleDateString('fa-IR');
-        }
-        function escapeHtml(s) {
-          const d = document.createElement('div');
-          d.textContent = s || '';
-          return d.innerHTML;
-        }
-        function playMsgSound() {
-          if (!soundEnabled) return;
-          try {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5b2phYmRpeH+Jj5GPi4J5');
-            audio.volume = 0.3;
-            audio.play().catch(()=>{});
-          } catch(e) {}
-        }
-        function channelName(uid1, uid2) {
-          return 'chat:' + [uid1, uid2].sort().join('_');
-        }
-        function isProfileComplete(u) {
-          return !!(u && u.username && u.displayName && String(u.username).trim() && String(u.displayName).trim());
-        }
-
-        // ===================== AUTH UI =====================
-        document.getElementById('goRegister').onclick = () => {
-          document.getElementById('loginForm').style.display = 'none';
-          document.getElementById('registerForm').style.display = 'block';
-          document.getElementById('authError').classList.remove('show');
-        };
-        document.getElementById('goLogin').onclick = () => {
-          document.getElementById('registerForm').style.display = 'none';
-          document.getElementById('loginForm').style.display = 'block';
-          document.getElementById('authError').classList.remove('show');
-        };
-
-        function showAuthError(msg) {
-          const el = document.getElementById('authError');
-          el.textContent = msg;
-          el.classList.add('show');
-        }
-
-        // ===== LOGIN =====
-        document.getElementById('btnLogin').onclick = async () => {
-          const email = normalizeEmail(document.getElementById('loginEmail').value);
-          const pass = document.getElementById('loginPass').value;
-          if (!email || !pass) return showAuthError('ایمیل و رمز را وارد کنید');
-          setLoading(true);
-          try {
-            currentUser = await Backendless.UserService.login(email, pass, true);
-            await afterLogin();
-          } catch (e) {
-            showAuthError(e.message || 'ورود ناموفق بود');
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        // ===== REGISTER =====
-        document.getElementById('btnRegister').onclick = async () => {
-          const email = normalizeEmail(document.getElementById('regEmail').value);
-          const pass = document.getElementById('regPass').value;
-          const name = (document.getElementById('regName').value || '').trim();
-          if (!email || !pass) return showAuthError('ایمیل و رمز الزامی است');
-          if (pass.length < 6) return showAuthError('رمز حداقل ۶ کاراکتر باشد');
-          setLoading(true);
-          try {
-            const user = new Backendless.User();
-            user.email = email;
-            user.password = pass;
-            user.displayName = name || email.split('@')[0];
-            user.username = '';
-            user.bio = '';
-            user.phone = '';
-            user.showPhone = false;
-            user.avatarSeed = email;
-            user.profileComplete = false;
-            currentUser = await Backendless.UserService.register(user);
-            currentUser = await Backendless.UserService.login(email, pass, true);
-            await afterLogin();
-          } catch (e) {
-            showAuthError(e.message || 'ثبت‌نام ناموفق بود');
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        // ===== AFTER LOGIN =====
-        async function afterLogin() {
-          try {
-            currentUser = await Backendless.UserService.getCurrentUser();
-          } catch(e) {
-            try {
-              currentUser = await Backendless.UserService.login(currentUser.email, null, true);
-            } catch(e2) {}
-          }
-          
-          soundEnabled = localStorage.getItem('neo_sound') !== '0';
-          
-          // بررسی کامل بودن پروفایل - اگر کامل نبود، صفحه تکمیل رو نشون بده
-          if (!isProfileComplete(currentUser)) {
-            document.getElementById('cpName').value = currentUser.displayName || '';
-            document.getElementById('cpUsername').value = currentUser.username || '';
-            document.getElementById('cpBio').value = currentUser.bio || '';
-            document.getElementById('cpPhone').value = currentUser.phone || '';
-            showScreen('completeScreen');
-            return;
-          }
-          
-          await initRealtime();
-          await loadUsers();
-          await loadConversations();
-          await ensureGroupExists();
-          updateMeBar();
-          showScreen('mainScreen');
-          renderGroupList();
-        }
-
-        // ===== COMPLETE PROFILE =====
-        document.getElementById('btnComplete').onclick = async () => {
-          const username = normalizeUsername(document.getElementById('cpUsername').value);
-          const name = (document.getElementById('cpName').value || '').trim();
-          const bio = (document.getElementById('cpBio').value || '').trim();
-          const phone = (document.getElementById('cpPhone').value || '').trim();
-          const err = document.getElementById('completeError');
-          err.classList.remove('show');
-          
-          if (!username || username.length < 3) {
-            err.textContent = 'آیدی حداقل ۳ کاراکتر و بدون فاصله باشد';
-            err.classList.add('show');
-            return;
-          }
-          if (!name) {
-            err.textContent = 'نام نمایشی الزامی است';
-            err.classList.add('show');
-            return;
-          }
-          
-          setLoading(true);
-          try {
-            // چک کردن تکراری نبودن آیدی
-            const query = Backendless.DataQueryBuilder.create()
-              .setWhereClause("username = '" + username + "' and objectId != '" + currentUser.objectId + "'")
-              .setPageSize(10);
-            const existing = await Backendless.Data.of(Backendless.User).find(query);
-            if (existing && existing.length > 0) {
-              err.textContent = 'این آیدی قبلاً استفاده شده است';
-              err.classList.add('show');
-              setLoading(false);
-              return;
-            }
-            
-            currentUser.username = username;
-            currentUser.displayName = name;
-            currentUser.bio = bio;
-            currentUser.phone = phone;
-            currentUser.profileComplete = true; // مهم: این مقدار رو true می‌کنیم
-            currentUser = await Backendless.UserService.update(currentUser);
-            
-            // اطمینان از ذخیره شدن در سرور
-            const saved = await Backendless.UserService.getCurrentUser();
-            if (saved && saved.profileComplete === true) {
-              currentUser = saved;
-            }
-            
-            await initRealtime();
-            await loadUsers();
-            await loadConversations();
-            updateMeBar();
-            showScreen('mainScreen');
-            showToast('پروفایل ذخیره شد');
-          } catch (e) {
-            err.textContent = e.message || 'خطا در ذخیره';
-            err.classList.add('show');
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        // ===================== REALTIME =====================
-        async function initRealtime() {
-          if (ably) {
-            try {
-              if (presenceChannel) await presenceChannel.presence.leave();
-              ably.close();
-            } catch(e) {}
-            ably = null;
-          }
-          
-          ably = new Ably.Realtime({ 
-            key: CONFIG.ABLY_KEY, 
-            clientId: currentUser.objectId,
-            echoMessages: false 
-          });
-          
-          await new Promise((resolve, reject) => {
-            ably.connection.once('connected', resolve);
-            ably.connection.once('failed', reject);
-            setTimeout(() => resolve(), 5000);
-          });
-
-          presenceChannel = ably.channels.get('neo-presence');
-          
-          try {
-            presenceChannel.presence.subscribe('enter', (m) => {
-              if (m.clientId && m.clientId !== currentUser.objectId) {
-                onlineUsers.add(m.clientId);
-                refreshOnlineUI();
-              }
-            });
-            presenceChannel.presence.subscribe('leave', (m) => {
-              if (m.clientId) {
-                onlineUsers.delete(m.clientId);
-                refreshOnlineUI();
-              }
-            });
-            presenceChannel.presence.subscribe('update', (m) => {
-              if (m.clientId && m.clientId !== currentUser.objectId) {
-                onlineUsers.add(m.clientId);
-                refreshOnlineUI();
-              }
-            });
-            
-            const members = await presenceChannel.presence.get();
-            if (members && typeof members.forEach === 'function') {
-              members.forEach(m => {
-                if (m.clientId && m.clientId !== currentUser.objectId) {
-                  onlineUsers.add(m.clientId);
-                }
-              });
-            }
-            await presenceChannel.presence.enter({ name: currentUser.displayName });
-          } catch(e) {
-            console.warn('Presence error:', e);
-          }
-
-          try {
-            const inbox = ably.channels.get('inbox:' + currentUser.objectId);
-            inbox.unsubscribe();
-            inbox.subscribe('message', (msg) => {
-              if (msg.data) handleIncoming(msg.data);
-            });
-          } catch(e) { console.warn('inbox subscribe', e); }
-          
-          refreshOnlineUI();
-        }
-
-        function refreshOnlineUI() {
-          renderChatList();
-          renderUserList();
-          if (currentPeer && !currentPeer.isGroup) {
-            const on = onlineUsers.has(currentPeer.objectId);
-            const dot = document.getElementById('roomOnline');
-            const status = document.getElementById('roomStatus');
-            if (dot) dot.style.display = on ? 'block' : 'none';
-            if (status) {
-              status.textContent = on ? 'آنلاین' : 'آفلاین';
-              status.classList.toggle('off', !on);
-            }
-          }
-        }
-
-        // ===================== USERS & CONVERSATIONS =====================
-        async function loadUsers() {
-          try {
-            const query = Backendless.DataQueryBuilder.create()
-              .setWhereClause("profileComplete = true")
-              .setPageSize(100)
-              .setOffset(0);
-            const users = await Backendless.Data.of(Backendless.User).find(query);
-            allUsers = (users || []).filter(u => u.objectId !== currentUser.objectId);
-            await ensureGroupExists();
-          } catch (e) {
-            console.warn('loadUsers error:', e);
-            try {
-              const users = await Backendless.Data.of(Backendless.User).find();
-              allUsers = (users || []).filter(u => 
-                u.objectId !== currentUser.objectId && 
-                isProfileComplete(u)
-              );
-              await ensureGroupExists();
-            } catch (e2) {
-              allUsers = [];
-            }
-          }
-          renderUserList();
-          renderChatList();
-          renderGroupList();
-        }
-
-        // ===== LOAD CONVERSATIONS با Fallback برای نام جدول =====
-        async function loadConversations() {
-          try {
-            const uid = currentUser.objectId;
-            const query = Backendless.DataQueryBuilder.create()
-              .setWhereClause("(senderId = '" + uid + "' or receiverId = '" + uid + "')")
-              .setSortBy(['created DESC'])
-              .setPageSize(100);
-            
-            let messages = [];
-            // تلاش با نام‌های مختلف جدول
-            const tableNames = ['Message', 'Messages', 'ChatMessage', 'ChatMessages'];
-            for (const name of tableNames) {
-              try {
-                messages = await Backendless.Data.of(name).find(query);
-                if (messages && messages.length > 0) break;
-              } catch(e) {
-                // ادامه به جدول بعدی
-              }
-            }
-            
-            const map = new Map();
-            (messages || []).forEach(m => {
-              const peerId = m.senderId === uid ? m.receiverId : m.senderId;
-              if (peerId && !map.has(peerId)) {
-                const preview = m.type === 'voice' ? '🎤 پیام صوتی' : (m.text || 'پیام');
-                map.set(peerId, {
-                  peerId,
-                  lastMessage: preview,
-                  lastTime: m.created || Date.now(),
-                  unread: 0
-                });
-              }
-            });
-            conversations = Array.from(map.values());
-          } catch (e) {
-            console.warn('loadConversations error:', e);
-            conversations = [];
-          }
-          renderChatList();
-        }
-
-        async function ensureGroupExists() {
-          try {
-            const existing = allUsers.find(u => u.objectId === GROUP_ID);
-            if (!existing) {
-              const groupUser = {
-                objectId: GROUP_ID,
-                displayName: GROUP_NAME,
-                username: 'team_developer',
-                avatarSeed: GROUP_ID,
-                bio: 'گروه رسمی تیم توسعه دهنده',
-                profileComplete: true,
-                isGroup: true
-              };
-              allUsers.push(groupUser);
-            }
-          } catch(e) {
-            console.warn('Group ensure error:', e);
-          }
-        }
-
-        // ===== RENDER FUNCTIONS =====
-        function renderChatList() {
-          const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
-          const list = document.getElementById('chatList');
-          
-          const items = conversations
-            .map(c => {
-              const user = allUsers.find(u => u.objectId === c.peerId) || { 
-                objectId: c.peerId, 
-                displayName: 'کاربر', 
-                username: '', 
-                avatarSeed: c.peerId 
-              };
-              return { ...c, user };
-            })
-            .filter(c => {
-              if (!q) return true;
-              const name = (c.user.displayName || '').toLowerCase();
-              const uname = (c.user.username || '').toLowerCase();
-              return name.includes(q) || uname.includes(q);
-            });
-
-          if (!items.length) {
-            list.innerHTML = `<div class="empty"><i class="fa-regular fa-comments"></i><div>هنوز چتی ندارید</div><div style="font-size:12.5px">از تب کاربران کسی را پیدا کنید</div></div>`;
-            return;
-          }
-          
-          list.innerHTML = items.map(c => {
-            const on = onlineUsers.has(c.peerId);
-            const avatarSeed = c.user.avatarSeed || c.user.username || c.peerId;
-            const isGroup = c.peerId === GROUP_ID;
-            return `
-              <div class="row" data-peer="${c.peerId}">
-                <div class="avatar-wrap">
-                  ${isGroup ? 
-                    `<img class="avatar" src="${GROUP_AVATAR}" alt="گروه" />` :
-                    `<img class="avatar" src="${avatarUrl(avatarSeed)}" alt="" />`
-                  }
-                  ${on ? '<div class="online-dot"></div>' : ''}
-                </div>
-                <div class="row-info">
-                  <div class="row-top">
-                    <span class="row-name">${escapeHtml(c.user.displayName || 'کاربر')} ${isGroup ? '<span class="group-badge">گروه</span>' : ''}</span>
-                    <span class="row-time">${formatTime(c.lastTime)}</span>
-                  </div>
-                  <div class="row-bottom">
-                    <span class="row-preview">${escapeHtml(c.lastMessage || '')}</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('');
-          
-          list.querySelectorAll('.row').forEach(row => {
-            row.onclick = () => {
-              const peerId = row.dataset.peer;
-              const peer = allUsers.find(u => u.objectId === peerId) || {
-                objectId: peerId,
-                displayName: 'کاربر',
-                username: '',
-                avatarSeed: peerId
-              };
-              openChat(peer);
-            };
-          });
-        }
-
-        function renderUserList() {
-          const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
-          const list = document.getElementById('userList');
-          
-          const items = allUsers.filter(u => {
-            if (u.isGroup) return false;
-            if (!isProfileComplete(u)) return false;
-            if (!q) return true;
-            const name = (u.displayName || '').toLowerCase();
-            const uname = (u.username || '').toLowerCase();
-            return name.includes(q) || uname.includes(q);
-          });
-          
-          if (!items.length) {
-            list.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری پیدا نشد</div><div style="font-size:12.5px">فقط حساب‌های تکمیل‌شده نمایش داده می‌شوند</div></div>`;
-            return;
-          }
-          
-          list.innerHTML = items.map(u => {
-            const on = onlineUsers.has(u.objectId);
-            const avatarSeed = u.avatarSeed || u.username || u.objectId;
-            return `
-              <div class="row" data-id="${u.objectId}">
-                <div class="avatar-wrap">
-                  <img class="avatar" src="${avatarUrl(avatarSeed)}" alt="" />
-                  ${on ? '<div class="online-dot"></div>' : ''}
-                </div>
-                <div class="row-info">
-                  <div class="row-top">
-                    <span class="row-name">${escapeHtml(u.displayName || 'کاربر')}</span>
-                  </div>
-                  <div class="row-bottom">
-                    <span class="row-preview">@${escapeHtml(u.username || '')}</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('');
-          
-          list.querySelectorAll('.row').forEach(row => {
-            row.onclick = () => {
-              const u = allUsers.find(x => x.objectId === row.dataset.id);
-              if (u) openProfile(u);
-            };
-          });
-        }
-
-        function renderGroupList() {
-          const list = document.getElementById('groupList');
-          list.innerHTML = `
-            <div class="row" data-group="${GROUP_ID}">
-              <div class="avatar-wrap">
-                <img class="avatar" src="${GROUP_AVATAR}" alt="گروه" />
-                <div class="online-dot" style="background:var(--primary)"></div>
-              </div>
-              <div class="row-info">
-                <div class="row-top">
-                  <span class="row-name">${GROUP_NAME} <span class="group-badge">گروه</span></span>
-                </div>
-                <div class="row-bottom">
-                  <span class="row-preview">${allUsers.length} عضو</span>
-                </div>
-              </div>
-            </div>
-          `;
-          list.querySelector('.row').onclick = () => {
-            const groupPeer = {
-              objectId: GROUP_ID,
-              displayName: GROUP_NAME,
-              username: 'team_developer',
-              avatarSeed: GROUP_ID,
-              isGroup: true
-            };
-            openChat(groupPeer);
-          };
-        }
-
-        function updateMeBar() {
-          const avatarSeed = currentUser.avatarSeed || currentUser.username || currentUser.objectId;
-          document.getElementById('meAvatar').src = avatarUrl(avatarSeed);
-          document.getElementById('meName').textContent = currentUser.displayName || 'من';
-          document.getElementById('meSub').textContent = currentUser.username ? '@' + currentUser.username : currentUser.email || '';
-        }
-
-        // ===== TABS =====
-        document.querySelectorAll('.tab').forEach(tab => {
-          tab.onclick = () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const tabName = tab.dataset.tab;
-            document.getElementById('chatList').style.display = tabName === 'chats' ? 'block' : 'none';
-            document.getElementById('userList').style.display = tabName === 'users' ? 'block' : 'none';
-            document.getElementById('groupList').style.display = tabName === 'groups' ? 'block' : 'none';
-            if (tabName === 'chats') renderChatList();
-            else if (tabName === 'users') renderUserList();
-            else if (tabName === 'groups') renderGroupList();
-          };
-        });
-        
-        document.getElementById('searchInput').oninput = () => {
-          const activeTab = document.querySelector('.tab.active');
-          if (activeTab && activeTab.dataset.tab === 'chats') {
-            renderChatList();
-          } else if (activeTab && activeTab.dataset.tab === 'users') {
-            renderUserList();
-          }
-        };
-        
-        document.getElementById('btnRefresh').onclick = async () => {
-          setLoading(true);
-          await loadUsers();
-          await loadConversations();
-          setLoading(false);
-          showToast('بروزرسانی شد');
-        };
-
-        // ===================== CHAT =====================
-        async function openChat(peer) {
-          currentPeer = peer;
-          
-          const isGroup = peer.isGroup || peer.objectId === GROUP_ID;
-          
-          if (isGroup) {
-            document.getElementById('roomAvatar').src = GROUP_AVATAR;
-            document.getElementById('roomName').textContent = GROUP_NAME;
-            document.getElementById('roomOnline').style.display = 'block';
-            document.getElementById('roomStatus').textContent = allUsers.length + ' عضو';
-            document.getElementById('roomStatus').classList.remove('off');
-          } else {
-            const avatarSeed = peer.avatarSeed || peer.username || peer.objectId;
-            document.getElementById('roomAvatar').src = avatarUrl(avatarSeed);
-            document.getElementById('roomName').textContent = peer.displayName || 'کاربر';
-            const on = onlineUsers.has(peer.objectId);
-            document.getElementById('roomOnline').style.display = on ? 'block' : 'none';
-            document.getElementById('roomStatus').textContent = on ? 'آنلاین' : 'آفلاین';
-            document.getElementById('roomStatus').classList.toggle('off', !on);
-          }
-
-          if (activeChatChannel) {
-            try { activeChatChannel.unsubscribe(); } catch(e) {}
-          }
-          
-          const chanName = isGroup ? 'group:' + GROUP_ID : channelName(currentUser.objectId, peer.objectId);
-          activeChatChannel = ably.channels.get(chanName);
-          activeChatChannel.subscribe('message', (msg) => {
-            if (msg.data && msg.data.senderId !== currentUser.objectId) {
-              appendMessage(msg.data, false);
-              if (!mutedChats.has(peer.objectId)) playMsgSound();
-            }
-          });
-
-          await loadMessages(peer.objectId, isGroup);
-          showScreen('chatScreen');
-          document.getElementById('mainScreen').classList.add('hide-back');
-          document.getElementById('chatScreen').classList.remove('hide');
-          
-          document.getElementById('msgInput').value = '';
-          document.getElementById('msgInput').style.height = 'auto';
-          document.getElementById('btnSend').classList.remove('show');
-          document.getElementById('btnMic').style.display = 'flex';
-        }
-
-        // ===== LOAD MESSAGES با Fallback برای نام جدول =====
-        async function loadMessages(peerId, isGroup) {
-          const box = document.getElementById('messages');
-          box.innerHTML = '';
-          
-          try {
-            const uid = currentUser.objectId;
-            let clause;
-            if (isGroup) {
-              clause = "receiverId = '" + GROUP_ID + "'";
-            } else {
-              clause = "((senderId = '" + uid + "' and receiverId = '" + peerId + "') or (senderId = '" + peerId + "' and receiverId = '" + uid + "'))";
-            }
-            const query = Backendless.DataQueryBuilder.create()
-              .setWhereClause(clause)
-              .setSortBy(['created ASC'])
-              .setPageSize(100);
-            
-            let list = [];
-            const tableNames = ['Message', 'Messages', 'ChatMessage', 'ChatMessages'];
-            for (const name of tableNames) {
-              try {
-                list = await Backendless.Data.of(name).find(query);
-                if (list && list.length > 0) break;
-              } catch(e) {}
-            }
-            
-            if (!list || !list.length) {
-              box.innerHTML = `<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>`;
-              return;
-            }
-            
-            const day = document.createElement('div');
-            day.className = 'day';
-            const d = new Date(list[0]?.created || Date.now());
-            day.textContent = d.toLocaleDateString('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            box.appendChild(day);
-            
-            list.forEach(m => appendMessage(m, m.senderId === uid, true));
-            box.scrollTop = box.scrollHeight;
-          } catch (e) {
-            console.warn('loadMessages error:', e);
-            box.innerHTML = '<div class="empty"><div>خطا در بارگذاری پیام‌ها</div></div>';
-          }
-        }
-
-        function appendMessage(m, isOut, silent) {
-          const box = document.getElementById('messages');
-          const empty = box.querySelector('.empty');
-          if (empty) empty.remove();
-
-          const div = document.createElement('div');
-          div.className = 'msg ' + (isOut ? 'out' : 'in');
-          const time = formatTime(m.created || Date.now());
-          
-          let displayText = m.text || '';
-          if (m.type === 'voice') {
-            displayText = '🎤 پیام صوتی (' + (m.duration || '0:00') + ')';
-          }
-          
-          let senderName = '';
-          if (m.receiverId === GROUP_ID && m.senderId !== currentUser.objectId) {
-            const sender = allUsers.find(u => u.objectId === m.senderId);
-            senderName = sender ? sender.displayName + ': ' : '';
-          }
-          
-          div.innerHTML = `
-            <div class="bubble">${escapeHtml(senderName + displayText)}</div>
-            <div class="meta"><span>${time}</span>${isOut ? '<span class="ticks read">✓✓</span>' : ''}</div>
-          `;
-          box.appendChild(div);
-          if (!silent) {
-            box.scrollTop = box.scrollHeight;
-          }
-        }
-
-        // ===== SEND MESSAGE با Fallback برای نام جدول =====
-        async function sendTextMessage(text) {
-          if (!text || !currentPeer) return;
-          
-          const isGroup = currentPeer.isGroup || currentPeer.objectId === GROUP_ID;
-          const receiverId = isGroup ? GROUP_ID : currentPeer.objectId;
-          
-          const payload = {
-            senderId: currentUser.objectId,
-            receiverId: receiverId,
-            text: text,
-            type: 'text',
-            created: Date.now(),
-            senderName: currentUser.displayName
-          };
-          
-          appendMessage(payload, true);
-
-          const tableNames = isGroup ? ['GroupMessage', 'GroupMessages', 'Messages'] : ['Message', 'Messages', 'ChatMessage'];
-          for (const name of tableNames) {
-            try {
-              await Backendless.Data.of(name).save({
-                senderId: payload.senderId,
-                receiverId: payload.receiverId,
-                text: payload.text,
-                type: 'text',
-                senderName: payload.senderName
-              });
-              break;
-            } catch(e) {}
-          }
-
-          try {
-            if (activeChatChannel) activeChatChannel.publish('message', payload);
-            if (!isGroup) {
-              const peerInbox = ably.channels.get('inbox:' + currentPeer.objectId);
-              peerInbox.publish('message', payload);
-            }
-          } catch (e) { console.warn('publish', e); }
-
-          let conv = conversations.find(c => c.peerId === receiverId);
-          if (!conv) {
-            conv = { peerId: receiverId, lastMessage: text, lastTime: Date.now(), unread: 0 };
-            conversations.unshift(conv);
-          } else {
-            conv.lastMessage = text;
-            conv.lastTime = Date.now();
-          }
-          renderChatList();
-        }
-
-        function handleIncoming(data) {
-          if (!data) return;
-          const peerId = data.senderId;
-          if (!peerId || peerId === currentUser.objectId) return;
-          const preview = data.type === 'voice' ? '🎤 پیام صوتی' : (data.text || 'پیام');
-          let conv = conversations.find(c => c.peerId === peerId);
-          if (!conv) {
-            conversations.unshift({ peerId, lastMessage: preview, lastTime: data.created || Date.now(), unread: 1 });
-          } else {
-            conv.lastMessage = preview;
-            conv.lastTime = data.created || Date.now();
-          }
-          renderChatList();
-          if (currentPeer && currentPeer.objectId === peerId) {
-            appendMessage(data, false);
-          }
-          if (!mutedChats.has(peerId)) playMsgSound();
-        }
-
-        // ===== INPUT HANDLERS =====
-        const msgInput = document.getElementById('msgInput');
-        const btnSend = document.getElementById('btnSend');
-        const btnMic = document.getElementById('btnMic');
-
-        msgInput.addEventListener('input', () => {
-          msgInput.style.height = 'auto';
-          msgInput.style.height = Math.min(msgInput.scrollHeight, 110) + 'px';
-          if (msgInput.value.trim()) {
-            btnSend.classList.add('show');
-            btnMic.style.display = 'none';
-          } else {
-            btnSend.classList.remove('show');
-            btnMic.style.display = 'flex';
-          }
-        });
-        
-        msgInput.addEventListener('keydown', e => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            doSend();
-          }
-        });
-        
-        btnSend.onclick = doSend;
-
-        function doSend() {
-          const text = msgInput.value.trim();
-          if (!text) return;
-          sendTextMessage(text);
-          msgInput.value = '';
-          msgInput.style.height = 'auto';
-          btnSend.classList.remove('show');
-          btnMic.style.display = 'flex';
-        }
-
-        // ===== VOICE RECORDING =====
-        btnMic.onclick = () => {
-          if (isRecording) stopRecording(false);
-          else startRecording();
-        };
-        document.getElementById('recCancel').onclick = () => stopRecording(true);
-
-        async function startRecording() {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
-            mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
-            mediaRecorder.start();
-            isRecording = true;
-            recordingStart = Date.now();
-            document.getElementById('inputBox').style.display = 'none';
-            btnSend.style.display = 'none';
-            btnMic.classList.add('rec');
-            document.getElementById('recBar').classList.add('show');
-            recTimer = setInterval(() => {
-              const sec = Math.floor((Date.now() - recordingStart) / 1000);
-              document.getElementById('recTime').textContent = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
-            }, 200);
-          } catch (e) {
-            showToast('دسترسی میکروفون لازم است');
-          }
-        }
-
-        function stopRecording(cancel) {
-          if (!isRecording) return;
-          isRecording = false;
-          clearInterval(recTimer);
-          document.getElementById('recBar').classList.remove('show');
-          document.getElementById('inputBox').style.display = 'flex';
-          btnMic.classList.remove('rec');
-          btnMic.style.display = 'flex';
-          if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-          if (cancel) { audioChunks = []; return; }
-
-          const sec = Math.max(1, Math.floor((Date.now() - recordingStart)/1000));
-          const duration = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
-          
-          const isGroup = currentPeer.isGroup || currentPeer.objectId === GROUP_ID;
-          const receiverId = isGroup ? GROUP_ID : currentPeer.objectId;
-          
-          const payload = {
-            senderId: currentUser.objectId,
-            receiverId: receiverId,
-            type: 'voice',
-            duration: duration,
-            text: 'voice:' + duration,
-            created: Date.now(),
-            senderName: currentUser.displayName
-          };
-          
-          appendMessage(payload, true);
-          
-          const tableNames = isGroup ? ['GroupMessage', 'GroupMessages', 'Messages'] : ['Message', 'Messages', 'ChatMessage'];
-          for (const name of tableNames) {
-            try {
-              Backendless.Data.of(name).save({
-                senderId: payload.senderId,
-                receiverId: payload.receiverId,
-                type: 'voice',
-                text: 'voice:' + duration,
-                duration: duration,
-                senderName: payload.senderName
-              });
-              break;
-            } catch(e) {}
-          }
-          
-          try {
-            if (activeChatChannel) activeChatChannel.publish('message', payload);
-            if (!isGroup) {
-              ably.channels.get('inbox:' + currentPeer.objectId).publish('message', payload);
-            }
-          } catch(e) {}
-          
-          let conv = conversations.find(c => c.peerId === receiverId);
-          if (!conv) {
-            conversations.unshift({ peerId: receiverId, lastMessage: '🎤 پیام صوتی', lastTime: Date.now(), unread: 0 });
-          } else {
-            conv.lastMessage = '🎤 پیام صوتی';
-            conv.lastTime = Date.now();
-          }
-          renderChatList();
-        }
-
-        // ===== NAVIGATION =====
-        document.getElementById('btnBackChat').onclick = () => {
-          if (activeChatChannel) { 
-            try { activeChatChannel.unsubscribe(); } catch(e){} 
-            activeChatChannel = null; 
-          }
-          currentPeer = null;
-          showScreen('mainScreen');
-          renderChatList();
-        };
-
-        // ===== CHAT MENU =====
-        document.getElementById('btnChatMenu').onclick = () => document.getElementById('chatMenu').classList.add('show');
-        document.getElementById('menuClose').onclick = () => document.getElementById('chatMenu').classList.remove('show');
-        document.getElementById('chatMenu').onclick = (e) => {
-          if (e.target.id === 'chatMenu') e.target.classList.remove('show');
-        };
-        
-        document.getElementById('menuViewProfile').onclick = () => {
-          document.getElementById('chatMenu').classList.remove('show');
-          if (currentPeer && !currentPeer.isGroup) openProfile(currentPeer, true);
-        };
-        
-        document.getElementById('menuMute').onclick = () => {
-          if (!currentPeer) return;
-          if (mutedChats.has(currentPeer.objectId)) {
-            mutedChats.delete(currentPeer.objectId);
-            showToast('صدای چت روشن شد');
-          } else {
-            mutedChats.add(currentPeer.objectId);
-            showToast('چت بی‌صدا شد');
-          }
-          localStorage.setItem('neo_muted', JSON.stringify([...mutedChats]));
-          document.getElementById('chatMenu').classList.remove('show');
-        };
-        
-        document.getElementById('menuReport').onclick = async () => {
-          document.getElementById('chatMenu').classList.remove('show');
-          if (!currentPeer) return;
-          try {
-            await Backendless.Data.of('Reports').save({
-              reporterId: currentUser.objectId,
-              reportedId: currentPeer.objectId,
-              reason: 'user_report',
-              created: Date.now()
-            });
-            showToast('گزارش ثبت شد');
-          } catch(e) {
-            showToast('خطا در ثبت گزارش');
-          }
-        };
-
-        document.getElementById('chatUserBtn').onclick = () => {
-          if (currentPeer && !currentPeer.isGroup) openProfile(currentPeer, true);
-        };
-
-        // ===== PROFILE =====
-        function openProfile(user, fromChat) {
-          const avatarSeed = user.avatarSeed || user.username || user.objectId;
-          document.getElementById('pfAvatar').src = avatarUrl(avatarSeed);
-          document.getElementById('pfName').textContent = user.displayName || 'کاربر';
-          document.getElementById('pfUsername').textContent = user.username ? '@' + user.username : '';
-          document.getElementById('pfBio').textContent = user.bio || '';
-          
-          const on = onlineUsers.has(user.objectId);
-          document.getElementById('pfOnline').style.display = on ? 'block' : 'none';
-          document.getElementById('pfStatus').textContent = on ? 'آنلاین' : 'آفلاین';
-          
-          if (user.showPhone && user.phone) {
-            document.getElementById('pfPhoneRow').style.display = 'flex';
-            document.getElementById('pfPhone').textContent = user.phone;
-          } else {
-            document.getElementById('pfPhoneRow').style.display = 'none';
-          }
-          document.getElementById('pfJoined').textContent = user.created ? formatTime(user.created) : '—';
-
-          const isMe = user.objectId === currentUser.objectId;
-          document.getElementById('pfActions').style.display = isMe ? 'none' : 'flex';
-          document.getElementById('btnMessageUser').onclick = () => openChat(user);
-
-          document.getElementById('profileScreen').dataset.fromChat = fromChat ? '1' : '0';
-          showScreen('profileScreen');
-        }
-
-        document.getElementById('btnBackProfile').onclick = () => {
-          if (document.getElementById('profileScreen').dataset.fromChat === '1' && currentPeer) {
-            showScreen('chatScreen');
-          } else {
-            showScreen('mainScreen');
-          }
-        };
-
-        // ===== SETTINGS =====
-        function openSettings() {
-          document.getElementById('setUsername').value = currentUser.username || '';
-          document.getElementById('setName').value = currentUser.displayName || '';
-          document.getElementById('setBio').value = currentUser.bio || '';
-          document.getElementById('setPhone').value = currentUser.phone || '';
-          document.getElementById('setShowPhone').checked = !!currentUser.showPhone;
-          document.getElementById('setSound').checked = soundEnabled;
-          showScreen('settingsScreen');
-        }
-        
-        document.getElementById('btnMyProfile').onclick = openSettings;
-        document.getElementById('meBar').onclick = openSettings;
-        document.getElementById('btnBackSettings').onclick = () => showScreen('mainScreen');
-
-        document.getElementById('btnSaveSettings').onclick = async () => {
-          const username = normalizeUsername(document.getElementById('setUsername').value);
-          const name = (document.getElementById('setName').value || '').trim();
-          const err = document.getElementById('settingsError');
-          err.classList.remove('show');
-          
-          if (!username || username.length < 3) {
-            err.textContent = 'آیدی معتبر نیست (حداقل ۳ کاراکتر)';
-            err.classList.add('show');
-            return;
-          }
-          if (!name) {
-            err.textContent = 'نام الزامی است';
-            err.classList.add('show');
-            return;
-          }
-          
-          setLoading(true);
-          try {
-            const query = Backendless.DataQueryBuilder.create()
-              .setWhereClause("username = '" + username + "' and objectId != '" + currentUser.objectId + "'")
-              .setPageSize(10);
-            const existing = await Backendless.Data.of(Backendless.User).find(query);
-            if (existing && existing.length > 0) {
-              err.textContent = 'این آیدی قبلاً استفاده شده است';
-              err.classList.add('show');
-              setLoading(false);
-              return;
-            }
-            
-            currentUser.username = username;
-            currentUser.displayName = name;
-            currentUser.bio = (document.getElementById('setBio').value || '').trim();
-            currentUser.phone = (document.getElementById('setPhone').value || '').trim();
-            currentUser.showPhone = document.getElementById('setShowPhone').checked;
-            currentUser.profileComplete = true;
-            
-            soundEnabled = document.getElementById('setSound').checked;
-            localStorage.setItem('neo_sound', soundEnabled ? '1' : '0');
-            
-            currentUser = await Backendless.UserService.update(currentUser);
-            updateMeBar();
-            await loadUsers();
-            showToast('ذخیره شد');
-            showScreen('mainScreen');
-          } catch (e) {
-            err.textContent = e.message || 'خطا در ذخیره';
-            err.classList.add('show');
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        document.getElementById('btnLogout').onclick = async () => {
-          try {
-            if (presenceChannel) await presenceChannel.presence.leave();
-            if (ably) ably.close();
-            await Backendless.UserService.logout();
-          } catch(e) {}
-          currentUser = null;
-          ably = null;
-          presenceChannel = null;
-          activeChatChannel = null;
-          onlineUsers.clear();
-          allUsers = [];
-          conversations = [];
-          showScreen('authScreen');
-        };
-
-        // ===== FINAL BOOT =====
-        (async function finalBoot() {
-          setLoading(true);
-          try {
-            const valid = await Backendless.UserService.isValidLogin();
-            if (valid) {
-              currentUser = await Backendless.UserService.getCurrentUser();
-              if (currentUser) {
-                await afterLogin();
-                document.getElementById('splashScreen').style.display = 'none';
-                setLoading(false);
-                return;
-              }
-            }
-          } catch (e) {
-            console.warn('Boot auth check:', e);
-          }
-          document.getElementById('splashScreen').style.display = 'none';
-          setLoading(false);
-          showScreen('authScreen');
-        })();
-
-        console.log('✅ Neo Messenger loaded successfully!');
+  async function loadMsgs(peerId,isG){
+    const box=document.getElementById('messages');box.innerHTML='';
+    try{
+      const uid=me.objectId;
+      const clause=isG
+        ?("receiverId = '"+GROUP_ID+"'")
+        :("((senderId = '"+uid+"' AND receiverId = '"+peerId+"') OR (senderId = '"+peerId+"' AND receiverId = '"+uid+"'))");
+      const q=Backendless.DataQueryBuilder.create().setWhereClause(clause).setSortBy(['created ASC']).setPageSize(200);
+      let list=[];
+      try{list=await Backendless.Data.of(MSG_TABLE).find(q);}catch(e){
+        for(const n of['Message','ChatMessage']){try{list=await Backendless.Data.of(n).find(q);if(list&&list.length)break;}catch(e2){}}
       }
-    })();
-  </script>
+      // also try createdAt sort fallback by sorting client-side
+      list=(list||[]).slice().sort((a,b)=>(a.created||a.createdAt||0)-(b.created||b.createdAt||0));
+      if(!list.length){box.innerHTML='<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>';return;}
+      const day=document.createElement('div');day.className='day';day.textContent='پیام‌ها';box.appendChild(day);
+      list.forEach(m=>appendMsg(m,m.senderId===uid,true));
+      box.scrollTop=box.scrollHeight;
+    }catch(e){box.innerHTML='<div class="empty"><div>خطا در بارگذاری</div></div>';}
+  }
+
+  function appendMsg(m,out,silent){
+    const box=document.getElementById('messages');
+    const empty=box.querySelector('.empty');if(empty)empty.remove();
+    const div=document.createElement('div');div.className='msg '+(out?'out':'in');
+    let text=m.text||'';
+    if(m.receiverId===GROUP_ID&&m.senderId!==me.objectId){
+      const s=users.find(u=>u.objectId===m.senderId);
+      text=(s?s.displayName+': ':'')+text;
+    }
+    if(m.type==='voice')text='🎤 پیام صوتی '+(m.duration||'');
+    div.innerHTML=`<div class="bub">${esc(text)}</div><div class="meta"><span>${ft(m.created||m.createdAt||Date.now())}</span>${out?'<span class="tick">✓✓</span>':''}</div>`;
+    box.appendChild(div);if(!silent)box.scrollTop=box.scrollHeight;
+  }
+
+  async function sendText(text){
+    if(!text||!peer)return;
+    const isG=peer.isGroup||peer.objectId===GROUP_ID;
+    const receiverId=isG?GROUP_ID:peer.objectId;
+    const payload={id:gid(),senderId:me.objectId,receiverId,text,type:'text',created:Date.now(),senderName:me.displayName||''};
+    appendMsg(payload,true);
+    try{await saveMsg(payload);}catch(e){toast('ذخیره سرور ناموفق — جدول Messages را بسازید');}
+    try{
+      if(chatCh)chatCh.publish('message',payload);
+      if(!isG)ably.channels.get('inbox:'+peer.objectId).publish('message',payload);
+      // group: also publish to each? channel is enough for online members
+    }catch(e){}
+    upsert(receiverId,text);
+  }
+  function upsert(peerId,preview){
+    let c=convs.find(x=>x.peerId===peerId);
+    if(!c)convs.unshift({peerId,lastMessage:preview,lastTime:Date.now()});
+    else{c.lastMessage=preview;c.lastTime=Date.now();}
+    renderChats();
+  }
+  function onIncoming(d){
+    if(!d||!d.senderId||d.senderId===me.objectId)return;
+    const peerId=d.receiverId===GROUP_ID?GROUP_ID:d.senderId;
+    upsert(peerId,d.type==='voice'?'🎤 ویس':(d.text||'پیام'));
+    if(peer&&(peer.objectId===d.senderId||(peer.objectId===GROUP_ID&&d.receiverId===GROUP_ID)))appendMsg(d,false);
+  }
+
+  const msgIn=document.getElementById('msgIn'),btnSend=document.getElementById('btnSend'),btnMic=document.getElementById('btnMic');
+  let rec=null,chunks=[],recording=false,timer=null,recStart=0;
+  msgIn.oninput=()=>{
+    msgIn.style.height='auto';msgIn.style.height=Math.min(msgIn.scrollHeight,100)+'px';
+    if(msgIn.value.trim()){btnSend.classList.add('show');btnMic.style.display='none';}
+    else{btnSend.classList.remove('show');btnMic.style.display='flex';}
+  };
+  msgIn.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend();}};
+  btnSend.onclick=doSend;
+  function doSend(){const t=msgIn.value.trim();if(!t)return;sendText(t);msgIn.value='';msgIn.style.height='auto';btnSend.classList.remove('show');btnMic.style.display='flex';}
+
+  btnMic.onclick=()=>{if(recording)stopRec(false);else startRec();};
+  document.getElementById('recCancel').onclick=()=>stopRec(true);
+  async function startRec(){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      rec=new MediaRecorder(stream);chunks=[];
+      rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+      rec.onstop=()=>stream.getTracks().forEach(t=>t.stop());
+      rec.start();recording=true;recStart=Date.now();
+      document.getElementById('ibox').style.display='none';btnSend.style.display='none';btnMic.classList.add('rec');
+      document.getElementById('recBar').classList.add('show');
+      timer=setInterval(()=>{const s=Math.floor((Date.now()-recStart)/1000);document.getElementById('recT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');},200);
+    }catch(e){toast('میکروفون لازم است');}
+  }
+  function stopRec(cancel){
+    if(!recording)return;recording=false;clearInterval(timer);
+    document.getElementById('recBar').classList.remove('show');document.getElementById('ibox').style.display='flex';
+    btnMic.classList.remove('rec');btnMic.style.display='flex';
+    if(rec&&rec.state!=='inactive')rec.stop();
+    if(cancel){chunks=[];return;}
+    const sec=Math.max(1,Math.floor((Date.now()-recStart)/1000));
+    const dur=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+    sendText('🎤 پیام صوتی '+dur);
+    chunks=[];
+  }
+
+  document.getElementById('btnBack').onclick=()=>{
+    if(chatCh){try{chatCh.unsubscribe();}catch(e){}}chatCh=null;peer=null;show('mainScreen');renderChats();
+  };
+
+  // story viewer - video/iframe without accidental close
+  function openStory(){
+    const body=document.getElementById('stBody');
+    body.innerHTML='';
+    const url=storyUrl||DEFAULT_STORY;
+    const prog=document.getElementById('stProg');
+    prog.style.animation='none';void prog.offsetWidth;prog.style.animation='';
+    if(/\.(mp4|webm|ogg)(\?|$)/i.test(url)){
+      const v=document.createElement('video');
+      v.src=url;v.controls=true;v.autoplay=true;v.playsInline=true;v.style.width='100%';v.style.height='100%';v.style.objectFit='contain';
+      body.appendChild(v);
+      v.play().catch(()=>{});
+    }else{
+      const f=document.createElement('iframe');
+      f.src=url;f.allow='autoplay; fullscreen';f.allowFullscreen=true;
+      f.style.width='100%';f.style.height='100%';f.style.border='0';
+      body.appendChild(f);
+    }
+    document.getElementById('stAdmin').classList.toggle('show',isSupport());
+    if(isSupport())document.getElementById('stUrlIn').value=storyUrl||'';
+    document.getElementById('storyV').classList.add('show');
+    storySeen=true;localStorage.setItem('neo_story_seen','1');
+    document.getElementById('storyRing').classList.add('seen');
+  }
+  document.getElementById('storyBtn').onclick=openStory;
+  document.getElementById('stClose').onclick=()=>{document.getElementById('storyV').classList.remove('show');document.getElementById('stBody').innerHTML='';};
+  document.getElementById('stSaveBtn').onclick=()=>{
+    const u=document.getElementById('stUrlIn').value.trim();
+    if(u){saveStoryUrl(u);document.getElementById('stClose').click();}
+  };
+
+  // menus
+  document.getElementById('btnMenu').onclick=()=>document.getElementById('mainMenu').classList.add('show');
+  document.getElementById('mClose').onclick=()=>document.getElementById('mainMenu').classList.remove('show');
+  document.getElementById('mainMenu').onclick=e=>{if(e.target.id==='mainMenu')e.target.classList.remove('show');};
+  document.getElementById('mSettings').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');openSettings();};
+  document.getElementById('mStory').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');openStory();};
+  document.getElementById('mSync').onclick=()=>{document.getElementById('mainMenu').classList.remove('show');document.getElementById('btnRef').click();};
+
+  document.getElementById('btnChatMore').onclick=()=>document.getElementById('chatMenu').classList.add('show');
+  document.getElementById('cClose').onclick=()=>document.getElementById('chatMenu').classList.remove('show');
+  document.getElementById('chatMenu').onclick=e=>{if(e.target.id==='chatMenu')e.target.classList.remove('show');};
+  document.getElementById('cProfile').onclick=()=>{document.getElementById('chatMenu').classList.remove('show');if(peer&&!peer.isGroup)openProfile(peer,true);};
+  document.getElementById('cMute').onclick=()=>{
+    if(!peer)return;
+    if(muted.has(peer.objectId)){muted.delete(peer.objectId);toast('صدا روشن');}
+    else{muted.add(peer.objectId);toast('بی‌صدا');}
+    localStorage.setItem('neo_muted',JSON.stringify([...muted]));
+    document.getElementById('chatMenu').classList.remove('show');
+  };
+  document.getElementById('cReport').onclick=async()=>{
+    document.getElementById('chatMenu').classList.remove('show');
+    if(!peer)return;
+    try{
+      await Backendless.Data.of('Reports').save({
+        reporterId:me.objectId,reporterName:me.displayName||me.email,
+        reportedId:peer.objectId,reportedName:peer.displayName||'',
+        reason:'user_report',createdAt:Date.now()
+      });
+      toast('گزارش برای پشتیبانی ثبت شد');
+    }catch(e){toast('جدول Reports را در سرور بسازید');}
+  };
+  document.getElementById('chUser').onclick=()=>{if(peer&&!peer.isGroup)openProfile(peer,true);};
+
+  function openProfile(u,fromChat){
+    const isSup=normEmail(u.email)===SUPPORT_EMAIL;
+    document.getElementById('pfAv').src=av(u.avatarSeed||u.objectId);
+    document.getElementById('pfName').innerHTML=esc(u.displayName||'کاربر')+(isSup?(' '+badge()):'');
+    document.getElementById('pfUser').textContent=u.username?'@'+u.username:'';
+    document.getElementById('pfBio').textContent=u.bio||'';
+    const on=online.has(u.objectId);
+    document.getElementById('pfOd').style.display=on?'block':'none';
+    document.getElementById('pfSt').textContent=on?'آنلاین':'آفلاین';
+    document.getElementById('pfLast').textContent=on?'آنلاین':ft(lastSeenMap[u.objectId]||u.lastSeen);
+    document.getElementById('pfPhoneRow').style.display='none';
+    document.getElementById('pfAct').style.display=u.objectId===me.objectId?'none':'flex';
+    document.getElementById('btnMsgU').onclick=()=>openChat(u);
+    document.getElementById('profileScreen').dataset.fc=fromChat?'1':'0';
+    show('profileScreen');
+  }
+  document.getElementById('btnBackPf').onclick=()=>{
+    if(document.getElementById('profileScreen').dataset.fc==='1'&&peer)show('chatScreen');else show('mainScreen');
+  };
+
+  function openSettings(){
+    const lp=localProfile();
+    document.getElementById('setUser').value=me.username||lp.username||'';
+    document.getElementById('setName').value=me.displayName||lp.displayName||'';
+    document.getElementById('setBio').value=me.bio||lp.bio||'';
+    document.getElementById('setPhone').value=me.phone||lp.phone||'';
+    document.getElementById('swSound').classList.toggle('on',soundOn);
+    document.getElementById('supportPanel').style.display=isSupport()?'block':'none';
+    if(isSupport())document.getElementById('setStoryUrl').value=storyUrl||'';
+    show('settingsScreen');
+  }
+  document.getElementById('meBar').onclick=openSettings;
+  document.getElementById('btnBackSet').onclick=()=>show('mainScreen');
+  document.getElementById('togSound').onclick=()=>{soundOn=!soundOn;document.getElementById('swSound').classList.toggle('on',soundOn);localStorage.setItem('neo_sound',soundOn?'1':'0');};
+  document.getElementById('btnSaveStory').onclick=()=>{const u=document.getElementById('setStoryUrl').value.trim();if(u)saveStoryUrl(u);};
+  document.getElementById('btnViewReports').onclick=async()=>{
+    show('reportsScreen');
+    const list=document.getElementById('repList');list.innerHTML='<div class="empty">در حال بارگذاری...</div>';
+    try{
+      const rows=await Backendless.Data.of('Reports').find(Backendless.DataQueryBuilder.create().setSortBy(['created DESC']).setPageSize(50));
+      if(!rows||!rows.length){list.innerHTML='<div class="empty">گزارشی نیست</div>';return;}
+      list.innerHTML=rows.map(r=>`<div class="row"><div class="ri"><div class="rt"><span class="rn">${esc(r.reporterName||r.reporterId)}</span><span class="rtm">${ft(r.created||r.createdAt)}</span></div>
+        <div class="rp">علیه: ${esc(r.reportedName||r.reportedId)} — ${esc(r.reason||'')}</div></div></div>`).join('');
+    }catch(e){list.innerHTML='<div class="empty">جدول Reports موجود نیست</div>';}
+  };
+  document.getElementById('btnBackRep').onclick=()=>show('settingsScreen');
+
+  document.getElementById('btnSaveSet').onclick=async()=>{
+    const username=normUser(document.getElementById('setUser').value);
+    const name=(document.getElementById('setName').value||'').trim();
+    const bio=(document.getElementById('setBio').value||'').trim();
+    const phone=(document.getElementById('setPhone').value||'').trim();
+    if(!username||username.length<3){document.getElementById('setErr').textContent='آیدی نامعتبر';document.getElementById('setErr').classList.add('show');return;}
+    if(!name){document.getElementById('setErr').textContent='نام الزامی';document.getElementById('setErr').classList.add('show');return;}
+    saveLocalProfile({done:true,username,displayName:name,bio,phone});
+    me.username=username;me.displayName=name;me.bio=bio;me.phone=phone;
+    try{await Backendless.UserService.update({objectId:me.objectId,username,displayName:name,bio,phone,lastSeen:Date.now()});}catch(e){}
+    updateMe();toast('ذخیره شد');show('mainScreen');
+  };
+  document.getElementById('btnOut').onclick=async()=>{
+    try{if(pres)await pres.presence.leave();if(ably)ably.close();await Backendless.UserService.logout();}catch(e){}
+    me=null;ably=null;show('authScreen');
+  };
+
+  (async()=>{
+    loading(true);
+    try{
+      if(await Backendless.UserService.isValidLogin()){
+        me=await Backendless.UserService.getCurrentUser();
+        if(me){await afterLogin();document.getElementById('splash').style.display='none';loading(false);return;}
+      }
+    }catch(e){}
+    document.getElementById('splash').style.display='none';loading(false);show('authScreen');
+  })();
+}
+})();
+</script>
 </body>
 </html>
