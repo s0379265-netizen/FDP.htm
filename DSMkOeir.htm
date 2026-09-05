@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
-    <title>Neo Messenger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <title>فیلم‌سری | پلتفرم استریم سینمایی</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css">
     <style>
@@ -13,105 +13,113 @@
             --s: #141a22;
             --s2: #1c2430;
             --s3: #263142;
-            --p: #4f8cff;
-            --p2: #3b6ef5;
+            --p: #ef4444;
+            --p2: #dc2626;
+            --o: #f97316;
             --a: #2ee6a6;
             --t: #eef3fb;
             --m: #8b9bb4;
-            --r: #ff5c6c;
+            --r: #ef4444;
             --g: #2ee6a6;
             --b: rgba(255, 255, 255, .08);
-            --out: linear-gradient(135deg, #4f8cff, #3b6ef5);
+            --out: linear-gradient(135deg, #ef4444, #f97316);
             --in: #1c2533;
             --card-bg: rgba(20, 26, 34, 0.75);
             --card-border: rgba(255, 255, 255, 0.06);
-            --glow: rgba(79, 140, 255, 0.08);
+            --glow: rgba(239, 68, 68, 0.08);
+            --gold: #fbbf24;
+            --glass: rgba(20, 26, 34, 0.85);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Vazirmatn', system-ui, sans-serif;
             background: #000;
             color: var(--t);
-            height: 100dvh;
-            overflow: hidden
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .app {
-            max-width: 480px;
-            height: 100dvh;
-            margin: 0 auto;
-            background: var(--bg);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column
+        ::selection {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fff;
         }
 
-        .screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg);
-            transition: transform .3s cubic-bezier(.32, .72, 0, 1), opacity .3s
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
 
-        .screen.hide {
-            transform: translateX(110%);
-            pointer-events: none
+        ::-webkit-scrollbar-track {
+            background: #0a0c10;
         }
 
-        .screen.hide-back {
-            transform: translateX(-18%);
-            opacity: .4;
-            pointer-events: none
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ef4444, #7f1d1d);
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
         }
 
         /* ===== SPLASH ===== */
         #splash {
-            position: absolute;
+            position: fixed;
             inset: 0;
-            z-index: 999;
-            background: radial-gradient(ellipse at 50% 28%, #152038, var(--bg) 70%);
+            z-index: 10000;
+            background: radial-gradient(ellipse at 50% 28%, #1a0a0a, #0a0c10 70%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 14px
+            gap: 14px;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        #splash.hide {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
         }
 
         #splash .logo {
             width: 84px;
             height: 84px;
             border-radius: 24px;
-            background: linear-gradient(145deg, #4f8cff, #6d5efc);
+            background: linear-gradient(145deg, #ef4444, #f97316);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 36px;
             font-weight: 900;
-            box-shadow: 0 10px 36px rgba(79, 140, 255, .35)
+            box-shadow: 0 10px 36px rgba(239, 68, 68, 0.5);
+            animation: pulseGlow 2s ease-in-out infinite;
         }
 
         #splash h1 {
             font-size: 24px;
-            font-weight: 900
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         #splash .ld {
             width: 26px;
             height: 26px;
             border: 3px solid rgba(255, 255, 255, .12);
-            border-top-color: var(--p);
+            border-top-color: #ef4444;
             border-radius: 50%;
-            animation: sp .7s linear infinite
+            animation: sp .7s linear infinite;
         }
 
         @keyframes sp {
@@ -120,18 +128,27 @@
             }
         }
 
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 10px 36px rgba(239, 68, 68, 0.5);
+            }
+            50% {
+                box-shadow: 0 10px 60px rgba(239, 68, 68, 0.8), 0 0 80px rgba(249, 115, 22, 0.3);
+            }
+        }
+
         #splash .st {
             color: var(--m);
-            font-size: 13px
+            font-size: 13px;
         }
 
         #splash .er {
             display: none;
             color: var(--r);
-            background: rgba(255, 92, 108, .12);
+            background: rgba(239, 68, 68, .12);
             padding: 10px 16px;
             border-radius: 12px;
-            font-size: 13px
+            font-size: 13px;
         }
 
         #splash .rb {
@@ -143,140 +160,183 @@
             border-radius: 12px;
             font-family: inherit;
             font-weight: 700;
-            cursor: pointer
+            cursor: pointer;
         }
 
-        /* ===== AUTH ===== */
-        .auth {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        /* ===== AUTH MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
             justify-content: center;
-            padding: 28px 22px;
-            gap: 14px
+            padding: 16px;
         }
 
-        .auth .logo {
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--glass);
+            border: 1px solid var(--b);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            animation: modalUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        @keyframes modalUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal h2 {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 16px;
             text-align: center;
-            margin-bottom: 6px
+            background: linear-gradient(135deg, #fff, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .auth .logo .m {
-            width: 72px;
-            height: 72px;
-            margin: 0 auto 12px;
-            border-radius: 22px;
-            background: linear-gradient(145deg, #4f8cff, #6d5efc);
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 0;
+            background: var(--s2);
+            color: var(--t);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            font-weight: 900
+            transition: all 0.3s;
+            font-size: 16px;
         }
 
-        .auth h1 {
-            font-size: 26px;
-            font-weight: 900;
-            text-align: center
-        }
-
-        .auth p {
-            color: var(--m);
-            font-size: 13px;
-            text-align: center;
-            margin-top: 4px
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
         }
 
         .field {
             display: flex;
             flex-direction: column;
-            gap: 6px
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .field label {
             font-size: 12px;
             color: var(--m);
-            font-weight: 600
+            font-weight: 600;
         }
 
         .field input,
-        .field textarea {
+        .field textarea,
+        .field select {
             background: var(--s);
             border: 1px solid var(--b);
-            border-radius: 14px;
-            padding: 13px 14px;
+            border-radius: 12px;
+            padding: 12px 14px;
             color: var(--t);
             font-family: inherit;
             font-size: 14px;
-            outline: 0
+            outline: 0;
+            transition: all 0.3s;
+            width: 100%;
         }
 
         .field input:focus,
-        .field textarea:focus {
-            border-color: rgba(79, 140, 255, .55)
+        .field textarea:focus,
+        .field select:focus {
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.15);
         }
 
         .field textarea {
             min-height: 80px;
-            resize: vertical
+            resize: vertical;
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             border: 0;
-            border-radius: 14px;
+            border-radius: 12px;
             font-family: inherit;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all .2s ease;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-p {
-            background: linear-gradient(135deg, #4f8cff, #3b6ef5);
+            background: linear-gradient(135deg, #ef4444, #f97316);
             color: #fff;
-            box-shadow: 0 6px 22px rgba(79, 140, 255, .3)
+            box-shadow: 0 4px 18px rgba(239, 68, 68, 0.3);
         }
 
         .btn-p:hover {
             transform: scale(1.02);
-            box-shadow: 0 8px 30px rgba(79, 140, 255, .45)
+            box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
         }
 
         .btn-g {
             background: var(--s2);
-            color: var(--t)
+            color: var(--t);
         }
 
         .sw {
             text-align: center;
             font-size: 13px;
-            color: var(--m)
+            color: var(--m);
+            margin-top: 12px;
         }
 
         .sw span {
-            color: var(--p);
+            color: #ef4444;
             font-weight: 700;
-            cursor: pointer
+            cursor: pointer;
         }
 
         .err {
             display: none;
-            background: rgba(255, 92, 108, .1);
+            background: rgba(239, 68, 68, .1);
             color: #ffb0b8;
-            border: 1px solid rgba(255, 92, 108, .25);
-            padding: 11px 12px;
-            border-radius: 12px;
-            font-size: 13px
+            border: 1px solid rgba(239, 68, 68, .25);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 10px;
         }
 
         .err.show {
-            display: block
+            display: block;
         }
 
         /* ===== HEADER ===== */
@@ -284,1393 +344,1295 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 12px;
+            padding: 10px 16px;
             gap: 8px;
-            background: rgba(10, 12, 16, .92);
-            backdrop-filter: blur(16px);
+            background: rgba(10, 12, 16, 0.92);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--b);
-            z-index: 5;
+            z-index: 100;
             flex-shrink: 0;
+            position: sticky;
+            top: 0;
         }
 
-        .hdr h2 {
-            font-size: 19px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 6px
-        }
-
-        .ib {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            border: 0;
-            background: var(--s2);
-            color: var(--t);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all .2s;
-        }
-
-        .ib:active {
-            background: var(--s3);
-            transform: scale(.92);
-        }
-
-        .vbadge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #4f8cff;
-            color: #fff;
-            font-size: 9px;
-            margin-right: 4px;
-            vertical-align: middle
-        }
-
-        /* ===== STORIES ===== */
-        .stories {
-            display: flex;
-            gap: 12px;
-            padding: 8px 12px;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--b);
-            flex-shrink: 0;
-        }
-
-        .stories::-webkit-scrollbar {
-            display: none
-        }
-
-        .st-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            min-width: 56px;
-            cursor: pointer
-        }
-
-        .st-ring {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            padding: 2px;
-            background: linear-gradient(135deg, #4f8cff, #ff4d8d, #ffb020);
-            display: flex;
-            align-items: center;
-            justify-content: center
-        }
-
-        .st-ring.seen {
-            background: #3a4556
-        }
-
-        .st-ring img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--bg)
-        }
-
-        .st-lab {
-            font-size: 10px;
-            color: var(--m);
-            max-width: 56px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-align: center
-        }
-
-        /* ===== SEARCH ===== */
-        .srch {
-            padding: 8px 12px 4px;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .srch i {
-            position: absolute;
-            right: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--m);
-            font-size: 13px
-        }
-
-        .srch input {
-            width: 100%;
-            background: var(--s);
-            border: 1px solid var(--b);
-            border-radius: 14px;
-            padding: 11px 40px 11px 12px;
-            color: var(--t);
-            font-family: inherit;
-            font-size: 13px;
-            outline: 0
-        }
-
-        /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 6px;
-            padding: 6px 12px;
-            flex-shrink: 0;
-        }
-
-        .tab {
-            flex: 1;
-            border: 0;
-            background: transparent;
-            color: var(--m);
-            padding: 9px 4px;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s;
-        }
-
-        .tab.active {
-            background: rgba(79, 140, 255, .16);
-            color: var(--t)
-        }
-
-        /* ===== LISTS ===== */
-        .list {
-            flex: 1;
-            overflow-y: auto
-        }
-
-        .list::-webkit-scrollbar {
-            width: 0
-        }
-
-        .row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 14px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, .03)
-        }
-
-        .row:active {
-            background: var(--s)
-        }
-
-        .av {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--s2)
-        }
-
-        .avw {
-            position: relative;
-            flex-shrink: 0
-        }
-
-        .od {
-            position: absolute;
-            bottom: 1px;
-            left: 1px;
-            width: 12px;
-            height: 12px;
-            background: var(--g);
-            border: 2px solid var(--bg);
-            border-radius: 50%
-        }
-
-        .ri {
-            flex: 1;
-            min-width: 0
-        }
-
-        .rt {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3px
-        }
-
-        .rn {
-            font-weight: 800;
-            font-size: 14.5px;
-            display: flex;
-            align-items: center;
-            gap: 4px
-        }
-
-        .rtm {
-            font-size: 11px;
-            color: var(--m)
-        }
-
-        .rp {
-            font-size: 12.5px;
-            color: var(--m);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis
-        }
-
-        .gb {
-            background: rgba(79, 140, 255, .2);
-            color: #9ec0ff;
-            font-size: 10px;
-            padding: 1px 7px;
-            border-radius: 7px;
-            font-weight: 700
-        }
-
-        .empty {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: var(--m);
-            padding: 40px;
-            text-align: center
-        }
-
-        .empty i {
-            font-size: 40px;
-            opacity: .3
-        }
-
-        /* ===== CHAT ===== */
-        .ch-h {
+        .hdr .logo-wrap {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 10px;
-            background: rgba(10, 12, 16, .95);
-            border-bottom: 1px solid var(--b);
-            flex-shrink: 0;
-        }
-
-        .ch-u {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0;
-            cursor: pointer
-        }
-
-        .ch-u .av {
-            width: 40px;
-            height: 40px
-        }
-
-        .cn {
-            font-weight: 800;
-            font-size: 14.5px;
-            display: flex;
-            align-items: center;
-            gap: 4px
-        }
-
-        .cs {
-            font-size: 11.5px;
-            color: var(--g)
-        }
-
-        .cs.off {
-            color: var(--m)
-        }
-
-        .msgs {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px
-        }
-
-        .msgs::-webkit-scrollbar {
-            width: 0
-        }
-
-        .day {
-            align-self: center;
-            background: var(--s);
-            color: var(--m);
-            font-size: 11px;
-            padding: 5px 12px;
-            border-radius: 16px;
-            margin: 6px 0
-        }
-
-        .msg {
-            max-width: 78%;
-            display: flex;
-            flex-direction: column;
-            gap: 2px
-        }
-
-        .msg.out {
-            align-self: flex-end
-        }
-
-        .msg.in {
-            align-self: flex-start
-        }
-
-        .bub {
-            padding: 10px 12px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.5;
-            word-break: break-word
-        }
-
-        .msg.out .bub {
-            background: var(--out);
-            color: #fff;
-            border-bottom-left-radius: 5px
-        }
-
-        .msg.in .bub {
-            background: var(--in);
-            color: var(--t);
-            border-bottom-right-radius: 5px
-        }
-
-        .meta {
-            font-size: 10px;
-            color: var(--m);
-            padding: 0 4px;
-            display: flex;
-            gap: 4px;
-            align-items: center
-        }
-
-        .msg.out .meta {
-            justify-content: flex-start
-        }
-
-        .msg.in .meta {
-            justify-content: flex-end
-        }
-
-        .tick {
-            color: var(--a)
-        }
-
-        .ibar {
-            display: flex;
-            align-items: flex-end;
-            gap: 7px;
-            padding: 8px 10px max(10px, env(safe-area-inset-bottom));
-            border-top: 1px solid var(--b);
-            background: rgba(10, 12, 16, .95);
-            flex-shrink: 0;
-        }
-
-        .ibox {
-            flex: 1;
-            display: flex;
-            align-items: flex-end;
-            background: var(--s);
-            border: 1px solid var(--b);
-            border-radius: 22px;
-            padding: 4px 8px 4px 12px
-        }
-
-        .ibox textarea {
-            flex: 1;
-            background: 0;
-            border: 0;
-            color: var(--t);
-            font-family: inherit;
-            font-size: 14px;
-            outline: 0;
-            max-height: 100px;
-            resize: none;
-            padding: 8px 0
-        }
-
-        .sb,
-        .mb {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            border: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            font-size: 16px;
-            flex-shrink: 0
         }
 
-        .sb {
-            background: var(--p);
-            color: #fff;
-            display: none
-        }
-
-        .sb.show {
-            display: flex
-        }
-
-        .mb {
-            background: var(--s2);
-            color: var(--t)
-        }
-
-        .mb.rec {
-            background: var(--r);
-            color: #fff
-        }
-
-        .recb {
-            display: none;
-            flex: 1;
-            align-items: center;
-            gap: 8px;
-            background: var(--s);
-            border-radius: 22px;
-            padding: 10px 14px;
-            border: 1px solid rgba(255, 92, 108, .3)
-        }
-
-        .recb.show {
-            display: flex
-        }
-
-        .rd {
-            width: 8px;
-            height: 8px;
-            background: var(--r);
-            border-radius: 50%;
-            animation: bl 1s infinite
-        }
-
-        @keyframes bl {
-            50% {
-                opacity: .3
-            }
-        }
-
-        .rct {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--r)
-        }
-
-        .rcc {
-            background: 0;
-            border: 0;
-            color: var(--m);
-            font-family: inherit;
-            font-size: 12px;
-            cursor: pointer;
-            margin-right: auto
-        }
-
-        /* ============================================================
-           PROFILE - INSTAGRAM STYLE
-           ============================================================ */
-        .profile-container {
-            flex: 1;
-            overflow-y: auto;
-            background: var(--bg);
-        }
-
-        .profile-container::-webkit-scrollbar {
-            width: 0;
-        }
-
-        .profile-header {
-            padding: 16px 16px 12px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border-bottom: 1px solid var(--b);
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid rgba(79, 140, 255, 0.3);
-            flex-shrink: 0;
-            background: var(--s2);
-        }
-
-        .profile-stats {
-            flex: 1;
-            display: flex;
-            justify-content: space-around;
-            gap: 8px;
-        }
-
-        .profile-stats .stat {
-            text-align: center;
-        }
-
-        .profile-stats .stat .num {
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--t);
-        }
-
-        .profile-stats .stat .label {
-            font-size: 11px;
-            color: var(--m);
-        }
-
-        .profile-name-row {
-            padding: 8px 16px 4px;
-        }
-
-        .profile-name-row .name {
-            font-size: 18px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .profile-name-row .username {
-            font-size: 13px;
-            color: var(--m);
-        }
-
-        .profile-bio {
-            padding: 4px 16px 12px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #d0d8e6;
-        }
-
-        .profile-bio:empty::before {
-            content: 'بیوگرافی ثبت نشده';
-            color: var(--m);
-            opacity: 0.6;
-        }
-
-        .profile-actions {
-            padding: 4px 16px 14px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .profile-actions .btn {
-            flex: 1;
-            padding: 10px;
-            font-size: 13px;
+        .hdr .logo-icon {
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            min-width: 0;
-        }
-
-        .btn-follow {
-            background: #4f8cff;
-            color: #fff;
-        }
-
-        .btn-follow.following {
-            background: var(--s2);
-            color: var(--t);
-        }
-
-        .btn-follow.following:hover {
-            background: rgba(255, 92, 108, 0.2);
-            color: var(--r);
-        }
-
-        .btn-outline-light {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--t);
-        }
-
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .profile-highlights {
-            display: flex;
-            gap: 12px;
-            padding: 8px 16px 14px;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--b);
-        }
-
-        .profile-highlights::-webkit-scrollbar {
-            display: none;
-        }
-
-        .highlight-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            min-width: 64px;
-            cursor: pointer;
-        }
-
-        .highlight-item .circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, #ef4444, #f97316);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.03);
-            overflow: hidden;
-        }
-
-        .highlight-item .circle img,
-        .highlight-item .circle video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .highlight-item .label {
-            font-size: 10px;
-            color: var(--m);
-        }
-
-        /* ============================================================
-           REELS / EXPLORE
-           ============================================================ */
-        #reelsScreen {
-            position: absolute;
-            inset: 0;
-            background: #000;
-            z-index: 50;
-            display: none;
-            flex-direction: column;
-        }
-
-        #reelsScreen.show {
-            display: flex;
-        }
-
-        .reels-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 10;
-            flex-shrink: 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .reels-header h2 {
-            font-size: 20px;
             font-weight: 900;
-            background: linear-gradient(135deg, #fff, #4f8cff);
+            font-size: 16px;
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .hdr .logo-text {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #ef4444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .reels-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 0;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
+        .hdr nav {
             display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .reels-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .reels-container {
+            gap: 2px;
             flex: 1;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            height: 100%;
-            background: #000;
+            justify-content: center;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
 
-        .reels-container::-webkit-scrollbar {
+        .hdr nav::-webkit-scrollbar {
             display: none;
         }
 
-        .reel-item {
-            height: 100vh;
-            width: 100%;
-            scroll-snap-align: start;
+        .hdr nav a {
+            color: var(--m);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .hdr nav a:hover,
+        .hdr nav a.active {
+            color: #fff;
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .hdr .actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ib {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 0;
+            background: var(--s2);
+            color: var(--t);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
             position: relative;
+        }
+
+        .ib:hover {
+            background: rgba(239, 68, 68, 0.15);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .ib .badge {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            height: 55vh;
+            min-height: 360px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(180deg, #1a0a0a, #0a0c10);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://picsum.photos/1920/1080?random=1') center/cover;
+            opacity: 0.25;
+            transform: scale(1.05);
+            transition: transform 0.5s;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(10, 12, 16, 0.95) 0%, rgba(239, 68, 68, 0.15) 50%, rgba(10, 12, 16, 0.95) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(26px, 6vw, 44px);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #fbbf24, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+            animation: fadeUp 0.8s ease-out;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-sub {
+            font-size: 14px;
+            color: var(--m);
+            margin-bottom: 20px;
+            animation: fadeUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .btn-play {
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            color: #fff;
+            font-weight: 800;
+            font-size: 15px;
+            border: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            animation: pulseBtn 2s ease-in-out infinite;
+        }
+
+        .btn-play:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        }
+
+        @keyframes pulseBtn {
+            0%, 100% {
+                box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 32px rgba(239, 68, 68, 0.5);
+            }
+        }
+
+        .btn-ghost {
+            padding: 12px 24px;
+            border-radius: 50px;
+            background: transparent;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding: 24px 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #fff, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 18px;
+        }
+
+        .section-more {
+            color: var(--m);
+            font-size: 12px;
+            cursor: pointer;
+            border: 0;
+            background: none;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .section-more:hover {
+            color: #ef4444;
+        }
+
+        /* ===== CARDS ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 12px 28px rgba(239, 68, 68, 0.15);
+        }
+
+        .movie-card .poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            display: block;
+            transition: all 0.4s;
+        }
+
+        .movie-card:hover .poster {
+            transform: scale(1.04);
+        }
+
+        .movie-card .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 12, 16, 0.95) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .movie-card .card-info {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .movie-card .card-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-card .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--m);
+            flex-wrap: wrap;
+        }
+
+        .movie-card .imdb {
+            color: #fbbf24;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .movie-card .quality-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.85);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 5px;
+        }
+
+        .movie-card .watchlist-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(10, 12, 16, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 11px;
+        }
+
+        .movie-card .watchlist-btn.active {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-container {
+            padding: 12px 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--s);
+            border: 1px solid var(--b);
+            border-radius: 14px;
+            padding: 10px 14px;
+            max-width: 500px;
+            margin: 0 auto;
+            transition: all 0.3s;
+        }
+
+        .search-bar:focus-within {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.1);
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: 0;
+            color: var(--t);
+            font-family: inherit;
+            font-size: 13px;
+            outline: 0;
+        }
+
+        .filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid var(--b);
+            background: var(--s);
+            color: var(--m);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #fff;
+        }
+
+        /* ===== PLAYER MODAL ===== */
+        .player-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .player-modal.show {
+            display: flex;
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(10, 12, 16, 0.9);
+            border-bottom: 1px solid var(--b);
+        }
+
+        .player-video {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #000;
+        }
+
+        .player-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .player-controls {
+            padding: 10px 16px;
+            background: rgba(10, 12, 16, 0.95);
+            border-top: 1px solid var(--b);
+        }
+
+        .quality-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .quality-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--b);
+            background: var(--s);
+            color: var(--m);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quality-btn.active {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #fff;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--b);
+            background: var(--s);
+            color: var(--t);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        /* ===== REELS ===== */
+        .reels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .reels-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+        }
+
+        .reel-item {
+            position: relative;
+            border-radius: 12px;
             overflow: hidden;
+            aspect-ratio: 9/16;
+            cursor: pointer;
+            background: #000;
+            transition: all 0.3s;
         }
 
         .reel-item video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background: #0a0c10;
         }
 
-        .reel-overlay {
+        .reel-item .reel-info {
             position: absolute;
             bottom: 0;
-            left: 0;
             right: 0;
-            padding: 20px 16px 30px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
-            z-index: 5;
+            left: 0;
+            padding: 8px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
         }
 
-        .reel-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-
-        .reel-info .av {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .reel-info .name {
+        .reel-item .reel-info .name {
+            font-size: 11px;
             font-weight: 700;
-            font-size: 14px;
+        }
+
+        /* ===== CHAT ===== */
+        .chat-container {
+            display: flex;
+            height: 400px;
+            position: relative;
+            z-index: 2;
+            border: 1px solid var(--b);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .chat-list-panel {
+            width: 250px;
+            border-left: 1px solid var(--b);
+            overflow-y: auto;
+            background: var(--s);
+            display: none;
+        }
+
+        .chat-list-panel.show {
+            display: block;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-msg {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        .chat-msg.out {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #ef4444, #f97316);
             color: #fff;
         }
 
-        .reel-info .name .badge {
-            background: #4f8cff;
-            font-size: 9px;
-            padding: 1px 6px;
-            border-radius: 6px;
-            margin-right: 4px;
+        .chat-msg.in {
+            align-self: flex-start;
+            background: var(--s2);
+            color: var(--t);
         }
 
-        .reel-caption {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 13px;
-            line-height: 1.5;
-            max-width: 85%;
-        }
-
-        .reel-actions {
-            position: absolute;
-            bottom: 100px;
-            right: 12px;
-            z-index: 6;
+        .chat-input {
             display: flex;
-            flex-direction: column;
-            gap: 18px;
-            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            border-top: 1px solid var(--b);
         }
 
-        .reel-action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            background: none;
+        .chat-input input {
+            flex: 1;
+            background: var(--s2);
+            border: 1px solid var(--b);
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: var(--t);
+            font-family: inherit;
+            font-size: 12px;
+            outline: 0;
+        }
+
+        .chat-input button {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             border: 0;
+            background: linear-gradient(135deg, #ef4444, #f97316);
             color: #fff;
             cursor: pointer;
-            font-size: 12px;
-            transition: all .2s;
+            font-size: 14px;
         }
 
-        .reel-action-btn i {
-            font-size: 26px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-            transition: transform .2s;
+        /* ===== UPLOAD ===== */
+        .upload-section {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .reel-action-btn:active i {
-            transform: scale(0.85);
-        }
-
-        .reel-action-btn.liked i {
-            color: #ff5c6c;
-        }
-
-        .reel-action-btn .count {
-            font-size: 11px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* ============================================================
-           UPLOAD SCREEN
-           ============================================================ */
-        #uploadScreen {
-            position: absolute;
-            inset: 0;
-            background: var(--bg);
-            z-index: 45;
-            display: none;
-            flex-direction: column;
-        }
-
-        #uploadScreen.show {
-            display: flex;
-        }
-
-        .upload-container {
-            flex: 1;
-            padding: 20px 16px;
-            overflow-y: auto;
-        }
-
-        .upload-container .upload-box {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
+        .upload-box {
+            background: var(--s);
+            border-radius: 14px;
             padding: 16px;
             border: 1px solid var(--b);
-            margin-top: 12px;
         }
 
-        .upload-container .status-box {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 12px;
+        .upload-steps {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .upload-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--m);
+            background: var(--s2);
+        }
+
+        .upload-step.active {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fff;
+        }
+
+        .upload-step.done {
+            background: rgba(46, 230, 166, 0.2);
+            color: #2ee6a6;
+        }
+
+        .upload-progress {
+            height: 6px;
+            background: var(--s2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
             display: none;
-            font-size: 13px;
         }
 
-        .upload-container .status-box.success {
-            display: block;
-            background: rgba(46, 230, 166, 0.1);
-            border: 1px solid rgba(46, 230, 166, 0.3);
-            color: var(--a);
+        .upload-progress .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f97316);
+            border-radius: 3px;
+            transition: width 0.3s;
         }
 
-        .upload-container .status-box.error {
-            display: block;
-            background: rgba(255, 92, 108, 0.1);
-            border: 1px solid rgba(255, 92, 108, 0.3);
-            color: var(--r);
+        /* ===== PROFILE ===== */
+        .profile-container {
+            padding: 20px 16px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* ===== TOAST ===== */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.2);
+        }
+
+        /* ===== TOAST & LOADING ===== */
         .toast {
-            position: absolute;
-            bottom: 90px;
+            position: fixed;
+            bottom: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(12px);
+            transform: translateX(-50%) translateY(20px);
             background: var(--s3);
             color: var(--t);
-            padding: 11px 16px;
-            border-radius: 12px;
-            font-size: 12.5px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: 600;
             opacity: 0;
             pointer-events: none;
-            transition: .3s;
-            z-index: 120;
+            transition: all 0.35s;
+            z-index: 5000;
             border: 1px solid var(--b);
-            max-width: 88%;
-            text-align: center
+            max-width: 90%;
+            text-align: center;
         }
 
         .toast.show {
             opacity: 1;
-            transform: translateX(-50%) translateY(0)
+            transform: translateX(-50%) translateY(0);
         }
 
         .load {
-            position: absolute;
+            position: fixed;
             inset: 0;
-            background: rgba(10, 12, 16, .7);
+            background: rgba(10, 12, 16, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 90
+            z-index: 9000;
+            backdrop-filter: blur(4px);
         }
 
         .load.show {
-            display: flex
+            display: flex;
         }
 
         .spn {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border: 3px solid rgba(255, 255, 255, .1);
-            border-top-color: var(--p);
+            border-top-color: #ef4444;
             border-radius: 50%;
-            animation: sp .7s linear infinite
+            animation: sp .7s linear infinite;
         }
 
-        .me {
+        .empty {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-top: 1px solid var(--b);
-            background: var(--s);
-            cursor: pointer;
-            flex-shrink: 0;
+            justify-content: center;
+            gap: 8px;
+            color: var(--m);
+            padding: 30px;
+            text-align: center;
+            font-size: 13px;
         }
 
-        .me .av {
-            width: 38px;
-            height: 38px
+        .empty i {
+            font-size: 32px;
+            opacity: 0.3;
         }
 
-        .me .n {
-            font-weight: 800;
-            font-size: 13.5px
+        .hidden {
+            display: none !important;
         }
 
-        .me .s {
-            font-size: 11.5px;
-            color: var(--m)
+        /* ===== DETAIL MODAL ===== */
+        .detail-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
         }
 
-        /* Uploadcare overrides */
-        uc-file-uploader-regular {
-            --uc-color-primary: #4f8cff;
-            --uc-color-primary-hover: #3b6ef5;
-            --uc-color-background: #141a22;
-            --uc-color-text: #eef3fb;
-            --uc-color-border: rgba(255,255,255,0.08);
-            --uc-border-radius: 14px;
+        .detail-modal.show {
+            display: flex;
         }
 
-        @media(max-width:480px) {
-            .profile-header {
-                padding: 12px 12px 10px;
-                gap: 12px;
-            }
-            .profile-avatar {
-                width: 64px;
-                height: 64px;
-            }
-            .profile-stats .stat .num {
-                font-size: 15px;
-            }
-            .profile-stats .stat .label {
-                font-size: 10px;
-            }
-            .profile-name-row .name {
-                font-size: 16px;
-            }
-            .reel-actions {
-                bottom: 80px;
-                right: 8px;
-                gap: 14px;
-            }
-            .reel-action-btn i {
-                font-size: 22px;
-            }
-            .reel-overlay {
-                padding: 14px 12px 20px;
-            }
-            .highlight-item .circle {
-                width: 48px;
-                height: 48px;
-                font-size: 18px;
-            }
+        .detail-content {
+            background: var(--glass);
+            border: 1px solid var(--b);
+            border-radius: 18px;
+            padding: 20px;
+            width: 100%;
+            max-width: 560px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalUp 0.4s;
+        }
+
+        .detail-content .detail-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .detail-content .detail-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .detail-content .detail-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: var(--m);
+        }
+
+        .detail-content .detail-desc {
+            font-size: 13px;
+            color: #c0c8d6;
+            line-height: 1.7;
+            margin-bottom: 12px;
         }
     </style>
 </head>
 <body>
-<div class="app">
     <!-- SPLASH -->
     <div id="splash">
-        <div class="logo">N</div>
-        <h1>Neo Messenger</h1>
+        <div class="logo">🎬</div>
+        <h1>فیلم‌سری</h1>
         <div class="ld"></div>
         <div class="st" id="spSt">در حال بارگذاری...</div>
         <div class="er" id="spEr"></div>
         <button class="rb" id="spRe">تلاش مجدد</button>
     </div>
 
-    <!-- AUTH -->
-    <div class="screen hide" id="authScreen">
-        <div class="auth">
-            <div class="logo"><div class="m">N</div><h1>Neo Messenger</h1><p>سریع و ابری</p></div>
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" id="authClose"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="authTitle">ورود به فیلم‌سری</h2>
             <div class="err" id="authErr"></div>
             <div id="loginF">
                 <div class="field"><label>ایمیل</label><input id="loginEmail" type="email" placeholder="email@example.com"/></div>
-                <div class="field" style="margin-top:10px"><label>رمز عبور</label><input id="loginPass" type="password" placeholder="••••••••"/></div>
-                <button class="btn btn-p" style="margin-top:16px" id="btnLogin"><i class="fa-solid fa-right-to-bracket"></i> ورود</button>
-                <div class="sw" style="margin-top:14px">حساب نداری؟ <span id="goReg">ثبت‌نام</span></div>
+                <div class="field"><label>رمز عبور</label><input id="loginPass" type="password" placeholder="••••••••"/></div>
+                <button class="btn btn-p" id="btnLogin"><i class="fa-solid fa-right-to-bracket"></i> ورود</button>
+                <div class="sw">حساب نداری؟ <span id="goReg">ثبت‌نام</span></div>
             </div>
             <div id="regF" style="display:none">
                 <div class="field"><label>ایمیل</label><input id="regEmail" type="email"/></div>
-                <div class="field" style="margin-top:10px"><label>رمز (حداقل ۶)</label><input id="regPass" type="password"/></div>
-                <div class="field" style="margin-top:10px"><label>نام نمایشی</label><input id="regName" type="text" placeholder="نام شما"/></div>
-                <button class="btn btn-p" style="margin-top:16px" id="btnReg"><i class="fa-solid fa-user-plus"></i> ساخت حساب</button>
-                <div class="sw" style="margin-top:14px">حساب داری؟ <span id="goLog">ورود</span></div>
+                <div class="field"><label>رمز (حداقل ۶)</label><input id="regPass" type="password"/></div>
+                <div class="field"><label>نام نمایشی</label><input id="regName" type="text" placeholder="نام شما"/></div>
+                <button class="btn btn-p" id="btnReg"><i class="fa-solid fa-user-plus"></i> ساخت حساب</button>
+                <div class="sw">حساب داری؟ <span id="goLog">ورود</span></div>
             </div>
         </div>
     </div>
 
-    <!-- COMPLETE PROFILE -->
-    <div class="screen hide" id="completeScreen">
-        <div class="hdr"><h2>تکمیل پروفایل</h2></div>
-        <div class="auth" style="justify-content:flex-start;padding-top:16px">
-            <p style="color:var(--m);font-size:13px;text-align:right">این اطلاعات فقط برای نمایش است. ورود با ایمیل و رمز سرور انجام می‌شود.</p>
-            <div class="err" id="cpErr"></div>
-            <div class="field"><label>آیدی</label><input id="cpUser" placeholder="sara_m"/></div>
-            <div class="field" style="margin-top:10px"><label>نام</label><input id="cpName"/></div>
-            <div class="field" style="margin-top:10px"><label>بیوگرافی</label><textarea id="cpBio"></textarea></div>
-            <div class="field" style="margin-top:10px"><label>شماره</label><input id="cpPhone" type="tel"/></div>
-            <button class="btn btn-p" style="margin-top:16px" id="btnCp">ادامه</button>
-            <button class="btn btn-g" style="margin-top:8px" id="btnCpSkip">بعداً</button>
+    <!-- DETAIL MODAL -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-content" id="detailContent"></div>
+    </div>
+
+    <!-- PLAYER MODAL -->
+    <div class="player-modal" id="playerModal">
+        <div class="player-header">
+            <button class="modal-close" id="playerClose" style="position:static;"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="playerTitle" style="font-size:16px;">پخش</h2>
+            <div style="width:36px;"></div>
+        </div>
+        <div class="player-video">
+            <video id="playerVideo" controls playsinline></video>
+        </div>
+        <div class="player-controls">
+            <div class="quality-btns" id="qualityBtns">
+                <button class="quality-btn" data-q="720p">720p</button>
+                <button class="quality-btn active" data-q="1080p">1080p</button>
+                <button class="quality-btn" data-q="4K">4K</button>
+            </div>
+            <div class="player-actions">
+                <button class="action-btn" id="btnDownload"><i class="fa-solid fa-download"></i> دانلود</button>
+                <button class="action-btn" id="btnWatchlist"><i class="fa-solid fa-bookmark"></i> لیست پخش</button>
+                <button class="action-btn" id="btnSubtitle"><i class="fa-solid fa-closed-captioning"></i> زیرنویس</button>
+                <button class="action-btn" id="btnReport"><i class="fa-solid fa-flag"></i> گزارش</button>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="screen hide" id="mainScreen">
-        <div class="hdr">
-            <h2>Neo</h2>
-            <div style="display:flex;gap:6px">
-                <button class="ib" id="btnRef"><i class="fa-solid fa-arrows-rotate"></i></button>
-                <button class="ib" id="btnReels"><i class="fa-solid fa-play"></i></button>
-                <button class="ib" id="btnUploadHeader"><i class="fa-solid fa-plus-circle"></i></button>
-                <button class="ib" id="btnMenu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    <!-- MAIN CONTENT -->
+    <div id="mainContent" class="hidden">
+        <!-- HEADER -->
+        <header class="hdr">
+            <div class="logo-wrap" onclick="goHome()">
+                <div class="logo-icon">🎬</div>
+                <span class="logo-text">فیلم‌سری</span>
             </div>
-        </div>
-        <div class="stories">
-            <div class="st-item" id="storyBtn">
-                <div class="st-ring" id="storyRing"><img id="storyIcon" src="https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png" alt="story"/></div>
-                <div class="st-lab">پشتیبانی</div>
+            <nav id="mainNav">
+                <a class="active" data-section="home" onclick="scrollToSection('home')">خانه</a>
+                <a data-section="movies" onclick="scrollToSection('movies')">فیلم‌ها</a>
+                <a data-section="series" onclick="scrollToSection('series')">سریال‌ها</a>
+                <a data-section="reels" onclick="scrollToSection('reels')">کلیپ‌ها</a>
+                <a data-section="chat" onclick="scrollToSection('chat')">گفتگو</a>
+            </nav>
+            <div class="actions">
+                <button class="ib" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button class="ib" id="btnWatchlistBtn"><i class="fa-solid fa-bookmark"></i><span class="badge" id="watchlistCount">0</span></button>
+                <button class="ib" id="btnUpload"><i class="fa-solid fa-plus-circle"></i></button>
+                <button class="ib" id="btnProfile"><i class="fa-solid fa-user"></i></button>
+                <button class="ib" id="btnLogout" title="خروج"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
-        </div>
-        <div class="srch"><i class="fa-solid fa-magnifying-glass"></i><input id="search" placeholder="جستجو..."/></div>
-        <div class="tabs">
-            <button class="tab active" data-t="chats">چت‌ها</button>
-            <button class="tab" data-t="users">کاربران</button>
-            <button class="tab" data-t="groups">گروه‌ها</button>
-        </div>
-        <div class="list" id="chatList"></div>
-        <div class="list" id="userList" style="display:none"></div>
-        <div class="list" id="groupList" style="display:none"></div>
-        <div class="me" id="meBar">
-            <img class="av" id="meAv"/>
-            <div style="flex:1;min-width:0"><div class="n" id="meName">—</div><div class="s" id="meSub">—</div></div>
-            <i class="fa-solid fa-gear" style="color:var(--m)"></i>
-        </div>
-    </div>
+        </header>
 
-    <!-- CHAT -->
-    <div class="screen hide" id="chatScreen">
-        <div class="ch-h">
-            <button class="ib" id="btnBack"><i class="fa-solid fa-arrow-right"></i></button>
-            <div class="ch-u" id="chUser">
-                <div class="avw"><img class="av" id="roomAv"/><div class="od" id="roomOd" style="display:none"></div></div>
-                <div><div class="cn" id="roomName">—</div><div class="cs" id="roomSt">—</div></div>
-            </div>
-            <button class="ib" id="btnChatMore"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="msgs" id="messages"></div>
-        <div class="ibar">
-            <div class="recb" id="recBar"><div class="rd"></div><div class="rct" id="recT">0:00</div><button class="rcc" id="recCancel">لغو</button></div>
-            <div class="ibox" id="ibox"><textarea id="msgIn" rows="1" placeholder="پیام..."></textarea></div>
-            <button class="sb" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
-            <button class="mb" id="btnMic"><i class="fa-solid fa-microphone"></i></button>
-        </div>
-    </div>
-
-    <!-- PROFILE - INSTAGRAM STYLE -->
-    <div class="screen hide" id="profileScreen">
-        <div class="hdr">
-            <button class="ib" id="btnBackPf"><i class="fa-solid fa-arrow-right"></i></button>
-            <h2>پروفایل</h2>
-            <button class="ib" id="btnProfileMore"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="profile-container" id="profileContainer">
-            <div class="profile-header">
-                <img class="profile-avatar" id="pfAv" src=""/>
-                <div class="profile-stats">
-                    <div class="stat"><div class="num" id="pfPosts">۰</div><div class="label">پست</div></div>
-                    <div class="stat"><div class="num" id="pfFollowers">۰</div><div class="label">دنبال‌کننده</div></div>
-                    <div class="stat"><div class="num" id="pfFollowing">۰</div><div class="label">دنبال‌شونده</div></div>
+        <!-- HERO -->
+        <section class="hero" id="heroSection">
+            <div class="hero-bg" id="heroBg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">فیلم و سریال خفن‌ترین‌ها</h1>
+                <p class="hero-sub">شروع کن به تماشای خفن‌ترین‌ها ✨</p>
+                <div class="hero-btns">
+                    <button class="btn-play" onclick="playFeatured()"><i class="fa-solid fa-play"></i> تماشا</button>
+                    <button class="btn-ghost" onclick="scrollToSection('movies')"><i class="fa-solid fa-info-circle"></i> جزئیات</button>
                 </div>
             </div>
-            <div class="profile-name-row">
-                <div class="name" id="pfName">—</div>
-                <div class="username" id="pfUser">—</div>
-            </div>
-            <div class="profile-bio" id="pfBio"></div>
-            <div class="profile-actions" id="pfAct">
-                <button class="btn btn-follow" id="btnFollowU"><i class="fa-solid fa-user-plus"></i> دنبال</button>
-                <button class="btn btn-outline-light" id="btnMsgU"><i class="fa-solid fa-comment"></i> پیام</button>
-                <button class="btn btn-outline-light" id="btnExploreU"><i class="fa-solid fa-compass"></i></button>
-            </div>
-            <div class="profile-highlights" id="pfHighlights"></div>
-        </div>
-    </div>
+        </section>
 
-    <!-- SETTINGS -->
-    <div class="screen hide" id="settingsScreen">
-        <div class="hdr"><button class="ib" id="btnBackSet"><i class="fa-solid fa-arrow-right"></i></button><h2>تنظیمات</h2><div style="width:40px"></div></div>
-        <div style="flex:1;overflow-y:auto;padding:12px">
-            <div class="err" id="setErr"></div>
-            <div class="sec">
-                <div class="sec-t">حساب</div>
-                <div class="field" style="padding:10px 12px 0"><label>آیدی</label><input id="setUser"/></div>
-                <div class="field" style="padding:8px 12px 0"><label>نام</label><input id="setName"/></div>
-                <div class="field" style="padding:8px 12px 0"><label>بیو</label><textarea id="setBio"></textarea></div>
-                <div class="field" style="padding:8px 12px 12px"><label>شماره</label><input id="setPhone" type="tel"/></div>
+        <!-- SEARCH -->
+        <section class="search-container" id="searchSection">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--m);font-size:13px;"></i>
+                <input id="searchInput" placeholder="جستجوی فیلم، سریال، کلیپ..." oninput="liveSearch()"/>
             </div>
-            <div class="sec">
-                <div class="sec-t">اعلان</div>
-                <div class="si" id="togSound"><div style="flex:1"><div style="font-weight:700;font-size:14px">صدای پیام</div></div><div class="swx on" id="swSound"></div></div>
+            <div class="filters" id="filters">
+                <button class="filter-btn active" data-genre="all" onclick="setGenre('all',this)">همه</button>
+                <button class="filter-btn" data-genre="action" onclick="setGenre('action',this)">اکشن</button>
+                <button class="filter-btn" data-genre="drama" onclick="setGenre('drama',this)">درام</button>
+                <button class="filter-btn" data-genre="comedy" onclick="setGenre('comedy',this)">کمدی</button>
+                <button class="filter-btn" data-genre="sci-fi" onclick="setGenre('sci-fi',this)">علمی تخیلی</button>
+                <button class="filter-btn" data-quality="HD" onclick="setQuality('HD',this)">HD</button>
+                <button class="filter-btn" data-quality="4K" onclick="setQuality('4K',this)">4K</button>
             </div>
-            <button class="btn btn-p" style="margin-top:6px" id="btnSaveSet">ذخیره</button>
-            <button class="btn btn-g" style="margin-top:8px;color:var(--r)" id="btnOut">خروج</button>
-        </div>
-    </div>
+        </section>
 
-    <!-- REELS SCREEN -->
-    <div id="reelsScreen">
-        <div class="reels-header">
-            <h2><i class="fa-solid fa-play" style="font-size:16px;margin-left:6px;"></i> Reels</h2>
-            <button class="reels-close" id="reelsClose"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="reels-container" id="reelsContainer"></div>
-    </div>
+        <!-- MOVIES -->
+        <section class="section" id="moviesSection">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-fire"></i> فیلم‌های ترند</h2>
+                <button class="section-more" onclick="showAll('movies')">مشاهده همه</button>
+            </div>
+            <div class="cards-grid" id="moviesGrid"></div>
+        </section>
 
-    <!-- UPLOAD SCREEN -->
-    <div id="uploadScreen">
-        <div class="hdr">
-            <button class="ib" id="btnBackUpload"><i class="fa-solid fa-arrow-right"></i></button>
-            <h2>آپلود پست</h2>
-            <div style="width:40px"></div>
-        </div>
-        <div class="upload-container">
-            <p style="color:var(--m);font-size:13px;margin-bottom:8px;">ویدیو یا تصویر خود را آپلود کنید</p>
+        <!-- SERIES -->
+        <section class="section" id="seriesSection">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-tv"></i> سریال‌های محبوب</h2>
+                <button class="section-more" onclick="showAll('series')">مشاهده همه</button>
+            </div>
+            <div class="cards-grid" id="seriesGrid"></div>
+        </section>
+
+        <!-- REELS -->
+        <section class="section" id="reelsSection">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-clapperboard"></i> کلیپ‌های کاربران</h2>
+            </div>
+            <div class="reels-container" id="reelsGrid"></div>
+        </section>
+
+        <!-- UPLOAD -->
+        <section class="upload-section hidden" id="uploadSection">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-upload"></i> آپلود محتوا</h2>
+            </div>
             <div class="upload-box">
-                <uc-config
-                    ctx-name="neo-uploader"
-                    pubkey="634057eb7c1c635917d2"
-                    source-list="local, url, camera, dropbox"
-                ></uc-config>
-                <uc-file-uploader-regular
-                    ctx-name="neo-uploader"
-                ></uc-file-uploader-regular>
-                <uc-upload-ctx-provider
-                    ctx-name="neo-uploader"
-                ></uc-upload-ctx-provider>
+                <div class="upload-steps" id="uploadSteps">
+                    <div class="upload-step active" data-step="1">۱. نوع محتوا</div>
+                    <div class="upload-step" data-step="2">۲. فایل</div>
+                    <div class="upload-step" data-step="3">۳. اطلاعات</div>
+                    <div class="upload-step" data-step="4">۴. پیش‌نمایش</div>
+                </div>
+                <div id="uploadStep1">
+                    <div class="field"><label>نوع محتوا</label>
+                        <select id="uploadType">
+                            <option value="movie">فیلم</option>
+                            <option value="series">سریال</option>
+                            <option value="episode">قسمت سریال</option>
+                            <option value="clip">کلیپ کوتاه</option>
+                            <option value="trailer">تریلر</option>
+                            <option value="educational">ویدیوی آموزشی</option>
+                            <option value="exclusive">محتوای اختصاصی</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-p" onclick="uploadNextStep(2)">ادامه</button>
+                </div>
+                <div id="uploadStep2" style="display:none;">
+                    <div class="upload-box" style="margin-bottom:12px;">
+                        <p style="color:var(--m);font-size:12px;margin-bottom:8px;">فایل ویدیویی خود را انتخاب کنید</p>
+                        <uc-config ctx-name="neo-uploader" pubkey="634057eb7c1c635917d2" source-list="local, url, camera, dropbox"></uc-config>
+                        <uc-file-uploader-regular ctx-name="neo-uploader"></uc-file-uploader-regular>
+                        <uc-upload-ctx-provider ctx-name="neo-uploader"></uc-upload-ctx-provider>
+                        <div class="upload-progress" id="uploadProgress"><div class="bar" id="uploadBar" style="width:0%"></div></div>
+                        <div id="uploadStatus" style="margin-top:8px;display:none;font-size:12px;"></div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-g" onclick="uploadNextStep(1)">بازگشت</button>
+                        <button class="btn btn-p" id="btnUploadNext" onclick="uploadNextStep(3)" disabled>ادامه</button>
+                    </div>
+                </div>
+                <div id="uploadStep3" style="display:none;">
+                    <div class="field"><label>عنوان فارسی</label><input id="uTitleFa" placeholder="مثلاً آخرین نفس"/></div>
+                    <div class="field"><label>عنوان اصلی</label><input id="uTitleEn" placeholder="Original Title"/></div>
+                    <div class="field"><label>توضیحات</label><textarea id="uDesc" placeholder="توضیحات کامل..."></textarea></div>
+                    <div class="field"><label>ژانر</label>
+                        <select id="uGenre"><option value="action">اکشن</option><option value="drama">درام</option><option value="comedy">کمدی</option><option value="sci-fi">علمی تخیلی</option></select>
+                    </div>
+                    <div class="field"><label>سال تولید</label><input id="uYear" type="number" placeholder="2024"/></div>
+                    <div class="field"><label>کشور سازنده</label><input id="uCountry" placeholder="ایران"/></div>
+                    <div class="field"><label>زبان</label><input id="uLang" placeholder="فارسی"/></div>
+                    <div class="field"><label>مدت زمان (دقیقه)</label><input id="uDuration" type="number" placeholder="120"/></div>
+                    <div class="field"><label>کیفیت</label>
+                        <select id="uQuality"><option value="HD">HD</option><option value="1080p">Full HD</option><option value="4K">4K</option></select>
+                    </div>
+                    <div class="field"><label>برچسب‌ها</label><input id="uTags" placeholder="اکشن، هیجانی"/></div>
+                    <div class="field"><label>مناسب سن</label>
+                        <select id="uAge"><option value="all">همه سنین</option><option value="13">۱۳+</option><option value="18">۱۸+</option></select>
+                    </div>
+                    <div class="field"><label>وضعیت زیرنویس</label>
+                        <select id="uSubtitle"><option value="yes">دارد</option><option value="no">ندارد</option></select>
+                    </div>
+                    <div class="field"><label>تیک تأیید مالکیت محتوا</label>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--m);">
+                            <input type="checkbox" id="uOwnership" style="width:auto;"/> من مالک این محتوا هستم
+                        </label>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:12px;">
+                        <button class="btn btn-g" onclick="uploadNextStep(2)">بازگشت</button>
+                        <button class="btn btn-p" onclick="uploadNextStep(4)">ادامه</button>
+                    </div>
+                </div>
+                <div id="uploadStep4" style="display:none;">
+                    <div id="uploadPreview" style="margin-bottom:12px;"></div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-g" onclick="uploadNextStep(3)">ویرایش</button>
+                        <button class="btn btn-g" onclick="uploadNextStep(2)">بازگشت</button>
+                        <button class="btn btn-p" id="btnSubmitUpload" onclick="submitUpload()">ارسال برای بررسی</button>
+                    </div>
+                </div>
             </div>
-            <div id="uploadStatus" class="status-box"></div>
-        </div>
-    </div>
+        </section>
 
-    <!-- STORY VIEWER -->
-    <div id="storyV">
-        <div class="st-top">
-            <div class="st-prog"><i id="stProg"></i></div>
-            <div class="st-user">
-                <img src="https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png"/>
-                <div><div class="nm">پشتیبانی Neo <span class="vbadge"><i class="fa-solid fa-check"></i></span></div><div class="tm">استوری رسمی</div></div>
-                <button class="st-x" id="stClose"><i class="fa-solid fa-xmark"></i></button>
+        <!-- CHAT -->
+        <section class="section" id="chatSection" style="padding-top:0;">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-comments"></i> گفتگوی زنده</h2>
             </div>
-        </div>
-        <div class="st-body" id="stBody"></div>
-        <div class="st-admin" id="stAdmin">
-            <input id="stUrlIn" placeholder="لینک ویدیو استوری"/>
-            <button id="stSaveBtn">ذخیره</button>
-        </div>
+            <div class="chat-container">
+                <div class="chat-list-panel" id="chatListPanel">
+                    <div id="userList"></div>
+                </div>
+                <div class="chat-main">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input">
+                        <input id="chatInput" placeholder="پیام خود را بنویسید..." onkeydown="if(event.key==='Enter')sendChat()"/>
+                        <button onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section class="profile-container hidden" id="profileSection">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-user-circle"></i> پروفایل</h2>
+            </div>
+            <div class="profile-header">
+                <img class="profile-avatar" id="pfAvatar" src="" alt="avatar"/>
+                <div style="flex:1;">
+                    <div id="pfName" style="font-size:18px;font-weight:900;"></div>
+                    <div id="pfBio" style="color:var(--m);font-size:12px;margin-top:4px;"></div>
+                </div>
+            </div>
+            <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+                <div><span id="pfPosts" style="font-weight:900;">۰</span> پست</div>
+                <div><span id="pfFollowers" style="font-weight:900;">۰</span> دنبال‌کننده</div>
+                <div><span id="pfFollowing" style="font-weight:900;">۰</span> دنبال‌شونده</div>
+            </div>
+            <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">پست‌های من</h3>
+            <div class="reels-container" id="pfPostsGrid"></div>
+            <h3 style="font-size:15px;font-weight:800;margin:20px 0 10px;">وضعیت بررسی محتوا</h3>
+            <div id="pfReviewStatus" style="font-size:12px;color:var(--m);"></div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="padding:24px 16px;text-align:center;color:var(--m);font-size:12px;border-top:1px solid var(--b);">
+            <p>فیلم‌سری © 2024 — پلتفرم استریم سینمایی</p>
+            <p style="margin-top:4px;">ساخته‌شده با ❤️ برای علاقه‌مندان به سینما</p>
+        </footer>
     </div>
 
-    <!-- MENUS -->
-    <div class="sheet-bg" id="mainMenu">
-        <div class="sheet">
-            <div class="sh"></div>
-            <div class="shi" id="mSettings"><i class="fa-solid fa-gear"></i> تنظیمات</div>
-            <div class="shi" id="mReels"><i class="fa-solid fa-play"></i> Reels</div>
-            <div class="shi" id="mUpload"><i class="fa-solid fa-plus-circle"></i> آپلود</div>
-            <div class="shi" id="mSync"><i class="fa-solid fa-arrows-rotate"></i> همگام‌سازی</div>
-            <div class="shi" id="mClose"><i class="fa-solid fa-xmark"></i> بستن</div>
-        </div>
-    </div>
-    <div class="sheet-bg" id="chatMenu">
-        <div class="sheet">
-            <div class="sh"></div>
-            <div class="shi" id="cProfile"><i class="fa-solid fa-user"></i> پروفایل</div>
-            <div class="shi" id="cMute"><i class="fa-solid fa-bell-slash"></i> بی‌صدا</div>
-            <div class="shi dang" id="cReport"><i class="fa-solid fa-flag"></i> گزارش</div>
-            <div class="shi" id="cClose"><i class="fa-solid fa-xmark"></i> بستن</div>
-        </div>
-    </div>
-
-    <div class="load" id="loading"><div class="spn"></div></div>
+    <!-- TOAST & LOADING -->
     <div class="toast" id="toast"></div>
-</div>
+    <div class="load" id="loading"><div class="spn"></div></div>
 
-<script type="importmap">
-    {
-        "imports": {
-            "@uploadcare/file-uploader": "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/file-uploader.min.js"
+    <script type="importmap">
+        {
+            "imports": {
+                "@uploadcare/file-uploader": "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/file-uploader.min.js"
+            }
         }
-    }
-</script>
+    </script>
 
-<script>
-    // ============================================================
-    // BACKENDLESS INIT
-    // ============================================================
-    const CONFIG = {
-        APP_ID: 'C50651A5-1DFC-4BA1-AA34-B4444E9AC5A5',
-        API_KEY: '9303E7E8-BAF9-4023-A34B-E4E024192785',
-        ABLY_KEY: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM'
-    };
-    const SUPPORT_EMAIL = 's0379265@gmail.com';
-    const GROUP_ID = 'team_developer_group';
-    const GROUP_NAME = 'تیم توسعه دهنده پیام رسان';
-    const GROUP_AVATAR = 'https://cdn.imgurl.ir/uploads/j30850_InShot_20260829_114222431.png';
-    const STORY_ICON = 'https://uploadkon.ir/uploads/6d5f01_26videoframe-6041.png';
-    const DEFAULT_STORY = 'https://uplod.ir/embed-9cshxpuh638t.html';
-    const MSG_TABLE = 'Messages';
-    const PROFILE_KEY = 'neo_profile_';
-    const FOLLOW_KEY = 'neo_follows_';
-    const POSTS_KEY = 'neo_posts_';
-
-    if (typeof Backendless !== 'undefined') {
-        Backendless.serverURL = 'https://api.backendless.com';
-        Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
-        console.log('✅ Backendless initialized');
-    }
-
-    // ============================================================
-    // DEFAULT REEL VIDEOS
-    // ============================================================
-    const DEFAULT_REELS = [
-        'https://vid2.taw-bio.ir/2025/316248/1750919601/1la0ss5n.mp4',
-        'https://vid2.taw-bio.ir/2024/249438/1726261082/1kskci47.mp4',
-        'https://vid2.taw-bio.ir/2025/391355/1756676688/1lc06088.mp4',
-        'https://vid3.taw-bio.ir/2026/325967/1770746022/1lk5f7s6.mp4',
-        'https://vid2.taw-bio.ir/2025/364102/1764065758/1lg909ov.mp4',
-        'https://vid2.taw-bio.ir/2025/301402/1747597545/1l77fdbs.mp4',
-        'https://vid2.taw-bio.ir/2025/294713/1747346739/1l75p851.mp4',
-        'https://vid2.taw-bio.ir/2025/293321/1748577041/1l7i7t1i.mp4',
-        'https://vid2.taw-bio.ir/2025/257570/1736766377/1l1qv605.mp4',
-        'https://vid2.taw-bio.ir/2025/374828/1764324584/1lgavh20.mp4',
-        'https://vid3.taw-bio.ir/2026/328210/1773418211/1ll3o4q9.mp4',
-        'https://vid3.taw-bio.ir/2026/1030468/1788290078/1lrrtjje.mp4',
-        'https://vid3.taw-bio.ir/2026/433244/1788289871/1lrrt1il.mp4',
-        'https://vid3.taw-bio.ir/2026/1142440/1788289445/1lrrt0l8.mp4',
-        'https://vid3.taw-bio.ir/2026/720276/1788289349/1lrrt0eb.mp4',
-        'https://vid3.taw-bio.ir/2026/1151776/1788271129/1lrrqk5i.mp4',
-        'https://vid3.taw-bio.ir/2026/423499/1788286690/1lrrsn93.mp4',
-        'https://vid3.taw-bio.ir/2026/1066901/1788250725/1lrrnfa3.mp4',
-        'https://vid3.taw-bio.ir/2026/1129660/1788291694/1lrrto7t.mp4',
-        'https://vid3.taw-bio.ir/2026/701159/1788273245/1lrrqr0b.mp4',
-        'https://vid3.taw-bio.ir/2026/819745/1788262624/1lrrp740.mp4',
-        'https://vid2.taw-bio.ir/2025/353460/1753940398/1lb1jd91.mp4',
-        'https://vid3.taw-bio.ir/2026/385239/1774636353/1llg506b.mp4',
-        'https://vid2.taw-bio.ir/2025/347869/1755249383/1lbi9b6d.mp4'
-    ];
-
-    let retry = 0,
-        bootDone = false;
-    const spSt = document.getElementById('spSt'),
-        spEr = document.getElementById('spEr'),
-        spRe = document.getElementById('spRe');
-
-    // ============================================================
-    // SDK LOADER
-    // ============================================================
-    function loadSDK(src) { return new Promise((res, rej) => { const s = document.createElement('script');
-            s.src = src;
-            s.onload = res;
-            s.onerror = rej;
-            document.head.appendChild(s); }); }
-
-    function tryLoad() {
-        retry++;
-        spSt.textContent = 'تلاش ' + retry + ' از ۱۰...';
-        Promise.all([
-            loadSDK('https://api.backendless.com/sdk/js/latest/backendless.min.js'),
-            loadSDK('https://cdn.ably.com/lib/ably.min-1.js')
-        ]).then(() => setTimeout(() => {
-            if (typeof Backendless !== 'undefined' && typeof Ably !== 'undefined') {
-                Backendless.serverURL = 'https://api.backendless.com';
-                Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
-                spSt.textContent = 'آماده';
-                if (!bootDone) { bootDone = true;
-                    boot(); }
-            } else fail();
-        }, 400)).catch(fail);
-    }
-
-    function fail() {
-        if (retry >= 10) { spEr.style.display = 'block';
-            spEr.textContent = 'SDK لود نشد';
-            spRe.style.display = 'block'; } else setTimeout(tryLoad, Math.min(1200 * retry, 15000));
-    }
-    spRe.onclick = () => { retry = 0;
-        spEr.style.display = 'none';
-        spRe.style.display = 'none';
-        tryLoad(); };
-    tryLoad();
-
-    // ============================================================
-    // MAIN BOOT
-    // ============================================================
-    function boot() {
-        let me = null,
-            ably = null,
-            pres = null,
-            chatCh = null,
-            peer = null;
-        let users = [],
-            convs = [],
-            online = new Set(),
-            soundOn = true,
-            muted = new Set(JSON.parse(localStorage.getItem('neo_muted') || '[]'));
-        let storyUrl = DEFAULT_STORY,
-            storySeen = localStorage.getItem('neo_story_seen') === '1';
-        let lastSeenMap = {};
-        let currentProfileUser = null;
-        let reelsObserver = null;
+    <script>
+        // ============================================================
+        // CONFIG
+        // ============================================================
+        const CONFIG = {
+            APP_ID: 'C50651A5-1DFC-4BA1-AA34-B4444E9AC5A5',
+            API_KEY: '9303E7E8-BAF9-4023-A34B-E4E024192785',
+            ABLY_KEY: 'NNYzzQ.7HHPYg:NA1mSMcWdEnlWOHGZ4CaF7ZUkoXe1Iggtf0sy-nNsDM',
+            UPLOADCARE_PUBKEY: '634057eb7c1c635917d2'
+        };
+        const SUPPORT_EMAIL = 's0379265@gmail.com';
+        const GROUP_ID = 'team_developer_group';
+        const GROUP_NAME = 'تیم فیلم‌سری';
+        const MSG_TABLE = 'Messages';
+        const PROFILE_KEY = 'neo_profile_';
+        const FOLLOW_KEY = 'neo_follows_';
+        const POSTS_KEY = 'neo_posts_';
+        const REVIEW_KEY = 'neo_reviews_';
 
         // ============================================================
-        // FOLLOW SYSTEM
+        // STATE
         // ============================================================
-        function getFollows(userId) {
-            try { return JSON.parse(localStorage.getItem(FOLLOW_KEY + userId) || '[]'); } catch (e) { return []; }
+        let me = null;
+        let ably = null;
+        let pres = null;
+        let users = [];
+        let online = new Set();
+        let watchlist = JSON.parse(localStorage.getItem('fs_watchlist') || '[]');
+        let currentGenre = 'all';
+        let currentQuality = 'all';
+        let searchQuery = '';
+        let currentPlayingMovie = null;
+        let uploadedFileUrl = null;
+        let uploadedFileUuid = null;
+        let currentUploadStep = 1;
+        let bootDone = false;
+        let retry = 0;
+        let currentChatPeerId = null;
+
+        // ============================================================
+        // REAL CONTENT STORE (from Backend / localStorage)
+        // ============================================================
+        function getAllContent() {
+            try { return JSON.parse(localStorage.getItem('fs_content_store') || '[]'); } catch (e) { return []; }
         }
 
-        function setFollows(userId, list) {
-            localStorage.setItem(FOLLOW_KEY + userId, JSON.stringify(list));
+        function saveAllContent(list) {
+            localStorage.setItem('fs_content_store', JSON.stringify(list));
         }
 
-        function isFollowing(followerId, targetId) {
-            const list = getFollows(followerId);
-            return list.includes(targetId);
+        function getContentByType(type) {
+            return getAllContent().filter(c => c.type === type || (type === 'movie' && c.type === 'movie') || (type === 'series' && (c.type === 'series' || c.type === 'episode')));
         }
+
+        function addContentToStore(item) {
+            const all = getAllContent();
+            all.unshift(item);
+            saveAllContent(all);
+        }
+
+        function getReviews() {
+            try { return JSON.parse(localStorage.getItem(REVIEW_KEY) || '[]'); } catch (e) { return []; }
+        }
+
+        function saveReviews(list) {
+            localStorage.setItem(REVIEW_KEY, JSON.stringify(list));
+        }
+
+        function addReview(item) {
+            const reviews = getReviews();
+            reviews.unshift(item);
+            saveReviews(reviews);
+        }
+
+        function getUserPosts(userId) {
+            try { return JSON.parse(localStorage.getItem(POSTS_KEY + userId) || '[]'); } catch (e) { return []; }
+        }
+
+        function addUserPost(userId, post) {
+            const posts = getUserPosts(userId);
+            posts.unshift({ ...post, id: gid(), createdAt: Date.now(), status: 'pending' });
+            localStorage.setItem(POSTS_KEY + userId, JSON.stringify(posts));
+            return posts;
+        }
+
+        function updateUserPostStatus(userId, postId, status, reason) {
+            const posts = getUserPosts(userId);
+            const idx = posts.findIndex(p => p.id === postId);
+            if (idx > -1) {
+                posts[idx].status = status;
+                if (reason) posts[idx].reason = reason;
+                localStorage.setItem(POSTS_KEY + userId, JSON.stringify(posts));
+            }
+        }
+
+        function getFollows(userId) { try { return JSON.parse(localStorage.getItem(FOLLOW_KEY + userId) || '[]'); } catch (e) { return []; } }
+
+        function setFollows(userId, list) { localStorage.setItem(FOLLOW_KEY + userId, JSON.stringify(list)); }
+
+        function isFollowing(followerId, targetId) { return getFollows(followerId).includes(targetId); }
 
         function toggleFollow(followerId, targetId) {
             const list = getFollows(followerId);
@@ -1680,590 +1642,169 @@
                 setFollows(followerId, list); return true; }
         }
 
-        function getFollowersCount(userId) {
-            let count = 0;
-            users.forEach(u => {
-                if (isFollowing(u.objectId, userId)) count++;
-            });
-            if (me && me.objectId !== userId && isFollowing(me.objectId, userId)) count++;
-            return count;
-        }
-
-        function getFollowingCount(userId) {
-            return getFollows(userId).length;
-        }
-
         // ============================================================
-        // POSTS SYSTEM
+        // HELPERS
         // ============================================================
-        function getUserPosts(userId) {
-            try { return JSON.parse(localStorage.getItem(POSTS_KEY + userId) || '[]'); } catch (e) { return []; }
-        }
-
-        function addUserPost(userId, post) {
-            const posts = getUserPosts(userId);
-            posts.unshift({ ...post, id: Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6), createdAt: Date.now() });
-            localStorage.setItem(POSTS_KEY + userId, JSON.stringify(posts));
-            return posts;
-        }
-
-        function getAllPosts() {
-            let all = [];
-            users.forEach(u => {
-                const posts = getUserPosts(u.objectId);
-                posts.forEach(p => {
-                    all.push({ ...p, userId: u.objectId, user: u });
-                });
-            });
-            if (me) {
-                const myPosts = getUserPosts(me.objectId);
-                myPosts.forEach(p => {
-                    all.push({ ...p, userId: me.objectId, user: me });
-                });
-            }
-            // SORT: newest first (user posts first, then defaults)
-            return all.sort((a, b) => b.createdAt - a.createdAt);
-        }
-
-        // ============================================================
-        // UPLOADCARE SETUP
-        // ============================================================
-        async function setupUploadcare() {
-            try {
-                const UC = await import('@uploadcare/file-uploader');
-                UC.defineComponents(UC);
-                const ctxProvider = document.querySelector('uc-upload-ctx-provider');
-                if (!ctxProvider) return;
-
-                ctxProvider.addEventListener('common-upload-success', (e) => {
-                    const files = e.detail.successEntries.map(({ uuid, cdnUrl }) => ({ uuid, cdnUrl }));
-                    if (!files.length) {
-                        const status = document.getElementById('uploadStatus');
-                        status.className = 'status-box error';
-                        status.textContent = '❌ آپلود انجام نشد.';
-                        return;
-                    }
-                    const file = files[0];
-                    const status = document.getElementById('uploadStatus');
-                    status.className = 'status-box success';
-                    status.textContent = '✅ پست با موفقیت آپلود شد!';
-
-                    const post = {
-                        type: 'video',
-                        url: file.cdnUrl,
-                        caption: 'پست جدید',
-                        likes: 0,
-                        comments: 0
-                    };
-                    addUserPost(me.objectId, post);
-                    toast('پست شما منتشر شد! 🎉');
-                    renderReels();
-                    if (currentProfileUser) updateProfileUI(currentProfileUser);
-                    document.getElementById('uploadScreen').classList.remove('show');
-                });
-
-                ctxProvider.addEventListener('common-upload-error', (e) => {
-                    console.error('Upload error:', e.detail);
-                    const status = document.getElementById('uploadStatus');
-                    status.className = 'status-box error';
-                    status.textContent = '❌ خطا در آپلود. لطفاً دوباره تلاش کنید.';
-                });
-            } catch (e) {
-                console.warn('Uploadcare not loaded');
-            }
-        }
-
-        // ============================================================
-        // REELS RENDER - USER POSTS FIRST
-        // ============================================================
-        function renderReels() {
-            const container = document.getElementById('reelsContainer');
-            container.innerHTML = '';
-
-            const userPosts = getAllPosts();
-            const allReels = [];
-
-            // USER POSTS FIRST (newest first)
-            userPosts.forEach(p => {
-                if (p.type === 'video' || p.url.match(/\.(mp4|mov|webm|m3u8)/i)) {
-                    allReels.push({
-                        id: p.id,
-                        url: p.url,
-                        type: 'user',
-                        userId: p.userId,
-                        user: p.user || users.find(u => u.objectId === p.userId) || { displayName: 'کاربر', objectId: p.userId },
-                        caption: p.caption || 'پست جدید',
-                        likes: p.likes || 0,
-                        comments: p.comments || 0,
-                        isUserPost: true,
-                        createdAt: p.createdAt || 0
-                    });
-                }
-            });
-
-            // SORT user posts by newest first
-            allReels.sort((a, b) => {
-                if (a.isUserPost && !b.isUserPost) return -1;
-                if (!a.isUserPost && b.isUserPost) return 1;
-                return (b.createdAt || 0) - (a.createdAt || 0);
-            });
-
-            // DEFAULT REELS AFTER USER POSTS
-            DEFAULT_REELS.forEach((src, i) => {
-                allReels.push({
-                    id: 'default_' + i,
-                    url: src,
-                    type: 'default',
-                    userId: 'system',
-                    user: { displayName: 'Neo', objectId: 'system', avatarSeed: 'neo' },
-                    caption: '🎬 ویدئو کوتاه',
-                    likes: Math.floor(Math.random() * 50) + 10,
-                    comments: Math.floor(Math.random() * 20) + 2,
-                    isUserPost: false
-                });
-            });
-
-            if (!allReels.length) {
-                container.innerHTML =
-                    '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--m);font-size:16px;">هیچ ویدئویی موجود نیست</div>';
-                return;
-            }
-
-            allReels.forEach((reel, index) => {
-                const div = document.createElement('div');
-                div.className = 'reel-item';
-                div.dataset.index = index;
-
-                const video = document.createElement('video');
-                video.src = reel.url;
-                video.playsInline = true;
-                video.preload = 'metadata';
-                video.loop = true;
-                video.muted = false;
-                video.setAttribute('playsinline', '');
-                video.setAttribute('webkit-playsinline', '');
-                // Fix permissions policy
-                video.setAttribute('allow', 'accelerometer; gyroscope; magnetometer');
-
-                const overlay = document.createElement('div');
-                overlay.className = 'reel-overlay';
-                const displayName = reel.user?.displayName || 'کاربر';
-                const isSup = reel.user?.email === SUPPORT_EMAIL;
-                overlay.innerHTML = `
-                        <div class="reel-info">
-                            <img class="av" src="${av(reel.user?.avatarSeed || reel.user?.username || reel.user?.objectId || 'user')}"/>
-                            <span class="name">${esc(displayName)}${isSup ? ' <span class="badge">●</span>' : ''} ${reel.isUserPost ? '📱' : ''}</span>
-                        </div>
-                        <div class="reel-caption">${esc(reel.caption || '')}</div>
-                    `;
-
-                const actions = document.createElement('div');
-                actions.className = 'reel-actions';
-                actions.innerHTML = `
-                        <button class="reel-action-btn like-btn" data-id="${reel.id}">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="count">${reel.likes || 0}</span>
-                        </button>
-                        <button class="reel-action-btn" onclick="alert('کامنت')">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="count">${reel.comments || 0}</span>
-                        </button>
-                        <button class="reel-action-btn" onclick="alert('اشتراک گذاری')">
-                            <i class="fa-regular fa-share-from-square"></i>
-                            <span class="count">${Math.floor(Math.random() * 10) + 1}</span>
-                        </button>
-                    `;
-
-                div.appendChild(video);
-                div.appendChild(overlay);
-                div.appendChild(actions);
-                container.appendChild(div);
-            });
-
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const icon = this.querySelector('i');
-                    const count = this.querySelector('.count');
-                    if (icon.classList.contains('fa-regular')) {
-                        icon.classList.remove('fa-regular');
-                        icon.classList.add('fa-solid');
-                        this.classList.add('liked');
-                        count.textContent = parseInt(count.textContent) + 1;
-                    } else {
-                        icon.classList.remove('fa-solid');
-                        icon.classList.add('fa-regular');
-                        this.classList.remove('liked');
-                        count.textContent = parseInt(count.textContent) - 1;
-                    }
-                });
-            });
-
-            if (reelsObserver) reelsObserver.disconnect();
-            reelsObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const video = entry.target.querySelector('video');
-                    if (!video) return;
-                    if (entry.isIntersecting) {
-                        video.muted = false;
-                        video.play().catch(() => {});
-                    } else {
-                        video.pause();
-                    }
-                });
-            }, { threshold: 0.6 });
-
-            document.querySelectorAll('.reel-item').forEach(item => {
-                reelsObserver.observe(item);
-            });
-        }
-
-        // ============================================================
-        // PROFILE UI UPDATE
-        // ============================================================
-        function updateProfileUI(user) {
-            if (!user) return;
-            currentProfileUser = user;
-            const isSelf = user.objectId === me.objectId;
-
-            document.getElementById('pfAv').src = av(user.avatarSeed || user.username || user.objectId);
-            document.getElementById('pfName').textContent = user.displayName || 'کاربر';
-            document.getElementById('pfUser').textContent = user.username ? '@' + user.username : '';
-
-            const bio = user.bio || '';
-            document.getElementById('pfBio').textContent = bio || '';
-
-            const posts = getUserPosts(user.objectId);
-            document.getElementById('pfPosts').textContent = posts.length;
-            document.getElementById('pfFollowers').textContent = getFollowersCount(user.objectId);
-            document.getElementById('pfFollowing').textContent = getFollowingCount(user.objectId);
-
-            const actDiv = document.getElementById('pfAct');
-            if (isSelf) {
-                actDiv.innerHTML = `
-                        <button class="btn btn-following" id="btnEditProfile" style="flex:1;"><i class="fa-solid fa-pen"></i> ویرایش</button>
-                        <button class="btn btn-outline-light" id="btnExploreU" style="flex:0 0 48px;"><i class="fa-solid fa-compass"></i></button>
-                    `;
-                document.getElementById('btnEditProfile').onclick = openSettings;
-                document.getElementById('btnExploreU').onclick = () => { closeReels();
-                    openReels(); };
-            } else {
-                const following = isFollowing(me.objectId, user.objectId);
-                actDiv.innerHTML = `
-                        <button class="btn ${following ? 'btn-following' : 'btn-follow'}" id="btnFollowU" style="flex:1;">
-                            <i class="fa-solid ${following ? 'fa-user-check' : 'fa-user-plus'}"></i>
-                            ${following ? 'دنبال می‌کنید' : 'دنبال'}
-                        </button>
-                        <button class="btn btn-outline-light" id="btnMsgU" style="flex:1;"><i class="fa-solid fa-comment"></i> پیام</button>
-                        <button class="btn btn-outline-light" id="btnExploreU" style="flex:0 0 48px;"><i class="fa-solid fa-compass"></i></button>
-                    `;
-                document.getElementById('btnFollowU').onclick = function() {
-                    const nowFollowing = toggleFollow(me.objectId, user.objectId);
-                    this.innerHTML =
-                        `<i class="fa-solid ${nowFollowing ? 'fa-user-check' : 'fa-user-plus'}"></i> ${nowFollowing ? 'دنبال می‌کنید' : 'دنبال'}`;
-                    this.className = `btn ${nowFollowing ? 'btn-following' : 'btn-follow'}`;
-                    document.getElementById('pfFollowers').textContent = getFollowersCount(user.objectId);
-                    toast(nowFollowing ? 'شروع به دنبال کردید' : 'دنبال کردن لغو شد');
-                };
-                document.getElementById('btnMsgU').onclick = () => openChat(user);
-                document.getElementById('btnExploreU').onclick = () => { closeReels();
-                    openReels(); };
-            }
-
-            const highlights = document.getElementById('pfHighlights');
-            highlights.innerHTML = '';
-
-            const userPosts = getUserPosts(user.objectId);
-            userPosts.slice(0, 6).forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'highlight-item';
-                const isVideo = p.type === 'video' || p.url.match(/\.(mp4|mov|webm|m3u8)/i);
-                item.innerHTML = `
-                        <div class="circle">
-                            ${isVideo ? `<video src="${p.url}" muted playsinline style="width:100%;height:100%;object-fit:cover;" allow="accelerometer; gyroscope; magnetometer"></video>` : `<img src="${p.url}" style="width:100%;height:100%;object-fit:cover;"/>`}
-                        </div>
-                        <div class="label">${isVideo ? '🎬' : '🖼️'}</div>
-                    `;
-                item.onclick = () => { openReels(); };
-                highlights.appendChild(item);
-            });
-        }
-
-        // ============================================================
-        // NAVIGATION HELPERS
-        // ============================================================
-        const av = s => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(s || 'u');
-        const esc = s => { const d = document.createElement('div');
-            d.textContent = s || '';
-            return d.innerHTML; };
         const toast = t => { const el = document.getElementById('toast');
             el.textContent = t;
             el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 2600); };
+            setTimeout(() => el.classList.remove('show'), 2500); };
         const loading = v => document.getElementById('loading').classList.toggle('show', !!v);
-        const show = id => {
-            ['authScreen', 'completeScreen', 'mainScreen', 'chatScreen', 'profileScreen', 'settingsScreen'].forEach(s => {
-                const el = document.getElementById(s);
-                if (!el) return;
-                if (s === id) el.classList.remove('hide', 'hide-back');
-                else el.classList.add('hide');
-            });
-        };
+        const esc = s => { const d = document.createElement('div');
+            d.textContent = s || '';
+            return d.innerHTML; };
         const normEmail = e => (e || '').replace(/\s+/g, '').trim().toLowerCase();
-        const normUser = u => (u || '').replace(/\s+/g, '_').trim().toLowerCase().replace(/[^a-z0-9._]/g, '');
-        const ft = ts => {
-            if (!ts) return '—';
-            const d = new Date(ts),
-                n = new Date();
-            if (d.toDateString() === n.toDateString()) return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-            return d.toLocaleDateString('fa-IR');
-        };
+        const av = s => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(s || 'u');
         const gid = () => Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
-        const isSupport = () => me && normEmail(me.email) === SUPPORT_EMAIL;
-        const chan = (a, b) => 'chat:' + [a, b].sort().join('_');
         const localProfile = () => { try { return JSON.parse(localStorage.getItem(PROFILE_KEY + (me && me.objectId || '')) || '{}'); } catch (e) { return {}; } };
         const saveLocalProfile = p => { if (me) localStorage.setItem(PROFILE_KEY + me.objectId, JSON.stringify(p || {})); };
-        const profileDone = u => {
-            if (!u) return false;
-            const lp = localProfile();
-            if (lp.done) return true;
-            return !!(u.username && u.displayName);
-        };
-        const badge = () => '<span class="vbadge"><i class="fa-solid fa-check"></i></span>';
+        const isSupport = () => me && normEmail(me.email) === SUPPORT_EMAIL;
 
         // ============================================================
-        // REELS CONTROL
+        // SDK LOADER WITH TIMEOUT & RETRY
         // ============================================================
-        function openReels() {
-            const screen = document.getElementById('reelsScreen');
-            screen.classList.add('show');
-            renderReels();
+        function loadSDKWithTimeout(src, timeout) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.onload = resolve;
+                s.onerror = reject;
+                const timer = setTimeout(() => reject(new Error('Timeout')), timeout || 15000);
+                s.onload = () => { clearTimeout(timer);
+                    resolve(); };
+                s.onerror = () => { clearTimeout(timer);
+                    reject(new Error('Load error')); };
+                document.head.appendChild(s);
+            });
+        }
+
+        function tryLoadSDK() {
+            retry++;
+            const st = document.getElementById('spSt');
+            if (st) st.textContent = 'در حال اتصال... (تلاش ' + retry + ')';
+            Promise.all([
+                loadSDKWithTimeout('https://api.backendless.com/sdk/js/latest/backendless.min.js', 15000),
+                loadSDKWithTimeout('https://cdn.ably.com/lib/ably.min-1.js', 15000)
+            ]).then(() => {
+                if (typeof Backendless !== 'undefined' && typeof Ably !== 'undefined') {
+                    Backendless.serverURL = 'https://api.backendless.com';
+                    Backendless.initApp(CONFIG.APP_ID, CONFIG.API_KEY);
+                    if (!bootDone) { bootDone = true;
+                        boot(); }
+                } else {
+                    failSDK();
+                }
+            }).catch(() => {
+                if (retry < 5) {
+                    setTimeout(tryLoadSDK, 2000 * retry);
+                } else {
+                    failSDK();
+                }
+            });
+        }
+
+        function failSDK() {
+            const er = document.getElementById('spEr');
+            const rb = document.getElementById('spRe');
+            const st = document.getElementById('spSt');
+            if (er) er.style.display = 'block';
+            if (er) er.textContent = 'خطا در اتصال به سرور. لطفاً اتصال اینترنت را بررسی کنید.';
+            if (rb) rb.style.display = 'block';
+            if (st) st.textContent = '';
+            // Allow app to run in offline/demo mode
+            bootWithoutBackend();
+        }
+
+        function bootWithoutBackend() {
             setTimeout(() => {
-                const firstVideo = document.querySelector('.reel-item video');
-                if (firstVideo) { firstVideo.muted = false;
-                    firstVideo.play().catch(() => {}); }
-            }, 400);
+                document.getElementById('splash').classList.add('hide');
+                setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+                document.getElementById('mainContent').classList.remove('hidden');
+                renderAllContent();
+                toast('حالت آفلاین فعال شد');
+            }, 800);
         }
 
-        function closeReels() {
-            const screen = document.getElementById('reelsScreen');
-            screen.classList.remove('show');
-            document.querySelectorAll('.reel-item video').forEach(v => v.pause());
+        document.getElementById('spRe').onclick = () => {
+            retry = 0;
+            document.getElementById('spEr').style.display = 'none';
+            document.getElementById('spRe').style.display = 'none';
+            document.getElementById('spSt').textContent = 'در حال بارگذاری...';
+            tryLoadSDK();
+        };
+
+        // ============================================================
+        // BOOT
+        // ============================================================
+        function boot() {
+            setTimeout(() => {
+                document.getElementById('splash').classList.add('hide');
+                setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+            }, 600);
+
+            (async () => {
+                try {
+                    if (await Backendless.UserService.isValidLogin()) {
+                        me = await Backendless.UserService.getCurrentUser();
+                        if (me) {
+                            await afterLogin();
+                            return;
+                        }
+                    }
+                } catch (e) {}
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('authModal').classList.add('show');
+                renderAllContent();
+            })();
         }
-
-        document.getElementById('btnReels').onclick = openReels;
-        document.getElementById('reelsClose').onclick = closeReels;
-        document.getElementById('mReels').onclick = () => { document.getElementById('mainMenu').classList.remove('show');
-            openReels(); };
-
-        // ============================================================
-        // UPLOAD CONTROL
-        // ============================================================
-        function openUpload() {
-            document.getElementById('uploadScreen').classList.add('show');
-            document.getElementById('uploadStatus').className = 'status-box';
-            document.getElementById('uploadStatus').textContent = '';
-        }
-
-        document.getElementById('btnUploadHeader').onclick = openUpload;
-        document.getElementById('btnBackUpload').onclick = () => {
-            document.getElementById('uploadScreen').classList.remove('show');
-        };
-        document.getElementById('mUpload').onclick = () => {
-            document.getElementById('mainMenu').classList.remove('show');
-            openUpload();
-        };
-
-        // ============================================================
-        // STORY
-        // ============================================================
-        function openStoryView() {
-            document.getElementById('storyV').classList.add('show');
-            document.getElementById('storyRing').classList.add('seen');
-            storySeen = true;
-            localStorage.setItem('neo_story_seen', '1');
-            const body = document.getElementById('stBody');
-            body.innerHTML = '';
-            if (storyUrl && storyUrl.includes('embed')) {
-                const iframe = document.createElement('iframe');
-                iframe.src = storyUrl;
-                iframe.allowFullscreen = true;
-                iframe.setAttribute('allow', 'accelerometer; gyroscope; magnetometer');
-                body.appendChild(iframe);
-            } else if (storyUrl) {
-                const videoEl = document.createElement('video');
-                videoEl.src = storyUrl;
-                videoEl.controls = true;
-                videoEl.autoplay = true;
-                videoEl.style.width = '100%';
-                videoEl.style.height = '100%';
-                videoEl.style.objectFit = 'contain';
-                videoEl.setAttribute('allow', 'accelerometer; gyroscope; magnetometer');
-                body.appendChild(videoEl);
-            } else {
-                body.innerHTML = '<div style="color:#fff;font-size:18px;">هیچ استوری موجود نیست</div>';
-            }
-        }
-
-        document.getElementById('storyBtn').onclick = openStoryView;
-        document.getElementById('stClose').onclick = () => {
-            document.getElementById('storyV').classList.remove('show');
-        };
-
-        // ============================================================
-        // AUTH
-        // ============================================================
-        document.getElementById('goReg').onclick = () => { document.getElementById('loginF').style.display = 'none';
-            document.getElementById('regF').style.display = 'block'; };
-        document.getElementById('goLog').onclick = () => { document.getElementById('regF').style.display = 'none';
-            document.getElementById('loginF').style.display = 'block'; };
-        const authErr = m => { const e = document.getElementById('authErr');
-            e.textContent = m;
-            e.classList.add('show'); };
-
-        document.getElementById('btnLogin').onclick = async () => {
-            const email = normEmail(document.getElementById('loginEmail').value);
-            const pass = document.getElementById('loginPass').value;
-            if (!email || !pass) return authErr('ایمیل و رمز را وارد کنید');
-            loading(true);
-            try { me = await Backendless.UserService.login(email, pass, true);
-                await afterLogin(); } catch (e) { authErr(e.message || 'ورود ناموفق'); } finally { loading(false); }
-        };
-        document.getElementById('btnReg').onclick = async () => {
-            const email = normEmail(document.getElementById('regEmail').value);
-            const pass = document.getElementById('regPass').value;
-            const name = (document.getElementById('regName').value || '').trim();
-            if (!email || !pass) return authErr('ایمیل و رمز الزامی');
-            if (pass.length < 6) return authErr('رمز حداقل ۶ کاراکتر');
-            loading(true);
-            try {
-                const u = new Backendless.User();
-                u.email = email;
-                u.password = pass;
-                u.displayName = name || email.split('@')[0];
-                u.username = '';
-                u.bio = '';
-                u.phone = '';
-                u.avatarSeed = email;
-                await Backendless.UserService.register(u);
-                me = await Backendless.UserService.login(email, pass, true);
-                await afterLogin();
-            } catch (e) { authErr(e.message || 'ثبت‌نام ناموفق'); } finally { loading(false); }
-        };
 
         async function afterLogin() {
             try { me = await Backendless.UserService.getCurrentUser(); } catch (e) {}
-            soundOn = localStorage.getItem('neo_sound') !== '0';
             const lp = localProfile();
             if (lp.username) me.username = me.username || lp.username;
             if (lp.displayName) me.displayName = me.displayName || lp.displayName;
             if (lp.bio) me.bio = me.bio || lp.bio;
-            if (lp.phone) me.phone = me.phone || lp.phone;
 
-            try { me.lastSeen = Date.now();
-                await Backendless.UserService.update({ objectId: me.objectId, lastSeen: me.lastSeen }); } catch (e) {}
-
-            if (!profileDone(me) && !isSupport()) {
-                document.getElementById('cpName').value = me.displayName || '';
-                document.getElementById('cpUser').value = me.username || '';
-                document.getElementById('cpBio').value = me.bio || '';
-                document.getElementById('cpPhone').value = me.phone || '';
-                show('completeScreen');
-            }
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('authModal').classList.remove('show');
+            updateProfileUI();
             await initRealtime();
-            await loadStory();
             await loadUsers();
-            await loadConvs();
-            updateMe();
-            if (profileDone(me) || isSupport()) {
-                if (!profileDone(me) && isSupport()) {
-                    saveLocalProfile({ done: true, username: 'support', displayName: 'پشتیبانی Neo' });
-                    me.username = me.username || 'support';
-                    me.displayName = me.displayName || 'پشتیبانی Neo';
-                }
-                show('mainScreen');
-            }
-            document.getElementById('storyRing').classList.toggle('seen', storySeen);
-            setupUploadcare();
+            await setupUploadcare();
+            renderAllContent();
         }
 
-        document.getElementById('btnCp').onclick = async () => {
-            const username = normUser(document.getElementById('cpUser').value);
-            const name = (document.getElementById('cpName').value || '').trim();
-            const bio = (document.getElementById('cpBio').value || '').trim();
-            const phone = (document.getElementById('cpPhone').value || '').trim();
-            const err = document.getElementById('cpErr');
-            err.classList.remove('show');
-            if (!username || username.length < 3) { err.textContent = 'آیدی حداقل ۳ کاراکتر';
-                err.classList.add('show'); return; }
-            if (!name) { err.textContent = 'نام الزامی';
-                err.classList.add('show'); return; }
-            loading(true);
-            saveLocalProfile({ done: true, username, displayName: name, bio, phone });
-            me.username = username;
-            me.displayName = name;
-            me.bio = bio;
-            me.phone = phone;
-            try { await Backendless.UserService.update({ objectId: me.objectId, username, displayName: name, bio, phone, lastSeen: Date.now() }); } catch (e) {}
-            loading(false);
-            updateMe();
-            show('mainScreen');
-            toast('پروفایل ذخیره شد');
-        };
-        document.getElementById('btnCpSkip').onclick = () => {
-            saveLocalProfile({ done: true, username: me.username || ('user_' + String(me.objectId).slice(-4)), displayName: me.displayName || 'کاربر' });
-            show('mainScreen');
-        };
-
         // ============================================================
-        // REALTIME
+        // REALTIME (Ably)
         // ============================================================
         async function initRealtime() {
-            if (ably) { try { if (pres) await pres.presence.leave();
-                    ably.close(); } catch (e) {} ably = null; }
-            ably = new Ably.Realtime({ key: CONFIG.ABLY_KEY, clientId: me.objectId, echoMessages: false });
-            await new Promise(r => { ably.connection.once('connected', r);
-                setTimeout(r, 4500); });
+            if (!ably) {
+                try {
+                    ably = new Ably.Realtime({ key: CONFIG.ABLY_KEY, clientId: me.objectId, echoMessages: false });
+                    await new Promise(r => { ably.connection.once('connected', r);
+                        setTimeout(r, 4000); });
+                } catch (e) { ably = null; return; }
+            }
             pres = ably.channels.get('neo-presence');
             try {
                 pres.presence.subscribe('enter', m => { if (m && m.clientId && m.clientId !== me.objectId) { online.add(m.clientId);
-                        refreshOn(); } });
+                        renderUserList(); } });
                 pres.presence.subscribe('leave', m => { if (m && m.clientId) { online.delete(m.clientId);
-                        lastSeenMap[m.clientId] = Date.now();
-                        refreshOn(); } });
+                        renderUserList(); } });
                 const members = await pres.presence.get();
                 (Array.isArray(members) ? members : (members ? [members] : [])).forEach(m => { if (m && m.clientId && m.clientId !== me.objectId) online.add(m.clientId); });
                 await pres.presence.enter({ name: me.displayName || 'user' });
-            } catch (e) { console.warn(e); }
-            try {
-                const inbox = ably.channels.get('inbox:' + me.objectId);
-                inbox.unsubscribe();
-                inbox.subscribe('message', msg => { if (msg.data) onIncoming(msg.data); });
             } catch (e) {}
+
+            const groupChannel = ably.channels.get('group:' + GROUP_ID);
+            groupChannel.subscribe('message', (msg) => {
+                if (msg.data && msg.data.senderId !== me.objectId) {
+                    appendChatMessage(msg.data, false);
+                }
+            });
         }
 
-        function refreshOn() { renderChats();
-            renderUsers(); if (peer && !peer.isGroup) { const on = online.has(peer.objectId);
-                document.getElementById('roomOd').style.display = on ? 'block' : 'none';
-                document.getElementById('roomSt').textContent = on ? 'آنلاین' : ('آخرین بازدید ' + ft(lastSeenMap[peer.objectId] || peer.lastSeen));
-                document.getElementById('roomSt').classList.toggle('off', !on); } }
-
-        // ============================================================
-        // STORY LOAD
-        // ============================================================
-        async function loadStory() {
-            try {
-                const q = Backendless.DataQueryBuilder.create().setPageSize(1).setSortBy(['created DESC']);
-                const rows = await Backendless.Data.of('AppStory').find(q);
-                if (rows && rows[0] && rows[0].url) storyUrl = rows[0].url;
-            } catch (e) {}
-        }
-
-        // ============================================================
-        // USERS
-        // ============================================================
         async function loadUsers() {
-            users = [];
             try {
                 const all = await Backendless.Data.of(Backendless.User).find(Backendless.DataQueryBuilder.create().setPageSize(100));
                 users = (all || []).filter(u => u && u.objectId && u.objectId !== me.objectId).map(u => ({
@@ -2274,429 +1815,628 @@
                     bio: u.bio || ''
                 }));
             } catch (e) { users = []; }
-            if (!users.find(u => u.objectId === GROUP_ID)) {
-                users.push({ objectId: GROUP_ID, displayName: GROUP_NAME, username: 'team_developer', isGroup: true, avatarSeed: GROUP_ID });
-            }
-            renderUsers();
-            renderChats();
-            renderGroups();
+            renderUserList();
         }
 
-        // ============================================================
-        // MESSAGES
-        // ============================================================
-        async function saveMsg(p) {
-            const data = {
-                msgId: p.id || gid(),
-                senderId: String(p.senderId || ''),
-                receiverId: String(p.receiverId || ''),
-                text: String(p.text || ''),
-                type: String(p.type || 'text'),
-                duration: String(p.duration || ''),
-                senderName: String(p.senderName || ''),
-                createdAt: Number(p.created || Date.now())
-            };
-            try { return await Backendless.Data.of(MSG_TABLE).save(data); } catch (e1) {
-                for (const n of ['Message', 'ChatMessage']) { try { return await Backendless.Data.of(n).save(data); } catch (e) {} }
-                throw e1;
-            }
-        }
-
-        async function loadConvs() {
-            try {
-                const uid = me.objectId;
-                const q = Backendless.DataQueryBuilder.create()
-                    .setWhereClause("senderId = '" + uid + "' OR receiverId = '" + uid + "' OR receiverId = '" + GROUP_ID + "'")
-                    .setSortBy(['created DESC']).setPageSize(200);
-                let list = [];
-                try { list = await Backendless.Data.of(MSG_TABLE).find(q); } catch (e) {
-                    for (const n of ['Message', 'ChatMessage']) { try { list = await Backendless.Data.of(n).find(q); if (list && list.length) break; } catch (e2) {} }
-                }
-                const map = new Map();
-                (list || []).forEach(m => {
-                    let peerId = m.senderId === uid ? m.receiverId : m.senderId;
-                    if (m.receiverId === GROUP_ID) peerId = GROUP_ID;
-                    if (!peerId || map.has(peerId)) return;
-                    map.set(peerId, { peerId, lastMessage: m.type === 'voice' ? '🎤 ویس' : (m.text || 'پیام'), lastTime: m.created || m.createdAt || Date.now() });
-                });
-                convs = Array.from(map.values());
-            } catch (e) { convs = []; }
-            renderChats();
-        }
-
-        // ============================================================
-        // RENDER FUNCTIONS
-        // ============================================================
-        function renderChats() {
-            const q = (document.getElementById('search').value || '').trim().toLowerCase();
-            const list = document.getElementById('chatList');
-            const items = convs.map(c => {
-                const u = users.find(x => x.objectId === c.peerId) || { objectId: c.peerId, displayName: 'کاربر' };
-                return {...c, user: u };
-            }).filter(c => !q || (c.user.displayName || '').toLowerCase().includes(q));
-            if (!items.length) { list.innerHTML = '<div class="empty"><i class="fa-regular fa-comments"></i><div>چتی نیست</div></div>'; return; }
-            list.innerHTML = items.map(c => {
-                const on = online.has(c.peerId);
-                const isG = c.peerId === GROUP_ID;
-                const isSup = normEmail(c.user.email) === SUPPORT_EMAIL;
-                return `<div class="row" data-p="${c.peerId}">
-                        <div class="avw"><img class="av" src="${isG ? GROUP_AVATAR : av(c.user.avatarSeed || c.user.username || c.peerId)}"/>${on ? '<div class="od"></div>' : ''}</div>
-                        <div class="ri"><div class="rt"><span class="rn">${esc(c.user.displayName || 'کاربر')}${isSup ? badge() : ''}${isG ? ' <span class="gb">گروه</span>' : ''}</span><span class="rtm">${ft(c.lastTime)}</span></div>
-                        <div class="rp">${esc(c.lastMessage || '')}</div></div></div>`;
-            }).join('');
-            list.querySelectorAll('.row').forEach(r => r.onclick = () => {
-                const u = users.find(x => x.objectId === r.dataset.p) || { objectId: r.dataset.p, displayName: 'کاربر' };
-                openChat(u);
-            });
-        }
-
-        function renderUsers() {
-            const q = (document.getElementById('search').value || '').trim().toLowerCase();
+        function renderUserList() {
             const list = document.getElementById('userList');
-            const items = users.filter(u => !u.isGroup && (!q || (u.displayName || '').toLowerCase().includes(q) || (u.username || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)));
-            if (!items.length) { list.innerHTML = '<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری نیست</div></div>'; return; }
-            list.innerHTML = items.map(u => {
+            if (!list) return;
+            if (!users.length) { list.innerHTML = '<div class="empty"><i class="fa-solid fa-users"></i><div>کاربری نیست</div></div>'; return; }
+            list.innerHTML = users.map(u => {
                 const on = online.has(u.objectId);
-                const isSup = normEmail(u.email) === SUPPORT_EMAIL;
-                return `<div class="row" data-id="${u.objectId}">
-                        <div class="avw"><img class="av" src="${av(u.avatarSeed || u.username || u.objectId)}"/>${on ? '<div class="od"></div>' : ''}</div>
-                        <div class="ri"><div class="rt"><span class="rn">${esc(u.displayName || 'کاربر')}${isSup ? badge() : ''}</span></div>
-                        <div class="rp">${u.username ? '@' + esc(u.username) : (on ? 'آنلاین' : 'آخرین بازدید ' + ft(u.lastSeen))}</div></div></div>`;
+                return `<div style="padding:8px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--b);" onclick="startChat('${u.objectId}','${esc(u.displayName)}')">
+                        <img src="${av(u.avatarSeed || u.username || u.objectId)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"/>
+                        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:12px;">${esc(u.displayName)}</div>
+                        <div style="font-size:10px;color:${on ? '#2ee6a6' : 'var(--m)'};">${on ? '● آنلاین' : 'آفلاین'}</div></div>
+                    </div>`;
             }).join('');
-            list.querySelectorAll('.row').forEach(r => r.onclick = () => { const u = users.find(x => x.objectId === r.dataset.id); if (u) openProfile(u); });
         }
 
-        function renderGroups() {
-            document.getElementById('groupList').innerHTML = `<div class="row" id="openGroup">
-                        <div class="avw"><img class="av" src="${GROUP_AVATAR}"/><div class="od" style="background:var(--p)"></div></div>
-                        <div class="ri"><div class="rt"><span class="rn">${GROUP_NAME} <span class="gb">گروه</span></span></div>
-                        <div class="rp">${users.length} عضو</div></div></div>`;
-            document.getElementById('openGroup').onclick = () => openChat({ objectId: GROUP_ID, displayName: GROUP_NAME, isGroup: true });
+        function startChat(peerId, name) {
+            currentChatPeerId = peerId;
+            document.getElementById('chatMessages').innerHTML = '';
+            document.getElementById('chatListPanel').classList.remove('show');
+            loadChatMessages(peerId);
+            toast('گفتگو با ' + name);
         }
 
-        function updateMe() {
-            document.getElementById('meAv').src = av(me.avatarSeed || me.username || me.objectId);
-            document.getElementById('meName').innerHTML = (me.displayName || 'من') + (isSupport() ? (' ' + badge()) : '');
-            document.getElementById('meSub').textContent = me.username ? '@' + me.username : (me.email || '');
-        }
-
-        document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
-            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-            t.classList.add('active');
-            const n = t.dataset.t;
-            document.getElementById('chatList').style.display = n === 'chats' ? 'block' : 'none';
-            document.getElementById('userList').style.display = n === 'users' ? 'block' : 'none';
-            document.getElementById('groupList').style.display = n === 'groups' ? 'block' : 'none';
-        });
-        document.getElementById('search').oninput = () => { renderChats();
-            renderUsers(); };
-        document.getElementById('btnRef').onclick = async () => { loading(true);
-            await loadUsers();
-            await loadConvs();
-            await loadStory();
-            loading(false);
-            toast('همگام شد'); };
-
-        // ============================================================
-        // OPEN CHAT
-        // ============================================================
-        async function openChat(p) {
-            peer = p;
-            const isG = p.isGroup || p.objectId === GROUP_ID;
-            const isSup = normEmail(p.email) === SUPPORT_EMAIL;
-            document.getElementById('roomAv').src = isG ? GROUP_AVATAR : av(p.avatarSeed || p.objectId);
-            document.getElementById('roomName').innerHTML = esc(p.displayName || 'کاربر') + (isSup ? (' ' + badge()) : '') + (isG ? ' <span class="gb">گروه</span>' : '');
-            if (isG) {
-                document.getElementById('roomOd').style.display = 'block';
-                document.getElementById('roomSt').textContent = users.length + ' عضو';
-                document.getElementById('roomSt').classList.remove('off');
-            } else {
-                const on = online.has(p.objectId);
-                document.getElementById('roomOd').style.display = on ? 'block' : 'none';
-                document.getElementById('roomSt').textContent = on ? 'آنلاین' : ('آخرین بازدید ' + ft(lastSeenMap[p.objectId] || p.lastSeen));
-                document.getElementById('roomSt').classList.toggle('off', !on);
-            }
-            if (chatCh) { try { chatCh.unsubscribe(); } catch (e) {} }
-            const name = isG ? ('group:' + GROUP_ID) : chan(me.objectId, p.objectId);
-            chatCh = ably.channels.get(name);
-            chatCh.subscribe('message', msg => {
-                if (msg.data && msg.data.senderId !== me.objectId) {
-                    appendMsg(msg.data, false);
-                    if (!muted.has(p.objectId) && soundOn) try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Vi4N6b2lgYWNnd4CIj5COi4J5').play(); } catch (e) {}
-                }
-            });
-            await loadMsgs(p.objectId, isG);
-            show('chatScreen');
-            document.getElementById('mainScreen').classList.add('hide-back');
-        }
-
-        async function loadMsgs(peerId, isG) {
-            const box = document.getElementById('messages');
-            box.innerHTML = '';
+        async function loadChatMessages(peerId) {
+            const box = document.getElementById('chatMessages');
+            box.innerHTML = '<div class="empty"><i class="fa-solid fa-spinner fa-spin"></i></div>';
             try {
                 const uid = me.objectId;
-                const clause = isG ?
-                    ("receiverId = '" + GROUP_ID + "'") :
-                    ("((senderId = '" + uid + "' AND receiverId = '" + peerId + "') OR (senderId = '" + peerId + "' AND receiverId = '" + uid + "'))");
+                const clause = "((senderId = '" + uid + "' AND receiverId = '" + peerId + "') OR (senderId = '" + peerId + "' AND receiverId = '" + uid + "')) OR receiverId = '" + GROUP_ID + "'";
                 const q = Backendless.DataQueryBuilder.create().setWhereClause(clause).setSortBy(['created ASC']).setPageSize(200);
                 let list = [];
                 try { list = await Backendless.Data.of(MSG_TABLE).find(q); } catch (e) {
                     for (const n of ['Message', 'ChatMessage']) { try { list = await Backendless.Data.of(n).find(q); if (list && list.length) break; } catch (e2) {} }
                 }
                 list = (list || []).slice().sort((a, b) => (a.created || a.createdAt || 0) - (b.created || b.createdAt || 0));
+                box.innerHTML = '';
                 if (!list.length) { box.innerHTML = '<div class="empty"><i class="fa-regular fa-comment"></i><div>هنوز پیامی نیست</div></div>'; return; }
-                const day = document.createElement('div');
-                day.className = 'day';
-                day.textContent = 'پیام‌ها';
-                box.appendChild(day);
-                list.forEach(m => appendMsg(m, m.senderId === uid, true));
+                list.forEach(m => appendChatMessage(m, m.senderId === uid, true));
                 box.scrollTop = box.scrollHeight;
-            } catch (e) { box.innerHTML = '<div class="empty"><div>خطا در بارگذاری</div></div>'; }
+            } catch (e) { box.innerHTML = '<div class="empty"><div>خطا در بارگذاری پیام‌ها</div></div>'; }
         }
 
-        function appendMsg(m, out, silent) {
-            const box = document.getElementById('messages');
+        function appendChatMessage(m, out, silent) {
+            const box = document.getElementById('chatMessages');
             const empty = box.querySelector('.empty');
             if (empty) empty.remove();
             const div = document.createElement('div');
-            div.className = 'msg ' + (out ? 'out' : 'in');
-            let text = m.text || '';
-            if (m.receiverId === GROUP_ID && m.senderId !== me.objectId) {
-                const s = users.find(u => u.objectId === m.senderId);
-                text = (s ? s.displayName + ': ' : '') + text;
-            }
-            if (m.type === 'voice') text = '🎤 پیام صوتی ' + (m.duration || '');
-            div.innerHTML = `<div class="bub">${esc(text)}</div><div class="meta"><span>${ft(m.created || m.createdAt || Date.now())}</span>${out ? '<span class="tick">✓✓</span>' : ''}</div>`;
+            div.className = 'chat-msg ' + (out ? 'out' : 'in');
+            div.textContent = m.text || '';
             box.appendChild(div);
             if (!silent) box.scrollTop = box.scrollHeight;
         }
 
-        async function sendText(text) {
-            if (!text || !peer) return;
-            const isG = peer.isGroup || peer.objectId === GROUP_ID;
-            const receiverId = isG ? GROUP_ID : peer.objectId;
-            const payload = { id: gid(), senderId: me.objectId, receiverId, text, type: 'text', created: Date.now(), senderName: me.displayName || '' };
-            appendMsg(payload, true);
-            try { await saveMsg(payload); } catch (e) { toast('ذخیره سرور ناموفق — جدول Messages را بسازید'); }
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text || !me) return;
+            const payload = { id: gid(), senderId: me.objectId, receiverId: GROUP_ID, text, type: 'text', created: Date.now(), senderName: me.displayName || '' };
+            appendChatMessage(payload, true);
+            input.value = '';
+            try { await Backendless.Data.of(MSG_TABLE).save(payload); } catch (e) {}
+            try { if (ably) ably.channels.get('group:' + GROUP_ID).publish('message', payload); } catch (e) {}
+        }
+
+        // ============================================================
+        // UPLOADCARE
+        // ============================================================
+        async function setupUploadcare() {
             try {
-                if (chatCh) chatCh.publish('message', payload);
-                if (!isG) ably.channels.get('inbox:' + peer.objectId).publish('message', payload);
-            } catch (e) {}
-            upsert(receiverId, text);
-        }
-
-        function upsert(peerId, preview) {
-            let c = convs.find(x => x.peerId === peerId);
-            if (!c) convs.unshift({ peerId, lastMessage: preview, lastTime: Date.now() });
-            else { c.lastMessage = preview;
-                c.lastTime = Date.now(); }
-            renderChats();
-        }
-
-        function onIncoming(d) {
-            if (!d || !d.senderId || d.senderId === me.objectId) return;
-            const peerId = d.receiverId === GROUP_ID ? GROUP_ID : d.senderId;
-            upsert(peerId, d.type === 'voice' ? '🎤 ویس' : (d.text || 'پیام'));
-            if (peer && (peer.objectId === d.senderId || (peer.objectId === GROUP_ID && d.receiverId === GROUP_ID))) appendMsg(d, false);
-        }
-
-        // ============================================================
-        // MIC
-        // ============================================================
-        const msgIn = document.getElementById('msgIn'),
-            btnSend = document.getElementById('btnSend'),
-            btnMic = document.getElementById('btnMic');
-        let rec = null,
-            chunks = [],
-            recording = false,
-            timer = null,
-            recStart = 0;
-        msgIn.oninput = () => {
-            msgIn.style.height = 'auto';
-            msgIn.style.height = Math.min(msgIn.scrollHeight, 100) + 'px';
-            if (msgIn.value.trim()) { btnSend.classList.add('show');
-                btnMic.style.display = 'none'; } else { btnSend.classList.remove('show');
-                btnMic.style.display = 'flex'; }
-        };
-        msgIn.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault();
-                doSend(); } };
-        btnSend.onclick = doSend;
-
-        function doSend() { const t = msgIn.value.trim(); if (!t) return;
-            sendText(t);
-            msgIn.value = '';
-            msgIn.style.height = 'auto';
-            btnSend.classList.remove('show');
-            btnMic.style.display = 'flex'; }
-
-        btnMic.onclick = () => { if (recording) stopRec(false); else startRec(); };
-        document.getElementById('recCancel').onclick = () => stopRec(true);
-
-        async function startRec() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                rec = new MediaRecorder(stream);
-                chunks = [];
-                rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-                rec.onstop = () => { if (stream) { stream.getTracks().forEach(t => t.stop()); } };
-                rec.start();
-                recording = true;
-                recStart = Date.now();
-                document.getElementById('ibox').style.display = 'none';
-                btnSend.style.display = 'none';
-                btnMic.classList.add('rec');
-                document.getElementById('recBar').classList.add('show');
-                timer = setInterval(() => { const s = Math.floor((Date.now() - recStart) / 1000);
-                    document.getElementById('recT').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }, 200);
-            } catch (e) { toast('میکروفون لازم است'); }
-        }
-
-        function stopRec(cancel) {
-            if (!recording) return;
-            recording = false;
-            clearInterval(timer);
-            document.getElementById('recBar').classList.remove('show');
-            document.getElementById('ibox').style.display = 'flex';
-            btnMic.classList.remove('rec');
-            btnMic.style.display = 'flex';
-            if (rec && rec.state !== 'inactive') rec.stop();
-            if (cancel) { chunks = []; return; }
-            const sec = Math.max(1, Math.floor((Date.now() - recStart) / 1000));
-            const dur = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
-            sendText('🎤 پیام صوتی ' + dur);
-            chunks = [];
-        }
-
-        document.getElementById('btnBack').onclick = () => {
-            if (chatCh) { try { chatCh.unsubscribe(); } catch (e) {} }
-            chatCh = null;
-            peer = null;
-            show('mainScreen');
-            renderChats();
-        };
-
-        // ============================================================
-        // PROFILE
-        // ============================================================
-        function openProfile(user, fromChat) {
-            if (!user) return;
-            show('profileScreen');
-            updateProfileUI(user);
-            document.getElementById('profileScreen').dataset.fc = fromChat ? '1' : '0';
-        }
-
-        document.getElementById('btnBackPf').onclick = () => {
-            if (document.getElementById('profileScreen').dataset.fc === '1' && peer) show('chatScreen');
-            else show('mainScreen');
-        };
-
-        document.getElementById('btnProfileMore').onclick = () => {
-            toast('گزینه‌های بیشتر');
-        };
-
-        // ============================================================
-        // SETTINGS
-        // ============================================================
-        function openSettings() {
-            const lp = localProfile();
-            document.getElementById('setUser').value = me.username || lp.username || '';
-            document.getElementById('setName').value = me.displayName || lp.displayName || '';
-            document.getElementById('setBio').value = me.bio || lp.bio || '';
-            document.getElementById('setPhone').value = me.phone || lp.phone || '';
-            document.getElementById('swSound').classList.toggle('on', soundOn);
-            show('settingsScreen');
-        }
-        document.getElementById('meBar').onclick = openSettings;
-        document.getElementById('btnBackSet').onclick = () => show('mainScreen');
-        document.getElementById('togSound').onclick = () => { soundOn = !soundOn;
-            document.getElementById('swSound').classList.toggle('on', soundOn);
-            localStorage.setItem('neo_sound', soundOn ? '1' : '0'); };
-
-        document.getElementById('btnSaveSet').onclick = async () => {
-            const username = normUser(document.getElementById('setUser').value);
-            const name = (document.getElementById('setName').value || '').trim();
-            const bio = (document.getElementById('setBio').value || '').trim();
-            const phone = (document.getElementById('setPhone').value || '').trim();
-            if (!username || username.length < 3) { document.getElementById('setErr').textContent = 'آیدی نامعتبر';
-                document.getElementById('setErr').classList.add('show'); return; }
-            if (!name) { document.getElementById('setErr').textContent = 'نام الزامی';
-                document.getElementById('setErr').classList.add('show'); return; }
-            saveLocalProfile({ done: true, username, displayName: name, bio, phone });
-            me.username = username;
-            me.displayName = name;
-            me.bio = bio;
-            me.phone = phone;
-            try { await Backendless.UserService.update({ objectId: me.objectId, username, displayName: name, bio, phone, lastSeen: Date.now() }); } catch (e) {}
-            updateMe();
-            toast('ذخیره شد');
-            show('mainScreen');
-        };
-        document.getElementById('btnOut').onclick = async () => {
-            try { if (pres) await pres.presence.leave(); if (ably) ably.close(); await Backendless.UserService.logout(); } catch (e) {}
-            me = null;
-            ably = null;
-            show('authScreen');
-        };
-
-        // ============================================================
-        // MENUS
-        // ============================================================
-        document.getElementById('btnMenu').onclick = () => document.getElementById('mainMenu').classList.add('show');
-        document.getElementById('mClose').onclick = () => document.getElementById('mainMenu').classList.remove('show');
-        document.getElementById('mainMenu').onclick = e => { if (e.target.id === 'mainMenu') e.target.classList.remove('show'); };
-        document.getElementById('mSettings').onclick = () => { document.getElementById('mainMenu').classList.remove('show');
-            openSettings(); };
-        document.getElementById('mSync').onclick = () => { document.getElementById('mainMenu').classList.remove('show');
-            document.getElementById('btnRef').click(); };
-
-        document.getElementById('btnChatMore').onclick = () => document.getElementById('chatMenu').classList.add('show');
-        document.getElementById('cClose').onclick = () => document.getElementById('chatMenu').classList.remove('show');
-        document.getElementById('chatMenu').onclick = e => { if (e.target.id === 'chatMenu') e.target.classList.remove('show'); };
-        document.getElementById('cProfile').onclick = () => { document.getElementById('chatMenu').classList.remove('show'); if (peer && !peer.isGroup) openProfile(peer, true); };
-        document.getElementById('cMute').onclick = () => {
-            if (!peer) return;
-            if (muted.has(peer.objectId)) { muted.delete(peer.objectId);
-                toast('صدا روشن'); } else { muted.add(peer.objectId);
-                toast('بی‌صدا'); }
-            localStorage.setItem('neo_muted', JSON.stringify([...muted]));
-            document.getElementById('chatMenu').classList.remove('show');
-        };
-        document.getElementById('cReport').onclick = async () => {
-            document.getElementById('chatMenu').classList.remove('show');
-            if (!peer) return;
-            try {
-                await Backendless.Data.of('Reports').save({
-                    reporterId: me.objectId,
-                    reporterName: me.displayName || me.email,
-                    reportedId: peer.objectId,
-                    reportedName: peer.displayName || '',
-                    reason: 'user_report',
-                    createdAt: Date.now()
+                const UC = await import('@uploadcare/file-uploader');
+                UC.defineComponents(UC);
+                const ctxProvider = document.querySelector('uc-upload-ctx-provider');
+                if (!ctxProvider) return;
+                ctxProvider.addEventListener('common-upload-success', (e) => {
+                    const files = e.detail.successEntries.map(({ uuid, cdnUrl }) => ({ uuid, cdnUrl }));
+                    if (files.length) {
+                        uploadedFileUrl = files[0].cdnUrl;
+                        uploadedFileUuid = files[0].uuid;
+                        document.getElementById('uploadStatus').style.display = 'block';
+                        document.getElementById('uploadStatus').style.color = '#2ee6a6';
+                        document.getElementById('uploadStatus').textContent = '✅ فایل بارگذاری شد';
+                        document.getElementById('btnUploadNext').disabled = false;
+                        document.getElementById('uploadProgress').style.display = 'none';
+                    }
                 });
-                toast('گزارش برای پشتیبانی ثبت شد');
-            } catch (e) { toast('جدول Reports را در سرور بسازید'); }
-        };
-        document.getElementById('chUser').onclick = () => { if (peer && !peer.isGroup) openProfile(peer, true); };
+                ctxProvider.addEventListener('common-upload-progress', (e) => {
+                    if (e.detail && e.detail.progress) {
+                        document.getElementById('uploadProgress').style.display = 'block';
+                        document.getElementById('uploadBar').style.width = Math.round(e.detail.progress) + '%';
+                    }
+                });
+                ctxProvider.addEventListener('common-upload-error', (e) => {
+                    document.getElementById('uploadStatus').style.display = 'block';
+                    document.getElementById('uploadStatus').style.color = '#ef4444';
+                    document.getElementById('uploadStatus').textContent = '❌ خطا در آپلود';
+                });
+            } catch (e) {}
+        }
 
         // ============================================================
-        // BOOT
+        // UPLOAD FLOW
         // ============================================================
-        (async () => {
-            loading(true);
-            try {
-                if (typeof Backendless !== 'undefined' && await Backendless.UserService.isValidLogin()) {
-                    me = await Backendless.UserService.getCurrentUser();
-                    if (me) { await afterLogin();
-                        document.getElementById('splash').style.display = 'none';
-                        loading(false); return; }
+        function uploadNextStep(step) {
+            currentUploadStep = step;
+            document.querySelectorAll('.upload-step').forEach((el, i) => {
+                el.classList.remove('active', 'done');
+                if (i + 1 < step) el.classList.add('done');
+                if (i + 1 === step) el.classList.add('active');
+            });
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('uploadStep' + i).style.display = i === step ? 'block' : 'none';
+            }
+            if (step === 4) {
+                buildUploadPreview();
+            }
+            if (step === 2) {
+                document.getElementById('uploadStatus').style.display = 'none';
+                document.getElementById('uploadProgress').style.display = 'none';
+                document.getElementById('uploadBar').style.width = '0%';
+            }
+        }
+
+        function buildUploadPreview() {
+            const preview = document.getElementById('uploadPreview');
+            const title = document.getElementById('uTitleFa').value || 'بدون عنوان';
+            const desc = document.getElementById('uDesc').value || 'بدون توضیحات';
+            const quality = document.getElementById('uQuality').value || 'HD';
+            const type = document.getElementById('uploadType').value;
+            preview.innerHTML = `
+                        <div style="background:var(--s2);border-radius:12px;padding:12px;text-align:center;">
+                            ${uploadedFileUrl ? `<video src="${uploadedFileUrl}" controls style="width:100%;border-radius:8px;max-height:200px;"></video>` : '<div style="color:var(--m);">فایلی انتخاب نشده</div>'}
+                            <div style="margin-top:10px;font-weight:800;">${esc(title)}</div>
+                            <div style="font-size:12px;color:var(--m);margin-top:4px;">${esc(desc)}</div>
+                            <div style="font-size:11px;color:var(--m);margin-top:4px;">کیفیت: ${quality} | نوع: ${type}</div>
+                        </div>
+                    `;
+        }
+
+        function submitUpload() {
+            if (!uploadedFileUrl || !uploadedFileUuid) {
+                toast('فایل ویدیویی الزامی است');
+                return;
+            }
+            const title = document.getElementById('uTitleFa').value.trim();
+            if (title.length < 3) {
+                toast('عنوان فارسی حداقل ۳ کاراکتر');
+                return;
+            }
+            const post = {
+                id: gid(),
+                url: uploadedFileUrl,
+                uuid: uploadedFileUuid,
+                title: title,
+                titleEn: document.getElementById('uTitleEn').value.trim(),
+                desc: document.getElementById('uDesc').value.trim(),
+                genre: document.getElementById('uGenre').value,
+                year: document.getElementById('uYear').value || 'نامشخص',
+                country: document.getElementById('uCountry').value || 'نامشخص',
+                lang: document.getElementById('uLang').value || 'نامشخص',
+                duration: document.getElementById('uDuration').value || 'نامشخص',
+                quality: document.getElementById('uQuality').value,
+                type: document.getElementById('uploadType').value,
+                tags: document.getElementById('uTags').value.split(',').map(t => t.trim()).filter(Boolean),
+                ageRating: document.getElementById('uAge').value,
+                subtitle: document.getElementById('uSubtitle').value,
+                ownership: document.getElementById('uOwnership').checked,
+                status: 'pending',
+                createdAt: Date.now(),
+                authorId: me.objectId,
+                authorName: me.displayName || me.email
+            };
+            addUserPost(me.objectId, post);
+            addContentToStore(post);
+            addReview({ postId: post.id, status: 'pending', reason: '', content: post, authorId: me.objectId });
+            toast('محتوا برای بررسی ارسال شد ✓');
+            uploadedFileUrl = null;
+            uploadedFileUuid = null;
+            document.getElementById('btnUploadNext').disabled = true;
+            uploadNextStep(1);
+            renderAllContent();
+            updateProfileUI();
+        }
+
+        // ============================================================
+        // RENDER CONTENT
+        // ============================================================
+        function renderAllContent() {
+            renderMovies();
+            renderSeries();
+            renderReels();
+            updateWatchlistCount();
+            updateProfileUI();
+        }
+
+        function renderMovies() {
+            const grid = document.getElementById('moviesGrid');
+            const all = getAllContent().filter(c => c.status !== 'rejected' && (c.type === 'movie' || c.type === 'trailer' || c.type === 'exclusive'));
+            const filtered = all.filter(c => (currentGenre === 'all' || c.genre === currentGenre) && (currentQuality === 'all' || c.quality === currentQuality) && (!searchQuery || (c.title && c.title.includes(searchQuery))));
+            if (!filtered.length) { grid.innerHTML = '<div class="empty"><i class="fa-solid fa-film"></i><div>فیلمی یافت نشد</div></div>'; return; }
+            grid.innerHTML = filtered.map(c => movieCardHTML(c)).join('');
+            attachCardEvents();
+        }
+
+        function renderSeries() {
+            const grid = document.getElementById('seriesGrid');
+            const all = getAllContent().filter(c => c.status !== 'rejected' && (c.type === 'series' || c.type === 'episode'));
+            const filtered = all.filter(c => (currentGenre === 'all' || c.genre === currentGenre) && (currentQuality === 'all' || c.quality === currentQuality) && (!searchQuery || (c.title && c.title.includes(searchQuery))));
+            if (!filtered.length) { grid.innerHTML = '<div class="empty"><i class="fa-solid fa-tv"></i><div>سریالی یافت نشد</div></div>'; return; }
+            grid.innerHTML = filtered.map(c => movieCardHTML(c)).join('');
+            attachCardEvents();
+        }
+
+        function movieCardHTML(c) {
+            const inWatchlist = watchlist.includes(c.id);
+            const statusBadge = c.status === 'pending' ? '<span style="position:absolute;top:8px;right:8px;background:rgba(251,191,36,0.85);color:#000;font-size:9px;padding:2px 6px;border-radius:5px;">در حال بررسی</span>' : '';
+            return `<div class="movie-card" data-id="${c.id}" onclick="showDetail('${c.id}')">
+                        <span class="quality-badge">${c.quality || 'HD'}</span>
+                        ${statusBadge}
+                        <button class="watchlist-btn ${inWatchlist ? 'active' : ''}" onclick="event.stopPropagation();toggleWatchlist('${c.id}')"><i class="${inWatchlist ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
+                        <div style="position:relative;width:100%;aspect-ratio:2/3;background:var(--s2);overflow:hidden;">
+                            ${c.poster ? `<img class="poster" src="${c.poster}" alt="${esc(c.title)}" loading="lazy"/>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--m);font-size:32px;"><i class="fa-solid fa-film"></i></div>`}
+                        </div>
+                        <div class="card-overlay"></div>
+                        <div class="card-info">
+                            <div class="card-title">${esc(c.title)}</div>
+                            <div class="card-meta">
+                                <span class="imdb"><i class="fa-solid fa-star"></i> ${c.imdb || '—'}</span>
+                                <span>${c.year || '—'}</span>
+                                <span>${genreLabel(c.genre)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+        }
+
+        function genreLabel(g) {
+            const map = { action: 'اکشن', drama: 'درام', comedy: 'کمدی', 'sci-fi': 'علمی تخیلی' };
+            return map[g] || g || '—';
+        }
+
+        function attachCardEvents() {
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.watchlist-btn')) return;
+                });
+            });
+        }
+
+        // ============================================================
+        // DETAIL MODAL
+        // ============================================================
+        function showDetail(id) {
+            const content = getAllContent().find(c => c.id === id);
+            if (!content) return;
+            const modal = document.getElementById('detailModal');
+            const dc = document.getElementById('detailContent');
+            dc.innerHTML = `
+                        ${content.poster ? `<img class="detail-banner" src="${content.poster}" alt="${esc(content.title)}"/>` : ''}
+                        <div class="detail-title">${esc(content.title)}</div>
+                        ${content.titleEn ? `<div style="color:var(--m);font-size:13px;margin-bottom:8px;">${esc(content.titleEn)}</div>` : ''}
+                        <div class="detail-meta">
+                            <span>${genreLabel(content.genre)}</span>
+                            <span>${content.year || '—'}</span>
+                            <span>${content.country || '—'}</span>
+                            <span>${content.duration || '—'} دقیقه</span>
+                            <span>${content.quality || '—'}</span>
+                            <span>${content.lang || '—'}</span>
+                            <span>${content.status === 'pending' ? '⏳ در حال بررسی' : content.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده'}</span>
+                        </div>
+                        <div class="detail-desc">${esc(content.desc || 'توضیحاتی ثبت نشده است.')}</div>
+                        ${content.tags && content.tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;">${content.tags.map(t => `<span style="background:var(--s2);padding:3px 8px;border-radius:6px;font-size:10px;">#${esc(t)}</span>`).join('')}</div>` : ''}
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-p" style="flex:1;" onclick="playContent('${content.id}')"><i class="fa-solid fa-play"></i> پخش</button>
+                            <button class="btn btn-g" style="flex:1;" onclick="toggleWatchlist('${content.id}')"><i class="fa-solid fa-bookmark"></i> ${watchlist.includes(content.id) ? 'در لیست' : 'افزودن'}</button>
+                            <button class="btn btn-g" style="flex:1;" onclick="reportContent('${content.id}')"><i class="fa-solid fa-flag"></i> گزارش</button>
+                        </div>
+                        <button class="modal-close" onclick="document.getElementById('detailModal').classList.remove('show')" style="position:static;width:100%;margin-top:12px;border-radius:10px;"><i class="fa-solid fa-xmark"></i> بستن</button>
+                    `;
+            modal.classList.add('show');
+        }
+
+        function reportContent(id) {
+            if (!me) { toast('ابتدا وارد شوید'); return; }
+            const reason = prompt('دلیل گزارش این محتوا چیست؟');
+            if (reason && reason.trim()) {
+                const reviews = getReviews();
+                const idx = reviews.findIndex(r => r.postId === id);
+                if (idx > -1) { reviews[idx].status = 'reported';
+                    reviews[idx].reason = reason.trim();
+                    reviews[idx].reportedBy = me.objectId; } else {
+                    reviews.push({ postId: id, status: 'reported', reason: reason.trim(), reportedBy: me.objectId, content: getAllContent().find(c => c.id === id) });
                 }
-            } catch (e) { console.warn('Login check failed:', e); }
-            document.getElementById('splash').style.display = 'none';
-            loading(false);
-            show('authScreen');
-        })();
-    }
-</script>
+                saveReviews(reviews);
+                toast('گزارش ثبت شد');
+                document.getElementById('detailModal').classList.remove('show');
+            }
+        }
 
+        // ============================================================
+        // PLAYER
+        // ============================================================
+        function playContent(id) {
+            const content = getAllContent().find(c => c.id === id);
+            if (!content || !content.url) { toast('ویدیو موجود نیست'); return; }
+            currentPlayingMovie = content;
+            document.getElementById('playerTitle').textContent = content.title;
+            const video = document.getElementById('playerVideo');
+            video.src = content.url;
+            video.poster = content.poster || '';
+            document.getElementById('playerModal').classList.add('show');
+            document.getElementById('detailModal').classList.remove('show');
+            video.play().catch(() => { toast('خطا در پخش ویدیو'); });
+            document.getElementById('btnWatchlist').innerHTML = `<i class="fa-solid fa-bookmark"></i> ${watchlist.includes(id) ? 'در لیست' : 'لیست پخش'}`;
+        }
+
+        function playFeatured() {
+            const all = getAllContent();
+            const featured = all.find(c => c.featured) || all[0];
+            if (featured) playContent(featured.id);
+            else toast('محتوایی موجود نیست');
+        }
+
+        // ============================================================
+        // WATCHLIST
+        // ============================================================
+        function toggleWatchlist(id) {
+            const idx = watchlist.indexOf(id);
+            if (idx > -1) { watchlist.splice(idx, 1);
+                toast('از لیست حذف شد'); } else { watchlist.push(id);
+                toast('به لیست اضافه شد ✓'); }
+            localStorage.setItem('fs_watchlist', JSON.stringify(watchlist));
+            updateWatchlistCount();
+            renderMovies();
+            renderSeries();
+        }
+
+        function updateWatchlistCount() {
+            document.getElementById('watchlistCount').textContent = watchlist.length;
+        }
+
+        function showWatchlist() {
+            const items = getAllContent().filter(c => watchlist.includes(c.id));
+            if (!items.length) { toast('لیست تماشا خالی است'); return; }
+            const grid = document.getElementById('moviesGrid');
+            grid.innerHTML = items.map(c => movieCardHTML(c)).join('');
+            attachCardEvents();
+            scrollToSection('movies');
+        }
+
+        // ============================================================
+        // SEARCH & FILTERS
+        // ============================================================
+        function liveSearch() {
+            searchQuery = document.getElementById('searchInput').value.trim();
+            renderMovies();
+            renderSeries();
+        }
+
+        function setGenre(genre, btn) {
+            currentGenre = genre;
+            document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMovies();
+            renderSeries();
+        }
+
+        function setQuality(quality, btn) {
+            if (currentQuality === quality) { currentQuality = 'all';
+                btn.classList.remove('active'); } else {
+                currentQuality = quality;
+                document.querySelectorAll('[data-quality]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            renderMovies();
+            renderSeries();
+        }
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        function scrollToSection(id) {
+            const section = document.getElementById(id + 'Section');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.querySelectorAll('.hdr nav a').forEach(a => {
+                a.classList.toggle('active', a.dataset.section === id);
+            });
+            if (id === 'chat') document.getElementById('chatListPanel').classList.add('show');
+        }
+
+        function goHome() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderAllContent();
+        }
+
+        function showAll(type) {
+            if (type === 'movies') { currentGenre = 'all';
+                searchQuery = '';
+                document.getElementById('searchInput').value = '';
+                document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-genre="all"]').classList.add('active');
+                renderMovies();
+                renderSeries(); }
+        }
+
+        function toggleUploadSection() {
+            const section = document.getElementById('uploadSection');
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleProfileSection() {
+            const section = document.getElementById('profileSection');
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                updateProfileUI();
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ============================================================
+        // PROFILE UI
+        // ============================================================
+        function updateProfileUI() {
+            if (!me) return;
+            document.getElementById('pfAvatar').src = av(me.avatarSeed || me.username || me.objectId);
+            document.getElementById('pfName').textContent = me.displayName || 'کاربر';
+            document.getElementById('pfBio').textContent = me.bio || 'بیوگرافی ثبت نشده';
+            const posts = getUserPosts(me.objectId);
+            document.getElementById('pfPosts').textContent = posts.length;
+            document.getElementById('pfFollowers').textContent = users.filter(u => isFollowing(u.objectId, me.objectId)).length;
+            document.getElementById('pfFollowing').textContent = getFollows(me.objectId).length;
+
+            const grid = document.getElementById('pfPostsGrid');
+            if (!posts.length) { grid.innerHTML = '<div class="empty"><i class="fa-solid fa-photo-film"></i><div>پستی نیست</div></div>'; } else {
+                grid.innerHTML = posts.map(p => `
+                            <div class="reel-item">
+                                <video src="${p.url}" muted playsinline preload="none"></video>
+                                <div class="reel-info"><div class="name">${esc(p.title || p.caption || 'پست')}</div>
+                                <div style="font-size:9px;color:${p.status === 'pending' ? '#fbbf24' : p.status === 'approved' ? '#2ee6a6' : '#ef4444'};">${p.status === 'pending' ? 'در حال بررسی' : p.status === 'approved' ? 'تأیید شده' : 'رد شده'}</div></div>
+                            </div>
+                        `).join('');
+            }
+
+            const reviews = getReviews().filter(r => r.authorId === me.objectId);
+            const statusDiv = document.getElementById('pfReviewStatus');
+            if (!reviews.length) { statusDiv.innerHTML = 'محتوایی برای بررسی نیست'; } else {
+                statusDiv.innerHTML = reviews.map(r => {
+                    const statusText = r.status === 'pending' ? '⏳ در حال بررسی' : r.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده' + (r.reason ? ' — ' + r.reason : '');
+                    return `<div style="padding:8px;border-bottom:1px solid var(--b);">${statusText} — ${r.content?.title || 'بدون عنوان'}</div>`;
+                }).join('');
+            }
+        }
+
+        // ============================================================
+        // REELS
+        // ============================================================
+        function renderReels() {
+            const grid = document.getElementById('reelsGrid');
+            const all = getAllContent().filter(c => c.status !== 'rejected' && (c.type === 'clip' || c.type === 'trailer'));
+            if (!all.length) { grid.innerHTML = '<div class="empty"><i class="fa-solid fa-clapperboard"></i><div>کلیپی آپلود نشده</div></div>'; return; }
+            grid.innerHTML = all.slice(0, 12).map(p => `
+                        <div class="reel-item" data-id="${p.id}" onclick="playContent('${p.id}')">
+                            <video src="${p.url}" muted playsinline preload="metadata"></video>
+                            <div class="reel-info">
+                                <div class="name">${esc(p.title || 'کلیپ')}</div>
+                                <div style="font-size:9px;color:var(--m);">${esc(p.authorName || 'کاربر')}</div>
+                            </div>
+                        </div>
+                    `).join('');
+            // Lazy load reels videos on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const video = entry.target.querySelector('video');
+                        if (video && video.dataset.loaded !== 'true') {
+                            video.dataset.loaded = 'true';
+                            video.preload = 'metadata';
+                            video.load();
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+            grid.querySelectorAll('.reel-item').forEach(item => observer.observe(item));
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        function setupEvents() {
+            // Auth
+            document.getElementById('goReg').onclick = () => {
+                document.getElementById('loginF').style.display = 'none';
+                document.getElementById('regF').style.display = 'block';
+                document.getElementById('authTitle').textContent = 'ثبت‌نام در فیلم‌سری';
+            };
+            document.getElementById('goLog').onclick = () => {
+                document.getElementById('regF').style.display = 'none';
+                document.getElementById('loginF').style.display = 'block';
+                document.getElementById('authTitle').textContent = 'ورود به فیلم‌سری';
+            };
+            document.getElementById('authClose').onclick = () => document.getElementById('authModal').classList.remove('show');
+
+            document.getElementById('btnLogin').onclick = async () => {
+                const email = normEmail(document.getElementById('loginEmail').value);
+                const pass = document.getElementById('loginPass').value;
+                if (!email || !pass) { document.getElementById('authErr').textContent = 'ایمیل و رمز را وارد کنید';
+                    document.getElementById('authErr').classList.add('show'); return; }
+                loading(true);
+                try { me = await Backendless.UserService.login(email, pass, true);
+                    await afterLogin(); } catch (e) { document.getElementById('authErr').textContent = e.message || 'ورود ناموفق';
+                    document.getElementById('authErr').classList.add('show'); } finally { loading(false); }
+            };
+
+            document.getElementById('btnReg').onclick = async () => {
+                const email = normEmail(document.getElementById('regEmail').value);
+                const pass = document.getElementById('regPass').value;
+                const name = (document.getElementById('regName').value || '').trim();
+                if (!email || !pass) { document.getElementById('authErr').textContent = 'ایمیل و رمز الزامی';
+                    document.getElementById('authErr').classList.add('show'); return; }
+                if (pass.length < 6) { document.getElementById('authErr').textContent = 'رمز حداقل ۶ کاراکتر';
+                    document.getElementById('authErr').classList.add('show'); return; }
+                loading(true);
+                try {
+                    const u = new Backendless.User();
+                    u.email = email;
+                    u.password = pass;
+                    u.displayName = name || email.split('@')[0];
+                    u.username = '';
+                    u.bio = '';
+                    u.avatarSeed = email;
+                    await Backendless.UserService.register(u);
+                    me = await Backendless.UserService.login(email, pass, true);
+                    await afterLogin();
+                } catch (e) { document.getElementById('authErr').textContent = e.message || 'ثبت‌نام ناموفق';
+                    document.getElementById('authErr').classList.add('show'); } finally { loading(false); }
+            };
+
+            // Header
+            document.getElementById('btnSearch').onclick = () => scrollToSection('search');
+            document.getElementById('btnWatchlistBtn').onclick = showWatchlist;
+            document.getElementById('btnUpload').onclick = toggleUploadSection;
+            document.getElementById('btnProfile').onclick = toggleProfileSection;
+            document.getElementById('btnLogout').onclick = async () => {
+                try { if (pres) await pres.presence.leave(); if (ably) ably.close(); await Backendless.UserService.logout(); } catch (e) {}
+                me = null;
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('authModal').classList.add('show');
+                toast('با موفقیت خارج شدید');
+            };
+
+            // Player
+            document.getElementById('playerClose').onclick = () => {
+                document.getElementById('playerModal').classList.remove('show');
+                document.getElementById('playerVideo').pause();
+                document.getElementById('playerVideo').src = '';
+            };
+            document.getElementById('btnDownload').onclick = () => toast('دانلود شروع شد 📥');
+            document.getElementById('btnSubtitle').onclick = () => toast('زیرنویس فعال شد 💬');
+            document.getElementById('btnWatchlist').onclick = () => { if (currentPlayingMovie) toggleWatchlist(currentPlayingMovie.id); };
+            document.getElementById('btnReport').onclick = () => { if (currentPlayingMovie) reportContent(currentPlayingMovie.id); };
+
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    toast('کیفیت ' + btn.dataset.q + ' انتخاب شد');
+                };
+            });
+
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', liveSearch);
+
+            // Close modals on overlay click
+            document.getElementById('authModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.target.classList.remove('show'); });
+            document.getElementById('detailModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.target.classList.remove('show'); });
+            document.getElementById('playerModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) { e.target.classList.remove('show');
+                    document.getElementById('playerVideo').pause(); } });
+
+            // Upload type change
+            document.getElementById('uploadType').addEventListener('change', function() {
+                const isSeries = this.value === 'series' || this.value === 'episode';
+                document.getElementById('uTitleEn').placeholder = isSeries ? 'Series Title' : 'Original Title';
+            });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        setupEvents();
+        tryLoadSDK();
+
+        // Initialize empty state for demo/real content
+        function initEmptyState() {
+            // If no content in store, show empty states (no fake data)
+            const content = getAllContent();
+            if (!content.length) {
+                document.getElementById('moviesGrid').innerHTML = '<div class="empty"><i class="fa-solid fa-film"></i><div>هنوز فیلمی آپلود نشده است</div></div>';
+                document.getElementById('seriesGrid').innerHTML = '<div class="empty"><i class="fa-solid fa-tv"></i><div>هنوز سریالی آپلود نشده است</div></div>';
+                document.getElementById('reelsGrid').innerHTML = '<div class="empty"><i class="fa-solid fa-clapperboard"></i><div>هنوز کلیپی آپلود نشده است</div></div>';
+            } else {
+                renderAllContent();
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.warn('Global error caught:', e.message);
+            return true;
+        });
+
+        // Prevent multiple rapid submissions
+        let isSubmitting = false;
+        const originalSubmit = submitUpload;
+        submitUpload = function() {
+            if (isSubmitting) return;
+            isSubmitting = true;
+            originalSubmit();
+            setTimeout(() => { isSubmitting = false; }, 1500);
+        };
+    </script>
 </body>
 </html>
